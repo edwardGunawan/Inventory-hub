@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './Login.css';
-const { ipcRenderer } = window.require('electron');
+
 
 class Login extends Component {
   constructor(props) {
@@ -15,9 +15,7 @@ class Login extends Component {
       password: this.refs.password.value,
       path: this.refs.path.value
     }
-
-    ipcRenderer.send('auth',formObj); // sending data to main-process
-    console.log(formObj);
+    this.props.onSubmit(formObj);
   }
 
   render () {
