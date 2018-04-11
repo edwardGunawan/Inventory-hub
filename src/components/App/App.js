@@ -15,9 +15,15 @@ class App extends Component {
   handleSubmitLogin(data){
     console.log(data);
     ipcRenderer.send('auth',data); // sending data to main-process
-    this.setState({
-      isLoggedIn: true
+    ipcRenderer.on('reply-auth',(event,arg) => {
+      console.log('arg', arg);
+      if(arg !== 'isNotLogin'){
+        this.setState({
+          isLoggedIn: true
+        });
+      }
     });
+
   }
 
   render() {
