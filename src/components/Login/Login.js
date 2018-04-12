@@ -5,24 +5,31 @@ import './Login.css';
 class Login extends Component {
   constructor(props) {
     super(props);
-    this.formSubmit = this.formSubmit.bind(this);
+    this.onClickStatus = this.onClickStatus.bind(this);
   }
 
-  formSubmit(event) {
-    event.preventDefault();
-    const formObj = {
-      username: this.refs.username.value,
-      password: this.refs.password.value,
-      path: this.refs.path.value
+
+  onClickStatus(action){
+    return () => {
+      let formObj = {status:action};
+      if(action === 'login') {
+        formObj = {
+          ...formObj, // spread operator for adding status in the formObj
+          username: this.refs.username.value,
+          password: this.refs.password.value,
+          path: this.refs.path.value
+        }
+      }
+
+      this.props.onClickStatus(formObj);
     }
-    this.props.onSubmit(formObj);
   }
 
   render () {
     return (
       <div className="container">
         <h1 className="header"> Welcome! </h1>
-        <form onSubmit={this.formSubmit}>
+        <form>
           <div className="form-group">
             <label htmlFor="username">Username</label>
             <input type="text" className="form-control" ref="username" id="username" placeholder="johnDoe"/>
@@ -31,12 +38,13 @@ class Login extends Component {
             <label htmlFor="password">Password</label>
             <input type="password" className="form-control" ref="password" id="password" placeholder="password"/>
           </div>
-          <div className="form-group">
+          {/*<div className="form-group">
             <label htmlFor="importExcel">Import Excel File</label>
             <input type="file" className="form-control" ref="path" id="importExcel"/>
-          </div>
+          </div> */}
           <div className="form-actions">
-            <button className="btn btn-form btn default" type="submit">Login</button>
+            <button onClick={this.onClickStatus('login')} className="btn btn-form btn default" >Login</button>
+            <button onClick={this.onClickStatus('signUp')} className="btn btn-form btn default" >Signup</button>
           </div>
         </form>
       </div>

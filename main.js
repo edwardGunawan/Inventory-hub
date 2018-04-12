@@ -3,6 +3,7 @@ const glob = require('glob');
 const path = require('path');
 const url = require('path');
 const debug = /--debug/.test(process.argv[2]);
+const db = require('./db.js');
 
 
 let mainWindow = null;
@@ -46,6 +47,16 @@ function initialize() {
 
   app.on('ready', () => {
     createWindow();
+    db.sequelize
+      .authenticate()
+      .then(() => {
+        console.log('Connection has been established successfully');
+        return db.sequelize.sync({force:true});
+      })
+      .then(() => {
+        console.log('db is already in sync');
+      })
+      .catch(e => console.log('Unable to connect to the database', e));
   });
 
   /// for Mac
