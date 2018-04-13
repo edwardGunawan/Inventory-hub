@@ -13,11 +13,14 @@ class Login extends Component {
     return () => {
       let formObj = {status:action};
       if(action === 'login') {
-        formObj = {
-          ...formObj, // spread operator for adding status in the formObj
-          username: this.refs.username.value,
-          password: this.refs.password.value,
-          path: this.refs.path.value
+        if(this.refs.username.value && this.refs.password.value) {
+          formObj = {
+            ...formObj, // spread operator for adding status in the formObj
+            username: this.refs.username.value,
+            password: this.refs.password.value
+          }
+        } else {
+          formObj.status = 'notLogin';
         }
       }
 

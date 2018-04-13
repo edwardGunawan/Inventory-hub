@@ -1,8 +1,9 @@
 const {ipcMain, dialog, BrowserWindow} = require('electron');
 const db = require('../../db.js');
+const bcrypt = require('bcrypt');
 
 ipcMain.on('signup', (event,data) => {
-  console.log('data is received', data);
+  console.log('data is received, currently creating in DB ....');
   db.user.create(data)
   .then((user) => {
     console.log('user is created', user);
