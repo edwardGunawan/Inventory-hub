@@ -10,28 +10,15 @@ class Login extends Component {
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleOnClose = this.handleOnClose.bind(this);
     this.state = {
-      selectedOption: 'public_username',
-      modalIsOpen: this.props.modalIsOpen
+      selectedOption: 'public_username'
     };
   }
-
-  // handling modal for error message on login
-  componentWillUpdate(nextProps, nextState) {
-    console.log('go through component will update in login', this.props.errMessage, nextProps.errMessage);
-    if(this.props.errMessage !== nextProps.errMessage){
-      this.setState({
-        modalIsOpen: true,
-        errMessage: (nextProps.errMessage) ? nextProps.errMessage : nextState.errMessage
-      });
-    }
-  }
-
 
   // handling submitting clicking either on login or signup
   onClickStatus(action){
     return () => {
       let formObj = {status:action,options:this.state.selectedOption};
-      if(action === 'login') {
+      if(action === 'aboutLogin') {
         if(this.refs.email.value && this.refs.password.value) {
           formObj = {
             ...formObj, // spread operator for adding status in the formObj
@@ -54,15 +41,16 @@ class Login extends Component {
   }
 
   // handling onClose for modal
+  // rendering the entire modal from container component app.js
+  // modalIsOpen and the error message
   handleOnClose() {
-    this.setState({
-      modalIsOpen: false
-    });
+    this.props.onClose();
   }
 
   render () {
-    let {selectedOption,modalIsOpen} = this.state;
-    let {errMessage} = this.props;
+    let {selectedOption} = this.state;
+    let {errMessage,modalIsOpen} = this.props;
+    console.log(modalIsOpen, ' in login');
     let renderErrMessage = () => {
       if(errMessage) return errMessage;
     }
@@ -72,7 +60,7 @@ class Login extends Component {
           {renderErrMessage()}
         </Modal>
         <h1 className="header"> Welcome! </h1>
-        <form>
+        <div>
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input type="text" className="form-control" ref="email" id="email" placeholder="email"/>
@@ -98,10 +86,10 @@ class Login extends Component {
             </label>
           </div>
           <div className="form-actions">
-            <button onClick={this.onClickStatus('login')} className="btn btn-form btn default" >Login</button>
+            <button onClick={this.onClickStatus('aboutLogin')} className="btn btn-form btn default" >Login</button>
             <button onClick={this.onClickStatus('signUp')} className="btn btn-form btn default" >Signup</button>
           </div>
-        </form>
+        </div>
       </div>
     )
   }

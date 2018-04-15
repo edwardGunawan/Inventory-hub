@@ -17,6 +17,10 @@ const { ipcRenderer } = window.require('electron');
   If user just click login without anything, it will go through
   handleClickStatus, then to login componentWillUpdate, then to
   ComponentDidUpdate in App.js
+
+  All of the modal are all changed through the App.js
+
+  Container Component
 */
 class App extends Component {
   constructor(props) {
@@ -25,6 +29,7 @@ class App extends Component {
     this.handleSubmitSignUp = this.handleSubmitSignUp.bind(this);
     this.handleClickStatus = this.handleClickStatus.bind(this);
     this.handleBackClick = this.handleBackClick.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
     this.state = {
       status: 'notLogin'
     };
@@ -35,7 +40,7 @@ class App extends Component {
     console.log('go through componentDidUpdate in app.js', this.state.status, prevState.status);
     if(this.state.status !== prevState.status) {
       switch(this.state.status) {
-        case 'login' :
+        case 'aboutLogin' :
           this.handleSubmitLogin();
           break;
         case 'signUp' :
@@ -47,19 +52,30 @@ class App extends Component {
   // handle submitting signup button
   handleSubmitSignUp(data) {
     console.log('go through data here');
-    ipcRenderer.send('signup', data);
-    ipcRenderer.on('reply-signup', (event,arg) => {
-      if(arg.status === 'Created'){
-        this.setState({
-          status:'notLogin'
-        });
-      } else {
-        console.log(arg.status.errors);
-        this.setState({
-          errMessage: arg.status.errors
-        });
-      }
-    });
+    let {email,public_password,admin_password} = data;
+    // validate here and send it back to signUp.js
+    if(!email || !public_password || !admin_password) {
+      console.log('get through exception');
+      this.setState({
+        errMessage:[{message:'Ooops! You have to fill out all the field'}],
+        modalIsOpen:true
+      });
+    }else {
+      ipcRenderer.send('signup', data);
+      ipcRenderer.on('reply-signup', (event,arg) => {
+        if(arg.status === 'Created'){
+          this.setState({
+            status:'notLogin'
+          });
+        } else {
+          console.log(arg.status.errors);
+          this.setState({
+            errMessage: arg.status.errors,
+            modalIsOpen:true
+          });
+        }
+      });
+    }
   }
 
   // handle submitting login button
@@ -77,7 +93,7 @@ class App extends Component {
           options
         });
       } else {
-        // console.log(arg.message);
+        console.log(arg.message);
         // console.log(this.state.status);
         this.setState({
           errMessage:arg.message,
@@ -92,7 +108,7 @@ class App extends Component {
   handleClickStatus(formObj) {
     console.log('go through here in handleClickStatus', formObj);
     // if the formObj has something else and it is login then go through login
-    if(formObj.status === 'login') {
+    if(formObj.status === 'aboutLogin') {
       this.setState(formObj);
     } else {
       // means it is only created
@@ -110,21 +126,31 @@ class App extends Component {
     });
   }
 
+  handleCloseModal() {
+    this.setState({
+      errMessage:'',
+      modalIsOpen:false
+    });
+  }
+
   render() {
     let {status,errMessage,modalIsOpen,email,options} = this.state;
-    console.log('email', email, 'options',options,'status',status);
+    console.log('email', email, 'options',options,'status',status, 'errMessage', errMessage);
     let renderMain = () => {
       switch(status) {
         case 'signUp':
           return <Signup onBackClick={this.handleBackClick}
                         errMessage={errMessage}
-                        onSubmitSignUp={this.handleSubmitSignUp}/>
+                        onSubmitSignUp={this.handleSubmitSignUp}
+                        onClose={this.handleCloseModal}
+                        modalIsOpen={modalIsOpen}/>
         case 'login':
           return <Main email={email}
                        options={options}/>
         default:
           return <Login errMessage={errMessage}
                         onClickStatus = {this.handleClickStatus}
+                        onClose={this.handleCloseModal}
                         modalIsOpen={modalIsOpen}/>
       }
     }

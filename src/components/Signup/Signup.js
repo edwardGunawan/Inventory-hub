@@ -7,58 +7,40 @@ class Signup extends Component {
     super(props);
     this.submitSignup = this.submitSignup.bind(this);
     this.handleOnClose = this.handleOnClose.bind(this);
-    this.state = {
-      modalIsOpen: false
-    }
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    console.log(this.props.errMessage, nextProps.errMessage);
-    if(this.props.errMessage !== nextProps.errMessage){
-      this.setState({
-        modalIsOpen: true,
-        errMessage: (nextProps.errMessage) ? nextProps.errMessage : nextState.errMessage
-      });
-    }
   }
 
 
-
+  // validate everything from the container component App.js
   submitSignup(e) {
     e.preventDefault();
     console.log('go through herere');
-    if(!this.refs.email.value || !this.refs.public_password.value ||
-    !this.refs.admin_password.value){
-      this.setState({
-        errMessage: [{message:'All Form Field Must be Filled'}],
-        modalIsOpen:true
-      });
-    }else {
-      const data = {
+    let data={};
+    if(this.refs.email.value && this.refs.public_password.value &&
+    this.refs.admin_password.value){
+      data = {
         email: this.refs.email.value,
         admin_password:this.refs.admin_password.value,
         public_password: this.refs.public_password.value
       }
-      this.props.onSubmitSignUp(data);
     }
+    this.props.onSubmitSignUp(data);
 
   }
 
   handleOnClose() {
-    this.setState({
-      modalIsOpen: false
-    });
+    this.props.onClose();
   }
 
 
   render() {
-    let {errMessage} = this.state;
+    let {errMessage,modalIsOpen} = this.props;
+    console.log(errMessage, 'errMessage in signup', 'modalIsOpen', modalIsOpen);
     let renderErrMessage = () => {
       if(errMessage) return errMessage[0].message;
     }
     return (
       <div className="container">
-        <Modal isOpen={this.state.modalIsOpen} onClose={this.handleOnClose}>
+        <Modal isOpen={modalIsOpen} onClose={this.handleOnClose}>
           {renderErrMessage()}
         </Modal>
         <form onSubmit={this.submitSignup}>
@@ -86,6 +68,9 @@ class Signup extends Component {
       </div>
     )
   }
+}
+Signup.defaultProps = {
+  modalIsOpen: false
 }
 
 
