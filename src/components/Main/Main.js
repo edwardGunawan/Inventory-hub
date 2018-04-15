@@ -12,11 +12,15 @@ import Create from '../Create/Create';
 */
 class Main extends Component {
   render () {
+    let {email, options} = this.props;
+    console.log('email is ', email, options);
     return (
       <Router>
         <div>
           <Nav/>
           Main Container
+          {email}
+          {options}
           <MainRoute/>
         </div>
       </Router>

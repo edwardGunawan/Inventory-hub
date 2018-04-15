@@ -6,5 +6,19 @@ ipcMain.on('login-auth', (event,data) => {
   // authentication is to generate hashvalue in bcrypt and check if the password exist
   // however when the user close and get back in, they need to sign in again
   // do authentication here
-  event.sender.send('reply-auth', {status:'isLogin'});
+  db.user.authenticate(data).then((user) => {
+    console.log('user here in login-async after authenticating',data);
+    // pass just let the user login
+    event.sender.send('reply-auth', {
+                                      status:'OK',
+                                      message: {
+                                        email: user.get('email'),
+                                        options: data.options
+                                      }
+                                    });
+  })
+  .catch((e) => {
+    console.log(' error happen with authentication', e);
+    event.sender.send('reply-auth',{status:'failed',message:e})
+  });
 });

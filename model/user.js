@@ -1,3 +1,4 @@
+let bcrypt = require('bcryptjs');
 module.exports = function(sequelize,DataTypes){
   var User =  sequelize.define('user', {
     email:{
@@ -11,16 +12,15 @@ module.exports = function(sequelize,DataTypes){
     admin_username: {
       type:DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate: {
         notEmpty:true,
-        len:[2,7]
+        len:[4,20]
       }
     },
     salt_admin: {
       type: DataTypes.STRING
     },
-    password_hash_admin: {
+    admin_password_hash: {
       type: DataTypes.STRING
     },
     admin_password: {
@@ -37,23 +37,22 @@ module.exports = function(sequelize,DataTypes){
         let hash = bcrypt.hashSync(val,salt);
         // set dataValue for password salt and hash
         this.setDataValue('salt_admin', salt);
-        this.setDataValue('password_hash_admin', hash);
+        this.setDataValue('admin_password_hash', hash);
         this.setDataValue('admin_password', val);
       }
     },
     public_username: {
       type:DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate:{
         notEmpty:true,
-        len:[2,7]
+        len:[4,20]
       }
     },
     salt_public: {
       type:DataTypes.STRING
     },
-    hash_public: {
+    public_password_hash: {
       type:DataTypes.STRING
     },
     public_password: {
@@ -69,16 +68,56 @@ module.exports = function(sequelize,DataTypes){
         let hash = bcrypt.hashSync(value,salt);
 
         this.setDataValue('salt_public', salt);
-        this.setDataValue('hash_public', hash);
+        this.setDataValue('public_password_hash', hash);
         this.setDataValue('public_password', value);
+      }
+    }
+  },{
+    hooks: {
+      beforeValidate: (user, options) => {
+        if(typeof user.email === 'String'){
+          user.admin_password = user.admin_password.toLowerCase();
+          user.public_password = user.public_password.toLowerCase();
+          user.username = user.email.trim().toLowerCase();
+        }
       }
     }
   });
 
   // class method for bcrypt hash and compare them to check if
   // the value does exist
-  // TODO: need to set whether it is a public or an admin account
   User.authenticate = (body) => {
+    return new Promise((resolve,reject) => {
+      try {
+        console.log('go through here in authenticate', body);
+        let {options} = body;
+        // check if body has property username and password, and if username
+        // and password is a string
+        if(body.hasOwnProperty('username') && body.hasOwnProperty('password')
+      && typeof body.username === 'string' && typeof body.password === 'string') {
+          User.findOne({
+            where: {
+              [options]:body.username
+            }
+          }).then((user) => {
+            console.log('user is ', user);
+            let passwordHash = (options === 'public_username') ? 'public_password_hash' : 'admin_password_hash';
+            console.log(passwordHash);
+            if(!user || !bcrypt.compareSync(body.password,user.get(passwordHash))) {
+              return reject('password or username did not match');
+            }
+            resolve(user);
+          })
+          .catch(e => {
+            console.log('error on promise', e);
+            reject(e);
+          }); // promise error
+        }
+      } catch(e) {
+        console.log('error on validating username and password', e);
+        return reject('password or username did not match');
+      }
+    });
 
   }
 

@@ -20,7 +20,6 @@ class Signup extends Component {
         errMessage: (nextProps.errMessage) ? nextProps.errMessage : nextState.errMessage
       });
     }
-
   }
 
 
@@ -86,7 +85,6 @@ class Signup extends Component {
             <button onClick={e=> this.props.onBackClick()} className="btn btn-form btn-default"> Back </button>
           </div>
         </form>
-
       </div>
     )
   }
