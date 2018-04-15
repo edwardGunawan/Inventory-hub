@@ -46,7 +46,7 @@ class App extends Component {
 
   // handle submitting signup button
   handleSubmitSignUp(data) {
-    console.log('go through data here', typeof data.public_username);
+    console.log('go through data here');
     ipcRenderer.send('signup', data);
     ipcRenderer.on('reply-signup', (event,arg) => {
       if(arg.status === 'Created'){

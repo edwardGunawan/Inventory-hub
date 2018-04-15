@@ -9,14 +9,14 @@ module.exports = function(sequelize,DataTypes){
         isEmail:true
       }
     },
-    admin_username: {
-      type:DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty:true,
-        len:[4,20]
-      }
-    },
+    // admin_username: {
+    //   type:DataTypes.STRING,
+    //   allowNull: false,
+    //   validate: {
+    //     notEmpty:true,
+    //     len:[4,20]
+    //   }
+    // },
     salt_admin: {
       type: DataTypes.STRING
     },
@@ -41,14 +41,14 @@ module.exports = function(sequelize,DataTypes){
         this.setDataValue('admin_password', val);
       }
     },
-    public_username: {
-      type:DataTypes.STRING,
-      allowNull: false,
-      validate:{
-        notEmpty:true,
-        len:[4,20]
-      }
-    },
+    // public_username: {
+    //   type:DataTypes.STRING,
+    //   allowNull: false,
+    //   validate:{
+    //     notEmpty:true,
+    //     len:[4,20]
+    //   }
+    // },
     salt_public: {
       type:DataTypes.STRING
     },
@@ -90,21 +90,20 @@ module.exports = function(sequelize,DataTypes){
     return new Promise((resolve,reject) => {
       try {
         console.log('go through here in authenticate', body);
-        let {options} = body;
+        let {email,options} = body;
         // check if body has property username and password, and if username
         // and password is a string
-        if(body.hasOwnProperty('username') && body.hasOwnProperty('password')
-      && typeof body.username === 'string' && typeof body.password === 'string') {
+        if(body.hasOwnProperty('email') && body.hasOwnProperty('password')
+      && typeof body.email === 'string' && typeof body.password === 'string') {
           User.findOne({
             where: {
-              [options]:body.username
+              email:body.email
             }
           }).then((user) => {
             console.log('user is ', user);
             let passwordHash = (options === 'public_username') ? 'public_password_hash' : 'admin_password_hash';
-            console.log(passwordHash);
             if(!user || !bcrypt.compareSync(body.password,user.get(passwordHash))) {
-              return reject('password or username did not match');
+              return reject('password or email did not match');
             }
             resolve(user);
           })
@@ -115,7 +114,7 @@ module.exports = function(sequelize,DataTypes){
         }
       } catch(e) {
         console.log('error on validating username and password', e);
-        return reject('password or username did not match');
+        return reject('password or email did not match');
       }
     });
 

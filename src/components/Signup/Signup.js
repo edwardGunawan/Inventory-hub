@@ -27,8 +27,8 @@ class Signup extends Component {
   submitSignup(e) {
     e.preventDefault();
     console.log('go through herere');
-    if(!this.refs.email.value || !this.refs.admin_username.value ||
-    !this.refs.admin_password.value || !this.refs.public_username.value){
+    if(!this.refs.email.value || !this.refs.public_password.value ||
+    !this.refs.admin_password.value){
       this.setState({
         errMessage: [{message:'All Form Field Must be Filled'}],
         modalIsOpen:true
@@ -36,9 +36,7 @@ class Signup extends Component {
     }else {
       const data = {
         email: this.refs.email.value,
-        admin_username: this.refs.admin_username.value,
         admin_password:this.refs.admin_password.value,
-        public_username: this.refs.public_username.value,
         public_password: this.refs.public_password.value
       }
       this.props.onSubmitSignUp(data);
@@ -65,18 +63,18 @@ class Signup extends Component {
         </Modal>
         <form onSubmit={this.submitSignup}>
           <div className="form-group">
-            <label htmlFor="email">Admin/Company Email: </label>
+            <label htmlFor="email">(Company) Email: </label>
             <input type="email" id="email" className="form-control" ref="email" placeholder="email"/>
           </div>
           <div className="form-group">
-            <label htmlFor="adminUser">Admin Username</label>
-            <input type="text" id="adminUser" className="form-control" ref="admin_username" placeholder="admin"/>
+            <label>Admin Username : <b>admin</b></label>
+            <br/>
             <label htmlFor="adminPassword"> Admin Password</label>
             <input type="password" id="adminPassword" className="form-control" ref="admin_password" placeholder="password"/>
           </div>
           <div className="form-group">
-            <label htmlFor="publicUser">Public Username</label>
-            <input type="text" id="publicUser" className="form-control" ref="public_username" placeholder="public"/>
+            <label htmlFor="publicUser">Public Username : <b>public</b></label>
+            <br/>
             <label htmlFor="publicPassword">Public Password</label>
             <input type="password" id="publicPassword" className="form-control" ref="public_password" placeholder="password"/>
           </div>

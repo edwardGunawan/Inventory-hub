@@ -32,11 +32,11 @@ class Login extends Component {
     return () => {
       let formObj = {status:action,options:this.state.selectedOption};
       if(action === 'login') {
-        if(this.refs.username.value && this.refs.password.value) {
+        if(this.refs.email.value && this.refs.password.value) {
           formObj = {
             ...formObj, // spread operator for adding status in the formObj
-            username: this.refs.username.value,
-            password: this.refs.password.value
+            password: this.refs.password.value,
+            email:this.refs.email.value
           }
         } else {
           formObj.status = 'notLogin';
@@ -64,19 +64,18 @@ class Login extends Component {
     let {selectedOption,modalIsOpen} = this.state;
     let {errMessage} = this.props;
     let renderErrMessage = () => {
-      if(errMessage) return 'Either username or password is invalid';
+      if(errMessage) return errMessage;
     }
     return (
       <div className="container">
-        {'go through here again' + errMessage}
         <Modal isOpen={modalIsOpen} onClose={this.handleOnClose}>
           {renderErrMessage()}
         </Modal>
         <h1 className="header"> Welcome! </h1>
         <form>
           <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input type="text" className="form-control" ref="username" id="username" placeholder="johnDoe"/>
+            <label htmlFor="email">Email</label>
+            <input type="text" className="form-control" ref="email" id="email" placeholder="email"/>
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
