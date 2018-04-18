@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 
-class Create extends Component {
+class AddRemove extends Component {
   render() {
     return(
       <div>
-        Create Component
+        AddRemove Component
       </div>
     )
   }
 }
 
 
-export default Create;
+export default AddRemove;

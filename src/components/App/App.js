@@ -156,7 +156,9 @@ class App extends Component {
     }
     return (
       <div>
-        {renderMain()}
+        {/*renderMain()*/}
+        {<Main email={email}
+                     options={options}/>}
       </div>
     )
   }

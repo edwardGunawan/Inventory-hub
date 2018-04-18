@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Modal from './../Modal/Modal';
 import './Login.css';
+import {Button, Form, FormGroup, Label, Input, FormText} from 'reactstrap';
 
 
 class Login extends Component {
@@ -55,42 +56,44 @@ class Login extends Component {
       if(errMessage) return errMessage;
     }
     return (
-      <div className="container">
+      <Form className="container">
         <Modal isOpen={modalIsOpen} onClose={this.handleOnClose}>
           {renderErrMessage()}
         </Modal>
         <h1 className="header"> Welcome! </h1>
         <div>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
+          <FormGroup className="form-group">
+            <Label for="email">Email</Label>
             <input type="text" className="form-control" ref="email" id="email" placeholder="email"/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          </FormGroup>
+          <FormGroup className="form-group">
+            <Label for="password">Password</Label>
             <input type="password" className="form-control" ref="password" id="password" placeholder="password"/>
-          </div>
-          <div className="radio">
-            <label>
-              <input type="radio" className="form-control" value="public_username"
-                checked={selectedOption === 'public_username'}
-                onChange={this.handleOptionChange} />
-              Public
-            </label>
-          </div>
-          <div className="radio">
-            <label>
-              <input type="radio" className="form-control" value="admin_username"
-                checked={selectedOption === 'admin_username'}
-                onChange={this.handleOptionChange}/>
-              Admin
-            </label>
-          </div>
-          <div className="form-actions">
-            <button onClick={this.onClickStatus('aboutLogin')} className="btn btn-form btn default" >Login</button>
-            <button onClick={this.onClickStatus('signUp')} className="btn btn-form btn default" >Signup</button>
-          </div>
+          </FormGroup>
+          <FormGroup tag="fieldset" className="radio">
+            <FormGroup check>
+              <Label check>
+                <input type="radio" className="form-control" value="public_username"
+                  checked={selectedOption === 'public_username'}
+                  onChange={this.handleOptionChange} />
+                Public
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <input type="radio" className="form-control" value="admin_username"
+                  checked={selectedOption === 'admin_username'}
+                  onChange={this.handleOptionChange}/>
+                Admin
+              </Label>
+            </FormGroup>
+          </FormGroup>
+          <FormGroup className="form-actions">
+            <Button onClick={this.onClickStatus('aboutLogin')} className="btn btn-form btn default" >Login</Button>
+            <Button onClick={this.onClickStatus('signUp')} className="btn btn-form btn default" >Signup</Button>
+          </FormGroup>
         </div>
-      </div>
+      </Form>
     )
   }
 }

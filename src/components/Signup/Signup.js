@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import './Signup.css';
 import Modal from './../Modal/Modal';
+import {Button, Form, FormGroup, Label, Input, FormText} from 'reactstrap';
 // pass back to props in render()
 class Signup extends Component {
   constructor(props) {
@@ -43,28 +44,30 @@ class Signup extends Component {
         <Modal isOpen={modalIsOpen} onClose={this.handleOnClose}>
           {renderErrMessage()}
         </Modal>
-        <form onSubmit={this.submitSignup}>
-          <div className="form-group">
-            <label htmlFor="email">(Company) Email: </label>
+        <Form onSubmit={this.submitSignup}>
+          <FormGroup className="form-group">
+            <Label for="email">(Company) Email: </Label>
             <input type="email" id="email" className="form-control" ref="email" placeholder="email"/>
-          </div>
-          <div className="form-group">
-            <label>Admin Username : <b>admin</b></label>
-            <br/>
-            <label htmlFor="adminPassword"> Admin Password</label>
+          </FormGroup>
+          <FormGroup className="form-group">
+            <Label>Admin Username : <b>admin</b></Label>
+          </FormGroup>
+          <FormGroup>
+            <Label for="adminPassword"> Admin Password</Label>
             <input type="password" id="adminPassword" className="form-control" ref="admin_password" placeholder="password"/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="publicUser">Public Username : <b>public</b></label>
-            <br/>
-            <label htmlFor="publicPassword">Public Password</label>
+          </FormGroup>
+          <FormGroup className="form-group">
+            <Label for="publicUser">Public Username : <b>public</b></Label>
+          </FormGroup>
+          <FormGroup>
+            <Label for="publicPassword">Public Password</Label>
             <input type="password" id="publicPassword" className="form-control" ref="public_password" placeholder="password"/>
-          </div>
-          <div className="form-actions">
-            <button className="btn btn-form btn btn-default">Signup!</button>
-            <button onClick={e=> this.props.onBackClick()} className="btn btn-form btn-default"> Back </button>
-          </div>
-        </form>
+          </FormGroup>
+          <FormGroup className="form-actions">
+            <Button>Signup!</Button>
+            <Button onClick={e=> this.props.onBackClick()}> Back </Button>
+          </FormGroup>
+        </Form>
       </div>
     )
   }
