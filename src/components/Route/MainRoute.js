@@ -14,6 +14,11 @@ import BulkCreate from '../Bulk/BulkCreate';
 class MainRoute extends Component {
   constructor(props) {
     super(props);
+    this.handleImportExcel = this.handleImportExcel.bind(this);
+  }
+
+  handleImportExcel(path) {
+    console.log(path);
   }
 
   render() {
@@ -30,10 +35,14 @@ class MainRoute extends Component {
       return (
         <div>
           <Route path="/Search" component={Search}/>
-          <Route path="/AddRemove" component={Search}/>
           <Route path="/InOut" component={Inout}/>
           <Route path="/AddRemove" component={AddRemove}/>
-          <Route path="/BulkCreate" component={BulkCreate}/>
+          <Route path="/BulkCreate" component={BulkCreate}
+
+                />
+                {/*}  render={() =>
+                   <BulkCreate onImportExcel={this.handleImportExcel}/>
+                 }*/}
         </div>
       )
     }
