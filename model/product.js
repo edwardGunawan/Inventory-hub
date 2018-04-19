@@ -3,31 +3,25 @@ module.exports = function(sequelize,DataTypes) {
     code : {
       type: DataTypes.STRING,
       allowNull: false,
+      unique:true, // needs to be unique
       validate: {
         notEmpty: true
       }
     },
-    in: {
+    amount: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         isInt: true
       }
     },
-    out: {
-      type:DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        isInt: true
-      }
-    },
     // type : stock or return
-    type: {
-      type: DataTypes.STRING,
-      validate: {
-        isAlpha: true
-      }
-    },
+    // type: {
+    //   type: DataTypes.STRING,
+    //   validate: {
+    //     isAlpha: true
+    //   }
+    // },
     price: {
       type: DataTypes.INTEGER,
       allowNull: false,
