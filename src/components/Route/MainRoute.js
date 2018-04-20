@@ -32,7 +32,7 @@ class MainRoute extends Component {
     if(options === 'admin_username') {
       return (
         <div>
-          <Route exact path="/Search" component={Search}/>
+          <Route exact path="/Search" render={() => <Search options={options}/>} />
           <Route path="/Analytics" component={Analytics}/>
           <Route path="/Settings" component={Settings}/>
         </div>
@@ -40,12 +40,10 @@ class MainRoute extends Component {
     } else {
       return (
         <div>
-          <Route exact path="/Search" component={Search}/>
+          <Route exact path="/Search" render={() => <Search options={options}/>} />
           <Route path="/InOut" component={Inout}/>
-          <Route path="/BulkCreate" component={BulkCreate}
-
-                />
-              <Route path="/TransactionHistory" component={TransactionHistory}/>
+          <Route path="/BulkCreate" component={BulkCreate}/>
+          <Route path="/TransactionHistory" component={TransactionHistory}/>
                 {/*}  render={() =>
                    <BulkCreate onImportExcel={this.handleImportExcel}/>
                  }*/}
