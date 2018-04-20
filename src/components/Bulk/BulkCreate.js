@@ -1,5 +1,15 @@
 import React, {Component} from 'react';
-import {Button, Form, FormGroup,FormText, Label, Input} from 'reactstrap';
+import {Button,
+        Form,
+        FormGroup,
+        FormText,
+        Label,
+        Input,
+        InputGroup,
+        InputGroupText,
+        InputGroupAddon
+      } from 'reactstrap';
+import InputList from '../InputList/InputList';
 const {ipcRenderer} = window.require('electron');
 
 class BulkCreate extends Component {
@@ -7,8 +17,11 @@ class BulkCreate extends Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handleToggleClick = this.handleToggleClick.bind(this);
+    this.handleSubmitInputList = this.handleSubmitInputList.bind(this);
     this.state = {
-      path:''
+      path:'',
+      isBulkCreate: true
     }
   }
   handleChange(files) {
@@ -21,6 +34,7 @@ class BulkCreate extends Component {
     // console.log(this.props.history.push('/Search')); // push to router history
   }
 
+  //TODO: Handling non .xlxs file
   handleClick(e) {
     e.preventDefault();
     console.log(this.state.path);
@@ -33,21 +47,56 @@ class BulkCreate extends Component {
         console.log(message);
       }
     });
-    // console.log(this.state.path);
-    // ipcRenderer here for handling path
+  }
+
+  handleToggleClick() {
+    this.setState({
+      isBulkCreate: !this.state.isBulkCreate
+    });
+  }
+
+  handleSubmitInputList(input_arr) {
+    input_arr.forEach((inputObj) => {
+      console.log(inputObj);
+    });
+    ipcRenderer.send('create',{product_arr: input_arr});
+    ipcRenderer.on('reply-create', (event,arg) => {
+      let {status,message} = arg;
+      if(status === 'OK') {
+        console.log(message);
+      } else {
+        console.log(message);
+      }
+    });
+
   }
 
   render() {
+    let {isBulkCreate} = this.state;
+    let toogle = () => {
+      if(isBulkCreate) {
+        return (
+          <FormGroup>
+            <Label for="excelImport">File</Label>
+            <Input type="file" innerRef="import" onChange={(e) => this.handleChange(e.target.files)} name="file" id="excelImport"/>
+            <FormText color="muted">
+              Find Excel Sheet to import to the database
+            </FormText>
+            <Button onClick={this.handleClick}>Import!</Button>
+          </FormGroup>
+        )
+      } else {
+        return (
+          <InputList onSubmitInputList={this.handleSubmitInputList}
+                     insideCreate={true}
+                     inputField={{code:'', amount:0, price:0}}/>
+        )
+      }
+    }
     return (
       <Form>
-        <FormGroup>
-          <Label for="excelImport">File</Label>
-          <Input type="file" innerRef="import" onChange={(e) => this.handleChange(e.target.files)} name="file" id="excelImport"/>
-          <FormText color="muted">
-            Find Excel Sheet to import to the database
-          </FormText>
-          <Button onClick={this.handleClick}>Import!</Button>
-        </FormGroup>
+        <Button onClick={this.handleToggleClick}>Toggle</Button>
+        {toogle()}
       </Form>
     )
   }

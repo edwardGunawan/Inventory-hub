@@ -26,7 +26,7 @@ class Main extends Component {
             <Col xs="4" className="nav-bar">
               <NavComp options={options}/>
             </Col>
-            <Col xs="7" className="main-content">
+            <Col xs="8" className="main-content">
               Main Container
               {email}
               {options}

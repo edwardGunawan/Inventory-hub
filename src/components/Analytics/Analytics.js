@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 
-class Edit extends Component {
+class Analytics extends Component {
   render() {
     return (
       <div>
-        Edit Component
+        Analytics Component
       </div>
     )
   }
 }
 
-export default Edit;
+export default Analytics;

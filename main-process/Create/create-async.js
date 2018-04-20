@@ -5,18 +5,17 @@ let XLSX = require('xlsx');
 /*
   Create new product
 */
-// One product
-ipcMain.on('create', (e,data) => {
-  db.product.create(data)
-    .then((product) => {
-      e.sender.send('reply-create', {
-        status:'OK',
-        message: `${product.get('code')}`
-     });
-    })
-    .catch(error => {
-      e.sender.send('reply-create', {status:'Error', message: error});
-    });
+// One product, or multiple still using bulkCreate function
+// data argument contained product array, [code,amount,price]
+ipcMain.on('create', async (event,data) => {
+  try {
+    let {product_arr} = data;
+    let products = await db.product.bulkCreate(product_arr,{returning:true});
+    event.sender.send('reply-create', {status:'OK', message:'all products is created'});
+  } catch(e) {
+    console.log('error in create', e);
+    event.sender.send('reply-create', {status:'Error', message:e});
+  }
 });
 
 
@@ -30,7 +29,7 @@ ipcMain.on('bulk-import',async (event,data) => {
     console.log('go through bulk-import', path);
     let excelObj = await importExcel(path);
     console.log(excelObj);
-    let products = await db.product.bulkCreate(excelObj);
+    let products = await db.product.bulkCreate(excelObj,{returning:true}); // returning auto-generate id
     event.sender.send('reply-bulk-import', {status:'OK', message:'Import From Excel Succeed'});
   }catch(e) {
     console.log('go through error',e);
@@ -47,13 +46,11 @@ async function importExcel(path) {
 
     // get rid of frist 3 because that is the description
     ws.splice(0,3);
-    let count = 0;
 
     // bulk Import needs to add id by itself, it can't generate ID
     return ws.map((item) => {
       let {__EMPTY_1} = item; // amount
       return {
-        id: count++,
         code: item['Posisi Stok'],
         amount: Number(__EMPTY_1.replace(/,/g,'')), // get rid of commas for integer value
         price: 100 // current still fixed, excel should write price number

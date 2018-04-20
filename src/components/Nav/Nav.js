@@ -18,7 +18,7 @@ class NavComp extends Component {
               <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Search">Search</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Edit">Edit</NavLink>
+              <NavLink tag={RRNavLink} disabled activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Analytics">Report</NavLink>
             </NavItem>
             <NavItem>
               <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Settings">Settings</NavLink>
@@ -34,8 +34,8 @@ class NavComp extends Component {
           <Nav vertical>
             <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Search">Search</NavLink>
             <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Inout">In/Out</NavLink>
-            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/AddRemove">Create/Delete</NavLink>
-            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/BulkCreate">Import</NavLink>
+            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/TransactionHistory">Transaction</NavLink>
+            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/BulkCreate">Create/Import</NavLink>
           </Nav>
         </div>
       )
