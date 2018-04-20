@@ -1,17 +1,29 @@
 import React, {Component} from 'react';
 import ShowTable from '../ShowTable/ShowTable';
-import {Progress} from 'reactstrap';
+import {Progress,
+        Input
+        } from 'reactstrap';
+import './Search.css'
 
 const lunr = window.require('lunr');
 let {ipcRenderer} = window.require('electron');
 
-
+// let debounce = (fn, delay) => {
+//   let timer = null;
+//   return () => {
+//     let context
+//   }
+// }
 
 class Search extends Component {
   constructor(props) {
     super(props);
+    this.handleClickAction = this.handleClickAction.bind(this);
+    // debouncing
+    // this.handleSearch = debounce(this.handleSearch.bind(this),1000);
+    this.handleSearch = this.handleSearch.bind(this);
     this.state = {
-      message:null
+      toRender:null
     }
   }
   componentWillMount() {
@@ -34,7 +46,8 @@ class Search extends Component {
         });
         this.setState({
           idx,
-          message
+          message,
+          toRender:message
         })
       }else {
         console.log(message);
@@ -42,17 +55,39 @@ class Search extends Component {
     })
   }
 
+  handleClickAction(idx,actionButton) {
+    console.log('click', idx, actionButton);
+    this.setState({
+      toRender:null
+    }); // to load progress
+
+    // fake timer for now
+    setTimeout(() => {
+      this.setState({
+        toRender:this.state.message
+      })
+    },5000)
+    // TODO:
+    // Delete from IPCRenderer
+    // render back to state for product
+  }
+
+  handleSearch(e) {
+    console.log(e.target.value);
+  }
+
   render() {
     let{options} = this.props;
-    let {message} = this.state;
-    console.log(message);
+    let {toRender} = this.state;
+    console.log(toRender);
     return (
       <div>
         {options}
-        Search Component
-        {(message) ? <ShowTable products={message}/>:
-          <Progress animated color="info" value="100"/> }
-
+        <Input type="text" placeholder="search" onChange={this.handleSearch}/>
+        <div className="progress-table-container">
+          {(toRender) ? <ShowTable options={options} onClickAction={this.handleClickAction} products={toRender}/>:
+            <Progress animated color="info" value="100"/> }
+        </div>
       </div>
     )
   }

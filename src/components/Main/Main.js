@@ -23,10 +23,10 @@ class Main extends Component {
         <Container>
           <Router>
           <Row>
-            <Col xs="4" className="nav-bar">
+            <Col xs="3" className="nav-bar">
               <NavComp options={options}/>
             </Col>
-            <Col xs="8" className="main-content">
+            <Col xs="9" className="main-content">
               Main Container
               {email}
               {options}
