@@ -15,6 +15,14 @@ class ShowTable extends Component{
     }
   }
 
+  componentDidUpdate(prevProps,prevState) {
+    if(this.props.products.length !== prevProps.products.length) {
+      this.setState({
+        products: this.props.products
+      })
+    }
+  }
+
   // handle click on the modal
   handleTableClick (ans) {
     console.log(ans);
@@ -54,7 +62,6 @@ class ShowTable extends Component{
         )
       })
     }
-
     return (
       <div className="table-container">
         <ModalStrap idx={this.state.idx}

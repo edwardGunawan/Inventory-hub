@@ -3,36 +3,33 @@ import ShowTable from '../ShowTable/ShowTable';
 import {Progress,
         Input
         } from 'reactstrap';
-import './Search.css'
+import './Search.css';
+import debounce from 'lodash/debounce';
 
 const lunr = window.require('lunr');
 let {ipcRenderer} = window.require('electron');
 
-// let debounce = (fn, delay) => {
-//   let timer = null;
-//   return () => {
-//     let context
-//   }
-// }
+
 
 class Search extends Component {
   constructor(props) {
     super(props);
     this.handleClickAction = this.handleClickAction.bind(this);
     // debouncing
-    // this.handleSearch = debounce(this.handleSearch.bind(this),1000);
-    this.handleSearch = this.handleSearch.bind(this);
+    this.handleSearch = debounce(this.handleSearch,500);
     this.state = {
       toRender:null
     }
   }
   componentWillMount() {
+    // debounce
+    // this.handleSearch= debounce(this.handleSearch,500)
     console.log('Go through component Will Mount in Search');
     ipcRenderer.send('show', 'Initialized');
     ipcRenderer.on('reply-show', (event,arg) => {
       let {status, message} = arg;
       if(status === 'OK') {
-        console.log(message);
+        // console.log(message);
         // importing lunr through here in component will mount
         let idx = lunr(function() {
           this.ref('id')
@@ -48,7 +45,7 @@ class Search extends Component {
           idx,
           message,
           toRender:message
-        })
+        });
       }else {
         console.log(message);
       }
@@ -72,18 +69,55 @@ class Search extends Component {
     // render back to state for product
   }
 
-  handleSearch(e) {
-    console.log(e.target.value);
+  // making onSearch as a regular function, not an event listener
+  // then call handleSearch through debounce that is in ctor
+  onSearch = (val) => {
+    // console.log(e.target.val);
+    this.handleSearch(val);
+
+  };
+
+  handleSearch = (val) => {
+    // console.log(val, 'in handleSearch');
+    if(val.length > 0) {
+      // console.log(this.state.idx);
+      let {idx, message} = this.state;
+      let res = idx.search(`${val}`);
+      let firstIdx = res[0];
+      let toRender = res.map((item) => {
+        let {ref} = item;
+        for(let {id,code,amount,price} of message) {
+          // NOTE: ref is object and id is number type
+          if(Number(ref) === id) {
+            return {
+              id,
+              code,
+              amount,
+              price
+            }
+          }
+        }
+      });
+      this.setState({
+        toRender
+      });
+    } else {
+      this.setState({
+        toRender: this.state.message
+      });
+    }
+
   }
+
 
   render() {
     let{options} = this.props;
     let {toRender} = this.state;
-    console.log(toRender);
+    // console.log(toRender);
     return (
       <div>
         {options}
-        <Input type="text" placeholder="search" onChange={this.handleSearch}/>
+        <Input type="text" placeholder="search" onChange={(e) => this.onSearch(e.target.value)}/>
         <div className="progress-table-container">
           {(toRender) ? <ShowTable options={options} onClickAction={this.handleClickAction} products={toRender}/>:
             <Progress animated color="info" value="100"/> }
