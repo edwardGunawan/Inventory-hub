@@ -11,7 +11,8 @@ ipcMain.on('show', async (event, data) => {
         id: product.get('id'),
         code: product.get('code'),
         amount:product.get('amount'),
-        price:product.get('price')
+        price:product.get('price'),
+        brand:product.get('brand')
       }
     });
 

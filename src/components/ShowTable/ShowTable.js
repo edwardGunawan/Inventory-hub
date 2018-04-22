@@ -50,11 +50,12 @@ class ShowTable extends Component{
     let {products,actionButton} = this.state;
     let renderBody = (products) => {
       return products.map((prod,i) => {
-        let {code,id,amount,price} = prod;
+        let {code,id,amount,price,brand} = prod;
         return (
           <tr key={i} scope="row">
             <th>{id}</th>
             <td>{code}</td>
+            <td>{brand}</td>
             <td>{amount}</td>
             <td>{price}</td>
             <td><Button onClick={this.launchModal(i, actionButton)}>{actionButton}</Button></td>
@@ -75,7 +76,8 @@ class ShowTable extends Component{
           <thead>
             <tr>
               <th>#</th>
-              <th>Product</th>
+              <th>Code</th>
+              <th>Brand/Model</th>
               <th>Amount</th>
               <th>Price</th>
               <th>Action</th>

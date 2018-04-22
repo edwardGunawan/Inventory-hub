@@ -5,7 +5,7 @@ module.exports = function(sequelize,DataTypes) {
       allowNull: false,
       unique:true, // needs to be unique
       validate: {
-        notEmpty: true
+        notEmpty: true // when initialized cannot be empty
       }
     },
     amount: {
@@ -14,6 +14,9 @@ module.exports = function(sequelize,DataTypes) {
       validate: {
         isInt: true
       }
+    },
+    brand: {
+      type:DataTypes.STRING
     },
     // type : stock or return
     // type: {

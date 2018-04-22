@@ -48,12 +48,13 @@ async function importExcel(path) {
     ws.splice(0,3);
 
     // bulk Import needs to add id by itself, it can't generate ID
-    return ws.map((item) => {
+    return ws.map((item,i) => {
       let {__EMPTY_1} = item; // amount
       return {
         code: item['Posisi Stok'],
         amount: Number(__EMPTY_1.replace(/,/g,'')), // get rid of commas for integer value
-        price: 100 // current still fixed, excel should write price number
+        price: 100, // current still fixed, excel should write price number
+        brand:(i%2 === 0)?'Charlie-Jill':'Sam Cafaso'
       }
     });
   } catch (e) {

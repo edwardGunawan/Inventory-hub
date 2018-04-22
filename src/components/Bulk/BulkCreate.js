@@ -21,7 +21,8 @@ class BulkCreate extends Component {
     this.handleSubmitInputList = this.handleSubmitInputList.bind(this);
     this.state = {
       path:'',
-      isBulkCreate: true
+      isBulkCreate: true,
+      buttonName: 'Create Your Own' // buttonName for toggle button
     }
   }
   handleChange(files) {
@@ -37,21 +38,26 @@ class BulkCreate extends Component {
   //TODO: Handling non .xlxs file
   handleClick(e) {
     e.preventDefault();
-    console.log(this.state.path);
-    ipcRenderer.send('bulk-import', {path:this.state.path});
-    ipcRenderer.on('reply-bulk-import', (event,arg) => {
-      let {status,message} = arg;
-      if(status === 'OK') {
-        console.log('Success');
-      } else {
-        console.log(message);
-      }
-    });
+
+    // path is a string
+    if(this.state.path.length > 0){
+      ipcRenderer.send('bulk-import', {path:this.state.path});
+      ipcRenderer.on('reply-bulk-import', (event,arg) => {
+        let {status,message} = arg;
+        if(status === 'OK') {
+          console.log('Success');
+        } else {
+          console.log(message);
+        }
+      });
+    }
+
   }
 
   handleToggleClick() {
     this.setState({
-      isBulkCreate: !this.state.isBulkCreate
+      isBulkCreate: !this.state.isBulkCreate,
+      buttonName: (this.state.buttonName === 'Create Your Own') ? 'Import Excel' : 'Create Your Own'
     });
   }
 
@@ -72,7 +78,7 @@ class BulkCreate extends Component {
   }
 
   render() {
-    let {isBulkCreate} = this.state;
+    let {isBulkCreate,buttonName} = this.state;
     let toogle = () => {
       if(isBulkCreate) {
         return (
@@ -95,7 +101,7 @@ class BulkCreate extends Component {
     }
     return (
       <Form>
-        <Button onClick={this.handleToggleClick}>Toggle</Button>
+        <Button onClick={this.handleToggleClick}>{buttonName}</Button>
         {toogle()}
       </Form>
     )

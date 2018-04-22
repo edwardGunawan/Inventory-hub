@@ -18,13 +18,14 @@ class Search extends Component {
     // debouncing
     this.handleSearch = debounce(this.handleSearch,500);
     this.state = {
-      toRender:null
+      toRender:null,
+      isLoaded:true
     }
   }
-  componentWillMount() {
+  componentDidMount() {
     // debounce
     // this.handleSearch= debounce(this.handleSearch,500)
-    console.log('Go through component Will Mount in Search');
+    console.log('Go through component Did Mount in Search');
     ipcRenderer.send('show', 'Initialized');
     ipcRenderer.on('reply-show', (event,arg) => {
       let {status, message} = arg;
@@ -36,32 +37,36 @@ class Search extends Component {
           this.field('code')
           this.field('amount')
           this.field('price')
+          this.field('brand')
 
           message.forEach(function(product) {
             this.add(product)
           },this)
         });
+        // This is causing warning idk how to solve it
         this.setState({
           idx,
           message,
-          toRender:message
+          toRender:message,
+          isLoaded:false
         });
       }else {
         console.log(message);
       }
-    })
+    },this)
   }
 
   handleClickAction(idx,actionButton) {
     console.log('click', idx, actionButton);
     this.setState({
-      toRender:null
+      isLoaded:true
     }); // to load progress
 
     // fake timer for now
     setTimeout(() => {
       this.setState({
-        toRender:this.state.message
+        toRender:this.state.message,
+        isLoaded:false
       })
     },5000)
     // TODO:
@@ -86,14 +91,15 @@ class Search extends Component {
       let firstIdx = res[0];
       let toRender = res.map((item) => {
         let {ref} = item;
-        for(let {id,code,amount,price} of message) {
+        for(let {id,code,amount,price,brand} of message) {
           // NOTE: ref is object and id is number type
           if(Number(ref) === id) {
             return {
               id,
               code,
               amount,
-              price
+              price,
+              brand
             }
           }
         }
@@ -112,15 +118,15 @@ class Search extends Component {
 
   render() {
     let{options} = this.props;
-    let {toRender} = this.state;
+    let {toRender,isLoaded} = this.state;
     // console.log(toRender);
     return (
       <div>
         {options}
         <Input type="text" placeholder="search" onChange={(e) => this.onSearch(e.target.value)}/>
         <div className="progress-table-container">
-          {(toRender) ? <ShowTable options={options} onClickAction={this.handleClickAction} products={toRender}/>:
-            <Progress animated color="info" value="100"/> }
+          {(isLoaded) ? <Progress animated color="info" value="100"/>:
+             <ShowTable options={options} onClickAction={this.handleClickAction} products={toRender}/>}
         </div>
       </div>
     )

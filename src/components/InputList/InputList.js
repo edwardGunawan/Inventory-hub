@@ -75,9 +75,11 @@ class InputList extends Component {
           let {code,amount,price} = item;
           return (
             <FormGroup className="formGroup-container" onChange={this.handleInputChange(idx)} key={idx}>
-              <Label for={`code_${idx}`}>code</Label>
+              <Label for={`code_${idx}`}>Code</Label>
               <Input name="code" type="text" id={`code_${idx}`} placeholder="code"/>
-              <Label for={`amount_${idx}`}>amount</Label>
+              <Label for={`brand_{idx}`}>Model</Label>
+              <Input name="brand" type="text" id={`brand_${idx}`} placeholder="model/brand"/>
+              <Label for={`amount_${idx}`}>Amount</Label>
               <Input name="amount" type="number" step="1" placeholder="amount" />
               <Label for={`price_${idx}`}>Price</Label>
               <Input name="price" type="number" placeholder="Price"/>
