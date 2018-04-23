@@ -26,7 +26,7 @@ class InputList extends Component {
      this.handleInputChange = this.handleInputChange.bind(this);
      this.handleSubmit = this.handleSubmit.bind(this);
      this.state = {
-       inputList: [this.props.inputField]
+       inputList: [this.props.inputField] // passing in for all the attributes
      }
    }
 
@@ -65,14 +65,15 @@ class InputList extends Component {
      this.props.onSubmitInputList(this.state.inputList);
    }
 
+
   render() {
     // rendering input group and label over here
     let {inputList} = this.state;
     let {insideCreate} = this.props;
     let renderInput = (inputList) => {
       return inputList.map((item, idx) => {
-        if(insideCreate) {
-          let {code,amount,price} = item;
+        if(insideCreate === 'product') {
+          let {code,amount,price,brand} = item;
           return (
             <FormGroup className="formGroup-container" onChange={this.handleInputChange(idx)} key={idx}>
               <Label for={`code_${idx}`}>Code</Label>
@@ -86,11 +87,19 @@ class InputList extends Component {
               <Button className="button-delete"onClick={this.handleDeleteItem(idx)}>Delete</Button>
             </FormGroup>
           );
-        }else {
+        }else if(insideCreate === 'inout') {
           return (
             <div>
               Inside In/Out Component
             </div>
+          )
+        } else if(insideCreate === 'customer') {
+          return (
+            <FormGroup className="formGroup-container" onChange={this.handleInputChange(idx)} key={idx}>
+              <Label for={`name_${idx}`}>Customer Name</Label>
+              <Input name="name" type="text" id={`name_${idx}`} placeholder="name"/>
+              <Button className="button-delete"onClick={this.handleDeleteItem(idx)}>Delete</Button>
+            </FormGroup>
           )
         }
 

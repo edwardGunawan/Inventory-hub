@@ -10,9 +10,10 @@ import {Button,
         InputGroupAddon
       } from 'reactstrap';
 import InputList from '../InputList/InputList';
+import './CreateProduct.css';
 const {ipcRenderer} = window.require('electron');
 
-class BulkCreate extends Component {
+class CreateProduct extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
@@ -22,7 +23,7 @@ class BulkCreate extends Component {
     this.state = {
       path:'',
       isBulkCreate: true,
-      buttonName: 'Create Your Own' // buttonName for toggle button
+      buttonName: 'Manual Create Product' // buttonName for toggle button
     }
   }
   handleChange(files) {
@@ -57,7 +58,7 @@ class BulkCreate extends Component {
   handleToggleClick() {
     this.setState({
       isBulkCreate: !this.state.isBulkCreate,
-      buttonName: (this.state.buttonName === 'Create Your Own') ? 'Import Excel' : 'Create Your Own'
+      buttonName: (this.state.buttonName === 'Manual Create Product') ? 'Import Excel' : 'Manual Create Product'
     });
   }
 
@@ -65,8 +66,8 @@ class BulkCreate extends Component {
     input_arr.forEach((inputObj) => {
       console.log(inputObj);
     });
-    ipcRenderer.send('create',{product_arr: input_arr});
-    ipcRenderer.on('reply-create', (event,arg) => {
+    ipcRenderer.send('create-product',{product_arr: input_arr});
+    ipcRenderer.on('reply-create-product', (event,arg) => {
       let {status,message} = arg;
       if(status === 'OK') {
         console.log(message);
@@ -94,13 +95,13 @@ class BulkCreate extends Component {
       } else {
         return (
           <InputList onSubmitInputList={this.handleSubmitInputList}
-                     insideCreate={true}
-                     inputField={{code:'', amount:0, price:0}}/>
+                     insideCreate={'product'}
+                     inputField={{code:'', amount:0, price:0,brand:''}}/>
         )
       }
     }
     return (
-      <Form>
+      <Form className="form-product">
         <Button onClick={this.handleToggleClick}>{buttonName}</Button>
         {toogle()}
       </Form>
@@ -108,4 +109,4 @@ class BulkCreate extends Component {
   }
 }
 
-export default BulkCreate;
+export default CreateProduct;

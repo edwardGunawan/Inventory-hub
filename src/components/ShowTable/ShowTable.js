@@ -75,7 +75,7 @@ class ShowTable extends Component{
         <Table>
           <thead>
             <tr>
-              <th>#</th>
+              <th>id</th>
               <th>Code</th>
               <th>Brand/Model</th>
               <th>Amount</th>

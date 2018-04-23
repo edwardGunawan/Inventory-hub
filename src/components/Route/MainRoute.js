@@ -4,7 +4,7 @@ import Search from '../Search/Search';
 import Inout from '../Inout/Inout';
 import Settings from '../Settings/Settings';
 import Analytics from '../Analytics/Analytics';
-import BulkCreate from '../Bulk/BulkCreate';
+import Create from '../Create/Create';
 import TransactionHistory from '../TransactionHistory/TransactionHistory';
 
 /*
@@ -42,7 +42,7 @@ class MainRoute extends Component {
         <div>
           <Route exact path="/Search" render={() => <Search options={options}/>} />
           <Route path="/InOut" component={Inout}/>
-          <Route path="/BulkCreate" component={BulkCreate}/>
+          <Route path="/Create" component={Create}/>
           <Route path="/TransactionHistory" component={TransactionHistory}/>
                 {/*}  render={() =>
                    <BulkCreate onImportExcel={this.handleImportExcel}/>

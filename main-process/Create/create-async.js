@@ -7,14 +7,14 @@ let XLSX = require('xlsx');
 */
 // One product, or multiple still using bulkCreate function
 // data argument contained product array, [code,amount,price]
-ipcMain.on('create', async (event,data) => {
+ipcMain.on('create-product', async (event,data) => {
   try {
     let {product_arr} = data;
     let products = await db.product.bulkCreate(product_arr,{returning:true});
     event.sender.send('reply-create', {status:'OK', message:'all products is created'});
   } catch(e) {
     console.log('error in create', e);
-    event.sender.send('reply-create', {status:'Error', message:e});
+    event.sender.send('reply-create-product', {status:'Error', message:e});
   }
 });
 
@@ -37,7 +37,25 @@ ipcMain.on('bulk-import',async (event,data) => {
   }
 });
 
+/*
+  Create Customer name
+*/
+ipcMain.on('create-customer', async (event, data) => {
+  try {
+    let{customer_arr} = data;
+    let customers = db.customer.bulkCreate(customer_arr,{return:true});
+    event.sender.send('reply-create-customer', {status:'OK', message:'all customers is created'});
+  } catch(e) {
+    event.sender.send('reply-create-customer', {status:'Error', message:e});
+  }
+})
 
+
+
+
+/*
+  Helper function
+  */
 async function importExcel(path) {
   try {
     let workbook = XLSX.readFile(path);
