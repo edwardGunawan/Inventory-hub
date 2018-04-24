@@ -80,8 +80,8 @@ class InputList extends Component {
               <Input name="code" type="text" id={`code_${idx}`} placeholder="code"/>
               <Label for={`brand_{idx}`}>Model</Label>
               <Input name="brand" type="text" id={`brand_${idx}`} placeholder="model/brand"/>
-              <Label for={`amount_${idx}`}>Amount</Label>
-              <Input name="amount" type="number" step="1" placeholder="amount" />
+              <Label for={`quantity_${idx}`}>Quantity</Label>
+              <Input name="quantity" type="number" step="1" placeholder="quantity" />
               <Label for={`price_${idx}`}>Price</Label>
               <Input name="price" type="number" placeholder="Price"/>
               <Button className="button-delete"onClick={this.handleDeleteItem(idx)}>Delete</Button>

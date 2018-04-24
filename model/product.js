@@ -8,7 +8,7 @@ module.exports = function(sequelize,DataTypes) {
         notEmpty: true // when initialized cannot be empty
       }
     },
-    amount: {
+    quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {

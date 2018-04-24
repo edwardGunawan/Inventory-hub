@@ -24,7 +24,6 @@ ipcMain.on('create-product', async (event,data) => {
 // data will contain path for excel spreadsheet
 ipcMain.on('bulk-import',async (event,data) => {
   try {
-
     let {path} = data;
     console.log('go through bulk-import', path);
     let excelObj = await importExcel(path);
@@ -70,7 +69,7 @@ async function importExcel(path) {
       let {__EMPTY_1} = item; // amount
       return {
         code: item['Posisi Stok'],
-        amount: Number(__EMPTY_1.replace(/,/g,'')), // get rid of commas for integer value
+        quantity: Number(__EMPTY_1.replace(/,/g,'')), // get rid of commas for integer value
         price: 100, // current still fixed, excel should write price number
         brand:(i%2 === 0)?'Charlie-Jill':'Sam Cafaso'
       }
