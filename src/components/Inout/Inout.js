@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import InputList from '../InputList/InputList';
 import InvoiceConverter from '../InvoiceConverter/InvoiceConverter';
 
+let {ipcRenderer} = window.require('electron');
 /*
   Buy/Sell Component:
     All math calculation and discount will be in frontend
@@ -13,14 +14,19 @@ class Inout extends Component {
     this.handleSubmitInputList = this.handleSubmitInputList.bind(this);
   }
 
-  handleSubmitInputList = (data) => {
-    // console.log(submitInputList);
+  handleSubmitInputList = (state) => {
+    console.log(state,' in inout submitInputList');
+
   }
   render() {
     return (
       <div>
         Inout Component
-        <InputList inputField={{code:'',quantity:0,action:'out'}} insideCreate={'inout'}/>
+        <InputList
+          inputField={{code:'',quantity:0}}
+          insideCreate={'inout'}
+          onSubmitInputList={this.handleSubmitInputList}
+          />
       </div>
     )
   }

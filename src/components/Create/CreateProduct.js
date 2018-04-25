@@ -62,11 +62,12 @@ class CreateProduct extends Component {
     });
   }
 
-  handleSubmitInputList(input_arr) {
-    input_arr.forEach((inputObj) => {
+  handleSubmitInputList(state) {
+    let{inputList} = state;
+    inputList.forEach((inputObj) => {
       console.log(inputObj);
     });
-    ipcRenderer.send('create-product',{product_arr: input_arr});
+    ipcRenderer.send('create-product',{product_arr: inputList});
     ipcRenderer.on('reply-create-product', (event,arg) => {
       let {status,message} = arg;
       if(status === 'OK') {

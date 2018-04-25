@@ -156,9 +156,9 @@ class App extends Component {
     }
     return (
       <div>
-        {renderMain()}
-        {/*<Main email={email}
-                     access={access}/>*/}
+        {/*renderMain()*/}
+        {<Main email={email}
+                     access={access}/>}
       </div>
     )
   }

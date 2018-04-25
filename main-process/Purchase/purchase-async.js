@@ -25,10 +25,11 @@ const db = require('../../db.js');
   Add Product to PurchaseOrder with PurchaseDetail
 */
 let purchaseOrder = ({customer, productArr,discount,action}) => {
-
-  // preprocess the totalPrice
+  // preprocess the totalPrice adding all of them together
   let total = productArr.reduce(reduceHelper,Promise.resolve(0));
   total.then((totalPrice) => {
+    // if the action is not sold, then the totalPrice is negative
+    if(action === 'return') totalPrice = (-totalPrice);
     return db.purchaseOrder.create({discount,totalPrice,action});
   })
   .then((order) => {
@@ -45,15 +46,23 @@ let purchaseOrder = ({customer, productArr,discount,action}) => {
       // find product based on code
       db.product.findOne({where:{code}}).then((prod_instance) => {
         let totalPricePerItem = quantity * prod_instance.get('price');
-        prod_instance.addPurchaseOrder(order,{through:{
-          quantity,
-          totalPricePerItem,
-          pricePerItem: prod_instance.get('price')
-        }}).catch(e => {
-          e.forEach(error => {
-            console.log(error.message);
-          })
-        });
+        if(action === 'sold') {
+          prod_instance.quantity -= quantity;
+        }else {
+          prod_instance.quantity+= quantity;
+        }
+        prod_instance.save().then((prod) => {
+          console.log(prod, 'here in prod');
+          prod_instance.addPurchaseOrder(order,{through:{
+            quantity,
+            totalPricePerItem,
+            pricePerItem: prod_instance.get('price')
+          }});
+        }).catch(e => {
+            e.forEach(error => {
+              console.log(error.message);
+            })
+          });
       })
     })
   })
@@ -71,7 +80,7 @@ let reduceHelper = (acc,curr) => {
   let{code,quantity} = curr;
   return db.product.findOne({where:{code}}).then((prod) => {
     return acc.then((curTotal) => {
-      let val = prod.get('price') * quantity;
+      let val = prod.get('price') * quantity+curTotal;
       return val
     })
   }).catch(e => console.log(e));

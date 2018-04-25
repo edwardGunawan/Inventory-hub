@@ -25,8 +25,13 @@ class InputList extends Component {
      this.handleDeleteItem = this.handleDeleteItem.bind(this);
      this.handleInputChange = this.handleInputChange.bind(this);
      this.handleSubmit = this.handleSubmit.bind(this);
+     this.onClickAction = this.onClickAction.bind(this);
+     this.onChangeInOut = this.onChangeInOut.bind(this);
      this.state = {
-       inputList: [this.props.inputField] // passing in for all the attributes
+       inputList: [this.props.inputField], // passing in for all the attributes
+       action:'sold',
+       discount:0,
+       customer:''
      }
    }
 
@@ -46,8 +51,9 @@ class InputList extends Component {
 
    // TODO: Handling incorrect value
    handleInputChange = (idx) => (evt) => {
+     // based on which value changes it will show that the component of the name and value
      let {value,name} = evt.target;
-     // console.log(evt.target.name,evt.target.value,idx);
+     // console.log(evt.target.name,evt.target.value,idx,evt.target);
      this.setState({
        inputList:this.state.inputList.map((currList, i) => {
          if(idx !== i) return currList;
@@ -60,9 +66,21 @@ class InputList extends Component {
 
    handleSubmit = (e) => {
      e.preventDefault();
+     console.log(this.state);
      console.log(this.state.inputList);
      console.log('click handleSubmit');
-     this.props.onSubmitInputList(this.state.inputList);
+     this.props.onSubmitInputList(this.state);
+   }
+
+   onClickAction(action) {
+     console.log(action);
+   }
+
+   // changing value in inout
+   onChangeInOut(e) {
+     this.setState({
+       [`${e.target.name}`]: e.target.value
+     });
    }
 
 
@@ -89,9 +107,13 @@ class InputList extends Component {
           );
         }else if(insideCreate === 'inout') {
           return (
-            <div key={idx}>
-              Inside In/Out Component
-            </div>
+            <FormGroup className="formGroup-container" onChange={this.handleInputChange(idx)} key={idx}>
+              <Label for={`code_${idx}`}>Code</Label>
+              <Input name="code" type="text" id={`code_${idx}`} placeholder="code"/>
+              <Label for={`quantity_${idx}`}>Quantity</Label>
+              <Input name="quantity" type="number" step="1" placeholder="quantity" />
+              <Button className="button-delete"onClick={this.handleDeleteItem(idx)}>Delete</Button>
+            </FormGroup>
           )
         } else if(insideCreate === 'customer') {
           return (
@@ -102,14 +124,32 @@ class InputList extends Component {
             </FormGroup>
           )
         }
-
       });
+    }
+
+    let renderInout = (insideCreate) => {
+      if(insideCreate === 'inout') {
+        return (
+          <FormGroup onChange={this.onChangeInOut}>
+            <Label for="customer">Customer</Label>
+            <Input type="type" name="customer" id="customer" />
+            <Label for="action">Action</Label>
+            <Input type="select" name="select" id="action">
+              <option>Sold</option>
+              <option>Return</option>
+            </Input>
+            <Label for="discount">Discount</Label>
+            <Input type="number" name="discount" id="discount" />
+          </FormGroup>
+        )
+      }
     }
     // adding scrollable div
     // let formStyle={overflowY:'auto', width:'100%', height:'500px',paddingBottom:'30px'};
     return (
       <div className="form-container" onSubmit={this.handleSubmit}>
         {renderInput(inputList)}
+        {renderInout(insideCreate)}
         <Button className="add-submit" onClick={this.handleAddItem}>Add</Button>
         <Button className="add-submit" onClick={this.handleSubmit}>Submit</Button>
       </div>

@@ -28,11 +28,11 @@ class MainRoute extends Component {
   }
 
   render() {
-    let {options} = this.props;
-    if(options === 'admin_username') {
+    let {access} = this.props;
+    if(access === 'admin_username') {
       return (
         <div>
-          <Route exact path="/Search" render={() => <Search options={options}/>} />
+          <Route exact path="/Search" render={() => <Search access={access}/>} />
           <Route path="/Analytics" component={Analytics}/>
           <Route path="/Settings" component={Settings}/>
         </div>
@@ -40,7 +40,7 @@ class MainRoute extends Component {
     } else {
       return (
         <div>
-          <Route exact path="/Search" render={() => <Search options={options}/>} />
+          <Route exact path="/Search" render={() => <Search access={access}/>} />
           <Route path="/InOut" component={Inout}/>
           <Route path="/Create" component={Create}/>
           <Route path="/TransactionHistory" component={TransactionHistory}/>

@@ -10,7 +10,7 @@ ipcMain.on('show', async (event, data) => {
       return {
         id: product.get('id'),
         code: product.get('code'),
-        amount:product.get('amount'),
+        quantity:product.get('quantity'),
         price:product.get('price'),
         brand:product.get('brand')
       }

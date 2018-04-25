@@ -9,9 +9,9 @@ class CreateCustomer extends Component {
     this.handleSubmitInputList = this.handleSubmitInputList.bind(this);
   }
 
-  handleSubmitInputList(arr) {
-    console.log(arr);
-    ipcRenderer.send('create-customer',{customer_arr:arr});
+  handleSubmitInputList(state) {
+    let {inputList} = state;
+    ipcRenderer.send('create-customer',{customer_arr:inputList});
     ipcRenderer.on('reply-create-customer', (event,arg)=>{
       let {status,message} = arg;
       if(status === 'OK') {

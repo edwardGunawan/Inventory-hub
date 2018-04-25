@@ -14,12 +14,14 @@ let {ipcRenderer} = window.require('electron');
 class Search extends Component {
   constructor(props) {
     super(props);
+    console.log(this.props.access === 'public_username');
     this.handleClickAction = this.handleClickAction.bind(this);
     // debouncing
     this.handleSearch = debounce(this.handleSearch,500);
     this.state = {
       toRender:null,
-      isLoaded:true
+      isLoaded:true,
+      showTableButton: (this.props.access === 'public_username')? 'Delete' : 'Edit'
     }
   }
   componentDidMount() {
@@ -43,12 +45,14 @@ class Search extends Component {
             this.add(product)
           },this)
         });
+
         // This is causing warning idk how to solve it
         this.setState({
           idx,
           message,
           toRender:message,
-          isLoaded:false
+          isLoaded:false,
+          tableHeader:['id','code','quantity','price','brand','action']
         });
       }else {
         console.log(message);
@@ -91,13 +95,13 @@ class Search extends Component {
       let firstIdx = res[0];
       let toRender = res.map((item) => {
         let {ref} = item;
-        for(let {id,code,amount,price,brand} of message) {
+        for(let {id,code,quantity,price,brand} of message) {
           // NOTE: ref is object and id is number type
           if(Number(ref) === id) {
             return {
               id,
               code,
-              amount,
+              quantity,
               price,
               brand
             }
@@ -118,7 +122,7 @@ class Search extends Component {
 
   render() {
     let{access} = this.props;
-    let {toRender,isLoaded} = this.state;
+    let {toRender,isLoaded,showTableButton,tableHeader} = this.state;
     // console.log(toRender);
     return (
       <div>
@@ -126,7 +130,13 @@ class Search extends Component {
         <Input type="text" placeholder="search" onChange={(e) => this.onSearch(e.target.value)}/>
         <div className="progress-table-container">
           {(isLoaded) ? <Progress animated color="info" value="100"/>:
-             <ShowTable access={access} onClickAction={this.handleClickAction} products={toRender}/>}
+             <ShowTable
+               access={access}
+               button={showTableButton}
+               onClickAction={this.handleClickAction}
+               tableBody={toRender}
+               tableHeader={tableHeader}
+               from={'search'}/>}
         </div>
       </div>
     )

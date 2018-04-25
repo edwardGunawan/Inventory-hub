@@ -19,7 +19,7 @@ let data = {
     }
   ],
   discount:20,
-  action:'out'
+  action:'sold'
 }
 
 purchaseOrder(data);
