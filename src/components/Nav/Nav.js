@@ -7,12 +7,12 @@ import {Nav, NavItem, NavLink} from 'reactstrap';
 */
 class NavComp extends Component {
   render () {
-    let {options} = this.props;
-    if(options === 'admin_username') {
+    let {access} = this.props;
+    if(access === 'admin_username') {
       return (
         <div>
           <p>Menu</p>
-          <p>{options}</p>
+          <p>{access}</p>
           <Nav vertical>
             <NavItem>
               <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Search">Search</NavLink>
@@ -30,7 +30,7 @@ class NavComp extends Component {
       return (
         <div>
           <p>Menu</p>
-          <p>{options}</p>
+          <p>{access}</p>
           <Nav vertical>
             <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Search">Search</NavLink>
             <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Inout">In/Out</NavLink>

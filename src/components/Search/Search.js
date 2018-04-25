@@ -117,16 +117,16 @@ class Search extends Component {
 
 
   render() {
-    let{options} = this.props;
+    let{access} = this.props;
     let {toRender,isLoaded} = this.state;
     // console.log(toRender);
     return (
       <div>
-        {options}
+        {access}
         <Input type="text" placeholder="search" onChange={(e) => this.onSearch(e.target.value)}/>
         <div className="progress-table-container">
           {(isLoaded) ? <Progress animated color="info" value="100"/>:
-             <ShowTable options={options} onClickAction={this.handleClickAction} products={toRender}/>}
+             <ShowTable access={access} onClickAction={this.handleClickAction} products={toRender}/>}
         </div>
       </div>
     )

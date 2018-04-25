@@ -86,11 +86,11 @@ class App extends Component {
       // console.log('arg', arg);
       if(arg.status === 'OK'){
         console.log(arg);
-        let {email, options} = arg.message;
+        let {email, access} = arg.message;
         this.setState({
           status:'login',
           email,
-          options
+          access
         });
       } else {
         console.log(arg.message);
@@ -134,8 +134,8 @@ class App extends Component {
   }
 
   render() {
-    let {status,errMessage,modalIsOpen,email,options} = this.state;
-    console.log('email', email, 'options',options,'status',status, 'errMessage', errMessage);
+    let {status,errMessage,modalIsOpen,email,access} = this.state;
+    console.log('email', email, 'access',access,'status',status, 'errMessage', errMessage);
     let renderMain = () => {
       switch(status) {
         case 'signUp':
@@ -146,7 +146,7 @@ class App extends Component {
                         modalIsOpen={modalIsOpen}/>
         case 'login':
           return <Main email={email}
-                       options={options}/>
+                       access={access}/>
         default:
           return <Login errMessage={errMessage}
                         onClickStatus = {this.handleClickStatus}
@@ -156,9 +156,9 @@ class App extends Component {
     }
     return (
       <div>
-        {/*renderMain()*/}
-        {<Main email={email}
-                     options={options}/>}
+        {renderMain()}
+        {/*<Main email={email}
+                     access={access}/>*/}
       </div>
     )
   }

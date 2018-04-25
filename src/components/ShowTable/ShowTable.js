@@ -2,6 +2,11 @@ import React, {Component} from 'react';
 import {Table,Button} from 'reactstrap';
 import ModalStrap from '../Modal/ModalStrap'
 import './ShowTable.css';
+/*
+  Show table get passed of props as button on the right,
+  all the thead that exist in that table
+  submit delete button to delete the value
+  */
 
 class ShowTable extends Component{
   constructor(props) {
@@ -10,7 +15,7 @@ class ShowTable extends Component{
     this.launchModal = this.launchModal.bind(this);
     this.state = {
       products: this.props.products,
-      actionButton:(this.props.options === 'admin_username')? 'Edit' : 'Delete',
+      actionButton:(this.props.access === 'admin_username')? 'Edit' : 'Delete',
       modal: false // to launch on componentdidUpdate in modalStrap.js
     }
   }

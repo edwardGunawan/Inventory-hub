@@ -89,7 +89,7 @@ class InputList extends Component {
           );
         }else if(insideCreate === 'inout') {
           return (
-            <div>
+            <div key={idx}>
               Inside In/Out Component
             </div>
           )

@@ -13,7 +13,7 @@ ipcMain.on('login-auth', (event,data) => {
                                       status:'OK',
                                       message: {
                                         email: user.get('email'),
-                                        options: data.options
+                                        access: data.options
                                       }
                                     });
   })

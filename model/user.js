@@ -90,7 +90,7 @@ module.exports = function(sequelize,DataTypes){
     return new Promise((resolve,reject) => {
       try {
         console.log('go through here in authenticate', body);
-        let {email,options} = body;
+        let {email,access} = body;
         // check if body has property username and password, and if username
         // and password is a string
         if(body.hasOwnProperty('email') && body.hasOwnProperty('password')
@@ -101,7 +101,7 @@ module.exports = function(sequelize,DataTypes){
             }
           }).then((user) => {
             console.log('user is ', user);
-            let passwordHash = (options === 'public_username') ? 'public_password_hash' : 'admin_password_hash';
+            let passwordHash = (access === 'public_username') ? 'public_password_hash' : 'admin_password_hash';
             if(!user || !bcrypt.compareSync(body.password,user.get(passwordHash))) {
               return reject('password or email did not match');
             }

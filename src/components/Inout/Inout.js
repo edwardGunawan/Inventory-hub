@@ -20,6 +20,7 @@ class Inout extends Component {
     return (
       <div>
         Inout Component
+        <InputList inputField={{code:'',quantity:0,action:'out'}} insideCreate={'inout'}/>
       </div>
     )
   }

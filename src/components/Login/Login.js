@@ -8,17 +8,17 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.onClickStatus = this.onClickStatus.bind(this);
-    this.handleOptionChange = this.handleOptionChange.bind(this);
+    this.handleAccessChange = this.handleAccessChange.bind(this);
     this.handleOnClose = this.handleOnClose.bind(this);
     this.state = {
-      selectedOption: 'public_username'
+      selectedAccess: 'public_username'
     };
   }
 
   // handling submitting clicking either on login or signup
   onClickStatus(action){
     return () => {
-      let formObj = {status:action,options:this.state.selectedOption};
+      let formObj = {status:action,access:this.state.selectedAccess};
       if(action === 'aboutLogin') {
         if(this.refs.email.value && this.refs.password.value) {
           formObj = {
@@ -34,10 +34,10 @@ class Login extends Component {
     }
   }
 
-  // handling options change on public or admin radio button
-  handleOptionChange(e) {
+  // handling access change on public or admin radio button
+  handleAccessChange(e) {
     this.setState({
-      selectedOption: e.target.value
+      selectedAccess: e.target.value
     });
   }
 
@@ -49,9 +49,9 @@ class Login extends Component {
   }
 
   render () {
-    let {selectedOption} = this.state;
+    let {selectedAccess} = this.state;
     let {errMessage,modalIsOpen} = this.props;
-    console.log(modalIsOpen, ' in login');
+    // console.log(modalIsOpen, ' in login');
     let renderErrMessage = () => {
       if(errMessage) return errMessage;
     }
@@ -74,16 +74,16 @@ class Login extends Component {
             <FormGroup check>
               <Label check>
                 <input type="radio" className="form-control" value="public_username"
-                  checked={selectedOption === 'public_username'}
-                  onChange={this.handleOptionChange} />
+                  checked={selectedAccess === 'public_username'}
+                  onChange={this.handleAccessChange} />
                 Public
               </Label>
             </FormGroup>
             <FormGroup check>
               <Label check>
                 <input type="radio" className="form-control" value="admin_username"
-                  checked={selectedOption === 'admin_username'}
-                  onChange={this.handleOptionChange}/>
+                  checked={selectedAccess === 'admin_username'}
+                  onChange={this.handleAccessChange}/>
                 Admin
               </Label>
             </FormGroup>

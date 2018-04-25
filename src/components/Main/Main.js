@@ -16,21 +16,21 @@ import {Container, Row, Col} from 'reactstrap';
 class Main extends Component {
 
   render () {
-    let {email, options} = this.props;
-    options = 'public_username';
-    console.log('email is ', email, options);
+    let {email, access} = this.props;
+    access = 'public_username';
+    console.log('email is ', email, access);
     return (
         <Container>
           <Router>
           <Row>
             <Col xs="3" className="nav-bar">
-              <NavComp options={options}/>
+              <NavComp access={access}/>
             </Col>
             <Col xs="9" className="main-content">
               Main Container
               {email}
-              {options}
-              <MainRoute options={options}/>
+              {access}
+              <MainRoute access={access}/>
             </Col>
           </Row>
           </Router>
