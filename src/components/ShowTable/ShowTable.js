@@ -43,14 +43,14 @@ class ShowTable extends Component{
   }
 
   // handle click on the modal
-  handleTableClick (ans) {
-    console.log(ans);
-    console.log(this.state);
-    let {idx,actionButton} = this.state;
-    this.setState({
-      modal:!this.state.modal
-    });
-    this.props.onClickAction(idx,actionButton); // pass it up to search to delete from db
+  handleTableClick = (idx) => (evt) => {
+    console.log(idx,' in showTable');
+    // console.log(this.state);
+    // let {idx,actionButton} = this.state;
+    // this.setState({
+    //   modal:!this.state.modal
+    // });
+    this.props.onClickAction(idx); // pass it up to search to delete from db
   }
 
   // launch the modal
@@ -87,7 +87,7 @@ class ShowTable extends Component{
               <td>{quantity}</td>
               <td>{price}</td>
               <td>{brand}</td>
-              <td><Button>{this.state.actionButton}</Button></td>
+              <td><Button onClick={this.handleTableClick}>{this.state.actionButton}</Button></td>
             </tr>
           );
         case 'customer':
@@ -95,7 +95,7 @@ class ShowTable extends Component{
           return (
             <tr key={i}>
               <td>{name}</td>
-              <td><Button>{this.state.actionButton}</Button></td>
+              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           );
       }

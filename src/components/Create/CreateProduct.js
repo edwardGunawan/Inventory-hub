@@ -11,6 +11,7 @@ import {Button,
       } from 'reactstrap';
 import PropTypes from 'prop-types';
 import InputList from '../Input/InputList';
+import InputField from '../Input/InputField';
 import './CreateProduct.css';
 const {ipcRenderer} = window.require('electron');
 
@@ -97,9 +98,9 @@ class CreateProduct extends Component {
         )
       } else {
         return (
-          <InputList onSubmitInputList={this.handleSubmitInputList}
+          {/*<InputList onSubmitInputList={this.handleSubmitInputList}
                      insideCreate={'product'}
-                     inputField={{code:'', amount:0, price:0,brand:''}}/>
+                     inputField={{code:'', amount:0, price:0,brand:''}}/> */}
         )
       }
     }

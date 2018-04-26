@@ -37,7 +37,10 @@ class CreateCustomer extends Component {
   }
 
   handleClickAction(idx) {
-    console.log(idx);
+    console.log(idx, ' in handleClickAction in customer');
+    this.setState({
+      name: this.state.name.filter((name,i) => i !== idx)
+    });
   }
 
   toOptions(customerNames) {
