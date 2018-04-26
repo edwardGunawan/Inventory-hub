@@ -16,6 +16,18 @@ import './InputList.css';
   This Component will serve as Input List,
   Configuring all the input list, and adding to bulkCreate
   or Inout for a list of input
+
+  Dynamic InputField
+
+
+  Props:
+    LeftButton
+    RightButton
+    insideCreate: what parent component is passed,
+    inputList: list of input field, object of name and value
+    action: buy or sell for inout
+    discount: discount for inout
+    customerNames: customer for inout
 */
 
 class InputList extends Component {
@@ -27,11 +39,13 @@ class InputList extends Component {
      this.handleSubmit = this.handleSubmit.bind(this);
      this.onClickAction = this.onClickAction.bind(this);
      this.onChangeInOut = this.onChangeInOut.bind(this);
+     this.handleChange = this.handleChange.bind(this);
      this.state = {
        inputList: [this.props.inputField], // passing in for all the attributes
        action:'sold',
        discount:0,
-       customer:''
+       customer:'',// when select the customer in dropdown input
+       selectedOption:''
      }
    }
 
@@ -78,16 +92,23 @@ class InputList extends Component {
 
    // changing value in inout
    onChangeInOut(e) {
+     console.log(e.target.name, e.target.value);
      this.setState({
        [`${e.target.name}`]: e.target.value
      });
    }
 
+   handleChange = (selectedOption) => {
+    this.setState({ selectedOption });
+    console.log(`Selected: ${selectedOption.label}`);
+  }
+
 
   render() {
     // rendering input group and label over here
-    let {inputList} = this.state;
-    let {insideCreate} = this.props;
+    let {inputList,selectedOption} = this.state;
+    let value = selectedOption & selectedOption.value;
+    let {insideCreate,customerNames} = this.props;
     let renderInput = (inputList) => {
       return inputList.map((item, idx) => {
         if(insideCreate === 'product') {
@@ -132,7 +153,9 @@ class InputList extends Component {
         return (
           <FormGroup onChange={this.onChangeInOut}>
             <Label for="customer">Customer</Label>
-            <Input type="type" name="customer" id="customer" />
+            <Input type="select" name="customer" id="customer">
+              {customerNames.map((name,i) => <option key={i}>{name}</option>)}
+            </Input>
             <Label for="action">Action</Label>
             <Input type="select" name="select" id="action">
               <option>Sold</option>
@@ -160,6 +183,7 @@ class InputList extends Component {
 
 InputList.defaultProps = {
   insideCreate:true,
-  inputField: {}
+  inputField: {},
+  customer:''
 }
 export default InputList;

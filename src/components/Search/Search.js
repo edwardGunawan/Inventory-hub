@@ -60,6 +60,13 @@ class Search extends Component {
     },this)
   }
 
+  // to not show any problem with force update
+  // cancel all listeners
+  componentWillUnmount() {
+    ipcRenderer.removeAllListeners('show');
+    ipcRenderer.removeAllListeners('reply-show');
+  }
+
   handleClickAction(idx,actionButton) {
     console.log('click', idx, actionButton);
     this.setState({
@@ -116,8 +123,10 @@ class Search extends Component {
         toRender: this.state.message
       });
     }
-
   }
+
+
+
 
 
   render() {
@@ -136,7 +145,7 @@ class Search extends Component {
                onClickAction={this.handleClickAction}
                tableBody={toRender}
                tableHeader={tableHeader}
-               from={'search'}/>}
+               parent={'search'}/>}
         </div>
       </div>
     )

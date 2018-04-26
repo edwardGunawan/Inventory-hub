@@ -9,7 +9,8 @@ import {Button,
         InputGroupText,
         InputGroupAddon
       } from 'reactstrap';
-import InputList from '../InputList/InputList';
+import PropTypes from 'prop-types';
+import InputList from '../Input/InputList';
 import './CreateProduct.css';
 const {ipcRenderer} = window.require('electron');
 
@@ -64,18 +65,19 @@ class CreateProduct extends Component {
 
   handleSubmitInputList(state) {
     let{inputList} = state;
-    inputList.forEach((inputObj) => {
-      console.log(inputObj);
-    });
-    ipcRenderer.send('create-product',{product_arr: inputList});
-    ipcRenderer.on('reply-create-product', (event,arg) => {
-      let {status,message} = arg;
-      if(status === 'OK') {
-        console.log(message);
-      } else {
-        console.log(message);
-      }
-    });
+    // inputList.forEach((inputObj) => {
+    //   console.log(inputObj);
+    // });
+    this.props.onSubmit(inputList,'createProduct');
+    // ipcRenderer.send('create-product',{product_arr: inputList});
+    // ipcRenderer.on('reply-create-product', (event,arg) => {
+    //   let {status,message} = arg;
+    //   if(status === 'OK') {
+    //     console.log(message);
+    //   } else {
+    //     console.log(message);
+    //   }
+    // });
 
   }
 
@@ -108,6 +110,11 @@ class CreateProduct extends Component {
       </Form>
     )
   }
+}
+
+CreateProduct.propTypes = {
+  productItems:PropTypes.array,
+  onSubmit: PropTypes.func
 }
 
 export default CreateProduct;

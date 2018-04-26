@@ -1,11 +1,15 @@
 import React, {Component} from 'react';
 import {Table,Button} from 'reactstrap';
 import ModalStrap from '../Modal/ModalStrap'
+import PropTypes from 'prop-types';
 import './ShowTable.css';
 /*
   Show table get passed of props as button on the right,
   all the thead that exist in that table
   submit delete button to delete the value
+
+  All Table component in creaetCustomer, createProduct,
+  search, inout transaciton
 
   Props:
     Button,
@@ -25,12 +29,13 @@ class ShowTable extends Component{
       actionButton:this.props.button,
       modal: false, // to launch on componentdidUpdate in modalStrap.js
       tableHeader: this.props.tableHeader,
-      from:this.props.from
+      parent:this.props.parent
     }
   }
 
   componentDidUpdate(prevProps,prevState) {
     if(this.props.tableBody.length !== prevProps.tableBody.length) {
+      console.log('here in tableBody not the same', this.props.tableBody);
       this.setState({
         tableBody: this.props.tableBody
       })
@@ -61,8 +66,9 @@ class ShowTable extends Component{
 
 
   render() {
-    let {tableBody,actionButton,tableHeader,from} = this.state;
+    let {tableBody,actionButton,tableHeader,parent} = this.state;
     console.log(actionButton);
+    console.log(tableBody,'in showTable');
 
     let renderHeader = tableHeader.map((header, idx) => {
       return (
@@ -71,7 +77,7 @@ class ShowTable extends Component{
     });
 
     let getTd = (prod,i) => {
-      switch(from) {
+      switch(parent) {
         case 'search':
           let {id,price,brand,code,quantity} = prod;
           return (
@@ -84,11 +90,20 @@ class ShowTable extends Component{
               <td><Button>{this.state.actionButton}</Button></td>
             </tr>
           );
+        case 'customer':
+          let {name} = prod;
+          return (
+            <tr key={i}>
+              <td>{name}</td>
+              <td><Button>{this.state.actionButton}</Button></td>
+            </tr>
+          );
       }
     }
 
     let renderBodyArr = [];
     tableBody.forEach((product,idx,arr) => {
+      console.log(product, 'inside product');
       // loop through each name attribute in product
       renderBodyArr.push(getTd(product,idx));
     });
@@ -121,6 +136,14 @@ class ShowTable extends Component{
 ShowTable.defaultProps = {
   tablebody: [],
   actionButton: 'Button'
+}
+
+ShowTable.propTypes = {
+  button: PropTypes.string, // name of the button on the side
+  onClickAction: PropTypes.func, // the eventListener of the buttonClick
+  tableBody: PropTypes.array, // content for tableBody (array of objects)
+  tableHeader:PropTypes.array, // description for table header
+  parent:PropTypes.string // parent component that is passed
 }
 
 export default ShowTable;

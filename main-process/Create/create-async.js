@@ -9,8 +9,8 @@ let XLSX = require('xlsx');
 // data argument contained product array, [code,amount,price]
 ipcMain.on('create-product', async (event,data) => {
   try {
-    let {product_arr} = data;
-    let products = await db.product.bulkCreate(product_arr,{returning:true});
+    let {input_arr} = data;
+    let products = await db.product.bulkCreate(input_arr,{returning:true});
     event.sender.send('reply-create', {status:'OK', message:'all products is created'});
   } catch(e) {
     console.log('error in create', e);
@@ -41,8 +41,8 @@ ipcMain.on('bulk-import',async (event,data) => {
 */
 ipcMain.on('create-customer', async (event, data) => {
   try {
-    let{customer_arr} = data;
-    let customers = db.customer.bulkCreate(customer_arr,{return:true});
+    let{input_arr} = data;
+    let customers = db.customer.bulkCreate(input_arr,{return:true});
     event.sender.send('reply-create-customer', {status:'OK', message:'all customers is created'});
   } catch(e) {
     event.sender.send('reply-create-customer', {status:'Error', message:e});
