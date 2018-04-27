@@ -30,6 +30,7 @@ class CreateCustomer extends Component {
 
   handleSelectEnter(value) {
     let {name} = this.state;
+    console.log(name);
     let obj = {name:value};
     this.setState({
       name: this.state.name.concat(obj)

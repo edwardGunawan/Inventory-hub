@@ -1,0 +1,12 @@
+.form-group {
+  width:40%;
+  margin-right:20px;
+}
+.select-customer {
+  width: 100%;
+}
+
+.show-table-container {
+  height:300px;
+  overflow:auto;
+}

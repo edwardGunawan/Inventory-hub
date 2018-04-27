@@ -78,16 +78,6 @@ class CreateProduct extends Component {
       console.log(inputObj);
     });
     this.props.onSubmit(tableBody,'createProduct');
-    // ipcRenderer.send('create-product',{product_arr: inputList});
-    // ipcRenderer.on('reply-create-product', (event,arg) => {
-    //   let {status,message} = arg;
-    //   if(status === 'OK') {
-    //     console.log(message);
-    //   } else {
-    //     console.log(message);
-    //   }
-    // });
-
   }
 
   toOptions(productItems) {
@@ -163,7 +153,4 @@ CreateProduct.propTypes = {
   onSubmit: PropTypes.func
 }
 
-// <InputList onSubmitInputList={this.handleSubmit}
-//            insideCreate={'product'}
-//            inputField={{code:'', amount:0, price:0,brand:''}}/>
 export default CreateProduct;

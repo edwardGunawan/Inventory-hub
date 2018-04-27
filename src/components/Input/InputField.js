@@ -7,8 +7,9 @@ import {
   FormGroup,
   Form
 } from 'reactstrap';
-import Select, {Creatable} from 'react-select';
-import 'react-select/dist/react-select.css';
+import Select from 'react-select';
+import Creatable from 'react-select/lib/Creatable';
+// import 'react-select/dist/react-select.css';
 
 /*
   All the InputField Component that is in the application
@@ -33,32 +34,58 @@ class InputField extends Component {
       otherInfo: this.props.otherInfo,
       selectedOption: '',
       code:'',
-      brand:'',
+      brand:'no model',
       quantity:0,
       price:0
     }
   }
 
+  componentDidUpdate(prevState,prevProps) {
+    if(prevProps.otherInfo !== this.props.otherInfo) {
+      this.setState({otherInfo:this.props.otherInfo});
+    }
+  }
+
   // handling Select change
   handleSelectChange = (selectedOption) => {
-    // console.log(selectedOption);
+    // console.log(value,'in selectedChange ');
+    // when selectedOption is null, the value is undefined
+    if(selectedOption !== null && typeof selectedOption.value !== undefined){
     let {value, label} = selectedOption;
-    if(value !== null){
-      this.props.onSelectEnter(value); // pass it back to the parent
+    // if it is actio and product go through this iff statement
+      if(this.props.parent === 'action' || this.props.parent === 'product') {
+        console.log(value, ' inside vlaue');
+        let item = this.state.otherInfo.productItems.find((it) => it.code.toLowerCase() === value.toLowerCase());
+        if(typeof item !== undefined) {
+          this.setState({
+            code:item.code,
+            brand:item.brand,
+            price:item.price,
+            quantity:item.quantity,
+            selectedOption:(value === null) ? '' : value
+          });
+        }
+      } else if (this.props.parent === 'customer') {
+        this.props.onSelectEnter(value); // pass it back to the parent, no button
+      }
     }
-
-    // console.log('selectedOption', selectedOption);
+    else {
+      this.clearInput();
+    }
   }
 
   // submit button
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(this.state);
+    console.log(this.state, 'in handle submit');
     let {code,brand,quantity,price} = this.state;
-    let toRet = [{code,brand,quantity,price}];
-    console.log(toRet);
-    this.props.onSubmitClick({code,brand,quantity,price});
-    this.clearInput();
+    if(code && quantity > 0 && price > 0) {
+      let toRet = [{code,brand,quantity,price}];
+      console.log(toRet);
+      this.props.onSubmitClick({code,brand,quantity,price});
+      this.clearInput();
+    }
+
   }
 
 
@@ -75,7 +102,7 @@ class InputField extends Component {
   clearInput() {
     this.setState({
       code:'',
-      brand:'',
+      brand:'no model',
       quantity:0,
       price:0
     });
@@ -92,25 +119,29 @@ class InputField extends Component {
       // autofill the entire field when add enter on the button, it will show
       // in the table
         return (
-          <Form inline>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+          <div inline>
+            <FormGroup>
               <Label for="code">Code</Label>
-              <Input name="code" bsSize="sm" value={code} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="code" placeholder="code"/>
+              {/*<Input name="code" bsSize="sm" value={code} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="code" placeholder="code"/> */}
+              <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
             </FormGroup>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Label for="brand">Model</Label>
-              <Input name="brand" bsSize="sm" value={brand} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand"/>
-            </FormGroup>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Label for="quantity">Quantity</Label>
-              <Input name="quantity" className="mr-sm-2" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity"/>
-            </FormGroup>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Label for="price">Price</Label>
-              <Input name="price" className="mr-sm-2" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price"/>
-            </FormGroup>
-            <Button onClick={this.handleSubmit}>{this.props.button}</Button>
-          </Form>
+            <Form inline>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Label className="mr-sm-2" for="brand">Model</Label>
+                <Input name="brand" bsSize="sm" value={brand} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand"/>
+              </FormGroup>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Label className="mr-sm-2" for="quantity">Quantity</Label>
+                <Input name="quantity" className="mr-sm-2" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity"/>
+              </FormGroup>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Label className="mr-sm-2" for="price">Price</Label>
+                <Input name="price" className="mr-sm-2" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price"/>
+              </FormGroup>
+              <Button size="sm" onClick={this.handleSubmit}>{this.props.button}</Button>
+            </Form>
+
+          </div>
         )
       case 'customer':
         // const {selectedOption,otherInfo} = this.state;
@@ -120,17 +151,41 @@ class InputField extends Component {
         return (
           <div>
             <Label for="name">Customer Name</Label>
-            <Creatable onChange={this.handleSelectChange} options={otherInfo.options}/>
+            <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
           </div>
         )
         break;
       case 'action' :
-        {/*<Select
-          onChange={this.handleChange}
-          name="form-field-name"
-          options={otherInfo.options}
-          /> */}
-        break;
+        return (
+          <div>
+            <FormGroup style={{'width':'100%'}}>
+              <Label for="code"> Code </Label>
+              <Select
+                  onChange={this.handleSelectChange}
+                  isClearable
+                  name="form-field-name"
+                  options={otherInfo.options}
+                  />
+            </FormGroup>
+            <Form inline>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Label className="mr-sm-2" for="quantity">Quantity</Label>
+                <Input type="number" className="mr-sm-2" bsSize="sm" onChange={this.handleInputChange} name="quantity" id="quantity" value={quantity}/>
+              </FormGroup>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Label className="mr-sm-2" for="brand">Model</Label>
+                <Input type="text" className="mr-sm-2" bsSize="sm" name="brand" id="brand" value={brand} disabled />
+              </FormGroup>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Label className="mr-sm-2" for="price">Price</Label>
+                <Input type="text" className="mr-sm-2" bsSize="sm" name="price" id="price" value={price} disabled />
+              </FormGroup>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Button  size="sm" className="mr-sm-2" onClick={this.handleSubmit}>{this.props.button}</Button>
+              </FormGroup>
+            </Form>
+          </div>
+        )
     }
   }
   render() {
@@ -139,7 +194,6 @@ class InputField extends Component {
     return (
       <div>
         {this.inputGroup()}
-        {this.state.selectedOption}
         {/*<Button onClick={this.handleClick}>{button}</Button>*/}
       </div>
 

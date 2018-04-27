@@ -99,6 +99,7 @@ class ShowTable extends Component{
             </tr>
           );
         case 'product':
+        case 'action':
           // let {code,brand,quantity,price} = prod;
           console.log(prod);
           return (
@@ -109,7 +110,6 @@ class ShowTable extends Component{
               <td>{price}</td>
               <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
-
           )
       }
     }

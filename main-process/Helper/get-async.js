@@ -27,7 +27,8 @@ ipcMain.on('get-product', async(event,data) => {
       return {
         code: product.get('code'),
         quantity:  product.get('quantity'),
-        price: product.get('price')
+        price: product.get('price'),
+        brand: product.get('brand')
       }
     });
     event.sender.send('reply-get-product', {status:'OK', message:productItems});
