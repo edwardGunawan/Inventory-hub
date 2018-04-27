@@ -68,8 +68,8 @@ class ShowTable extends Component{
   render() {
     let {tableBody,actionButton,tableHeader,parent} = this.state;
     console.log(actionButton);
+    console.log(parent);
     console.log(tableBody,'in showTable');
-
     let renderHeader = tableHeader.map((header, idx) => {
       return (
         <th key={idx}>{header}</th>
@@ -77,9 +77,9 @@ class ShowTable extends Component{
     });
 
     let getTd = (prod,i) => {
+      let {id,price,brand,code,quantity} = prod;
       switch(parent) {
         case 'search':
-          let {id,price,brand,code,quantity} = prod;
           return (
             <tr key={i}>
               <td>{id}</td>
@@ -98,6 +98,19 @@ class ShowTable extends Component{
               <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           );
+        case 'product':
+          // let {code,brand,quantity,price} = prod;
+          console.log(prod);
+          return (
+            <tr key={i}>
+              <td>{code}</td>
+              <td>{brand}</td>
+              <td>{quantity}</td>
+              <td>{price}</td>
+              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
+            </tr>
+
+          )
       }
     }
 
