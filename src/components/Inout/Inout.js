@@ -3,6 +3,7 @@ import InputList from '../Input/InputList';
 import InputField from '../Input/InputField';
 import ShowTable from '../ShowTable/ShowTable';
 import InvoiceConverter from '../InvoiceConverter/InvoiceConverter';
+import Action from '../Action/Action';
 import {Button,
         Label,
         Input,
@@ -28,7 +29,7 @@ class Inout extends Component {
     this.handleRadioClick = this.handleRadioClick.bind(this);
     this.handleClickAction = this.handleClickAction.bind(this);
     this.handleDiscountChange = this.handleDiscountChange.bind(this);
-    this.toOptions = this.toOptions.bind(this);
+    // this.toOptions = this.toOptions.bind(this);
     this.state = {
       customerNames: [],
       productItems:[],
@@ -37,26 +38,13 @@ class Inout extends Component {
       tableBody:[],
       tableHeader:['Code','Quantity','Brand','Price','Action'],
       customer:'',
-      action:''
+      action:'sold'
     }
   }
 
   componentDidMount() {
     this.getCustomer();
     this.getProduct();
-    // ipcRenderer.send('get-customer');
-    // ipcRenderer.on('reply-get-customer', (event, arg) => {
-    //   let {message,status} = arg;
-    //   console.log('get through here in reply-get-customer');
-    //   console.log(message);
-    //   if (status === 'OK') {
-    //     this.setState({
-    //       customerNames:message
-    //     })
-    //   }else {
-    //     console.log(message);
-    //   }
-    // });
   }
 
   componentWillUnmount(){
@@ -91,6 +79,7 @@ class Inout extends Component {
   }
 
   handleDiscountChange(evt) {
+    console.log(`Get through here in Inout for handleDiscountChange ${evt}`);
     this.setState({discount:evt.target.value});
   }
 
@@ -105,25 +94,6 @@ class Inout extends Component {
     this.setState({action:evt.target.value});
   }
 
-  // toOptions for select Input
-  toOptions(instanceArr) {
-    return instanceArr.map((item) => {
-      console.log(typeof item.code, ' in item');
-      if(typeof item === 'object') {
-        return {
-          label: item.code,
-          value: item.code
-        }
-      }else {
-        console.log('item in customer', item);
-        return {
-          label:item,
-          value:item
-        }
-      }
-
-    });
-  }
 
   getProduct = () => {
     ipcRenderer.send('get-product');
@@ -156,66 +126,29 @@ class Inout extends Component {
   }
 
   render() {
-    let {productItems,tableBody,customerNames,tableHeader} = this.state;
-    console.log(productItems,'productItems in render in Inout');
+    let {customerNames,
+      productItems,
+      tableHeader,
+      tableBody,
+      discount,
+      selected,
+      customer,
+      action} = this.state;
+    console.log(`In Inout ${customerNames}, ${productItems}, ${tableHeader}`);
     console.log(tableBody);
-    console.log(customerNames);
-    let options = this.toOptions(productItems);
-    let customerOptions = this.toOptions(customerNames);
-    console.log(options, 'options here in render');
     return (
       <div>
-        {/*}<InputList
-          inputField={{code:'',quantity:0}}
-          insideCreate={'inout'}
-          onSubmitInputList={this.handleSubmitInputList}
-          customerNames={this.state.customerNames}
-          /> */}
-          <Form inline>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0 form-group">
-              <Label className="mr-sm-2">Customer</Label>
-              <Select
-                  className="select-customer"
-                  onChange={this.handleSelectCustomer}
-                  isClearable
-                  name="form-field-name"
-                  options={customerOptions}
-                  isSearchable={false}
-                  />
-            </FormGroup>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Label className="mr-sm-2" for="discount">Discount</Label>
-              <Input type="number" id="discount" name="discount" onChange={this.handleDiscountChange} value={this.state.discount} bsSize="sm" placeholder="discount"/>
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
-                <Input type="radio" onClick={this.handleRadioClick} value="sold" name="radio1" />{' '}
-                Sold
-              </Label>
-            </FormGroup>
-            <FormGroup check >
-              <Label check>
-                <Input type="radio" name="radio1" value="return" onClick={this.handleRadioClick} />{' '}
-                Return
-              </Label>
-            </FormGroup>
-          </Form>
-
-        <InputField
-          button={'Submit'}
-          parent={'action'}
+        <Action info={{customerNames, productItems}}
+          tableHeader={tableHeader}
+          tableBody={tableBody}
+          inputField={{discount,selected,customer,action}}
           onSubmitClick={this.handleSubmitClick}
-          otherInfo={{options,productItems}}
+          onSelectCustomer={this.handleSelectCustomer}
+          onDiscountChange={this.handleDiscountChange}
+          onClickAction={this.handleClickAction}
+          onRadioClick={this.handleRadioClick}
           />
-        <div className="show-table-container">
-          <ShowTable  button={'delete'}
-                    className="show-table"
-                    onClickAction={this.handleClickAction}
-                    tableBody={tableBody}
-                    tableHeader={tableHeader}
-                    parent={'action'} />
-        </div>
-          <Button onClick={this.handleSubmitInputList} size="sm">Proceed</Button>
+        <Button onClick={this.handleSubmitInputList} size="sm">Proceed</Button>
       </div>
     )
   }

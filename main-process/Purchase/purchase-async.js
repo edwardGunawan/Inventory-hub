@@ -23,6 +23,8 @@ const db = require('../../db.js');
   Preprocess productArr, getting total price
   Create new PurchaseOrder instance and add Customer in it and totalPrice and discount
   Add Product to PurchaseOrder with PurchaseDetail
+
+  Total : to also get all total amount after discount
 */
 let purchaseOrder = ({customer, productArr,discount,action}) => {
   // preprocess the totalPrice adding all of them together
