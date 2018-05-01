@@ -77,7 +77,7 @@ class ShowTable extends Component{
     });
 
     let getTd = (prod,i) => {
-      let {id,price,brand,code,quantity} = prod;
+      let {id,price,brand,code,quantity,total} = prod;
       switch(parent) {
         case 'search':
           return (
@@ -99,7 +99,6 @@ class ShowTable extends Component{
             </tr>
           );
         case 'product':
-        case 'action':
           // let {code,brand,quantity,price} = prod;
           console.log(prod);
           return (
@@ -108,6 +107,17 @@ class ShowTable extends Component{
               <td>{brand}</td>
               <td>{quantity}</td>
               <td>{price}</td>
+              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
+            </tr>
+          )
+        case 'action':
+          return (
+            <tr key={i}>
+              <td>{code}</td>
+              <td>{brand}</td>
+              <td>{quantity}</td>
+              <td>{price}</td>
+              <td>{total}</td>
               <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           )

@@ -6,9 +6,13 @@ import {Button,
         Label,
         Input,
         Form,
-        FormGroup
+        FormGroup,
+        InputGroup,
+        InputGroupAddon,
+        InputGroupText
 } from 'reactstrap';
 import Select from 'react-select';
+import './Action.css';
 
 class Action extends Component {
   constructor(props) {
@@ -53,7 +57,10 @@ class Action extends Component {
   }
 
   handleDiscountChange(evt) {
-    this.props.onDiscountChange(evt);
+    if(evt.target.value <= 100 && evt.target.value >= 0 ) {
+      this.props.onDiscountChange(evt);
+    }
+
   }
 
   handleClickAction(idx) {
@@ -86,7 +93,7 @@ class Action extends Component {
 
 
   render() {
-    let {productItems,tableBody,customerNames,tableHeader,action} = this.state;
+    let {productItems,tableBody,customerNames,tableHeader,action,customer} = this.state;
     // console.log(`here in Action ${productItems}, ${tableBody}, ${customerNames}, ${tableHeader}`);
     let productOptions = [], customerOptions = [];
     if(productItems.length > 0) {
@@ -110,19 +117,33 @@ class Action extends Component {
                 isSearchable={false}
                 />
           </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0 discount">
             <Label className="mr-sm-2" for="discount">Discount</Label>
-            <Input type="number" id="discount" name="discount" onChange={this.handleDiscountChange} value={this.state.discount} bsSize="sm" placeholder="discount"/>
+            <InputGroup>
+              <InputGroupAddon addonType="append">
+                <Input type="number"
+                      id="discount"
+                      name="discount"
+                      max={100}
+                      min={0}
+                      onChange={this.handleDiscountChange}
+                      value={this.state.discount}
+                      bsSize="sm"
+                      placeholder="discount"
+                      />
+                <InputGroupText>%</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
           </FormGroup>
-          <FormGroup check>
+          <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
             <Label check>
-              <Input type="radio" onClick={this.handleRadioClick} checked={action === 'sold'} value="sold" name="radio1" />{' '}
+              <Input type="radio" onChange={this.handleRadioClick} checked={action === 'sold'} value="sold" name="radio1" />{' '}
               Sold
             </Label>
           </FormGroup>
-          <FormGroup check>
+          <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
             <Label check>
-              <Input type="radio" name="radio1" value="return" checked={action === 'return'} onClick={this.handleRadioClick} />{' '}
+              <Input type="radio" name="radio1" checked={action === 'return'} value="return" onChange={this.handleRadioClick} />{' '}
               Return
             </Label>
           </FormGroup>
@@ -154,7 +175,7 @@ Action.defaultProps = {
 
 Action.propTypes = {
   info: PropTypes.object, // passing customer names, productItems, and toOption for both
-  inputField: PropTypes.object,
+  inputField: PropTypes.object, // pass to input component in action
   tableHeader: PropTypes.array, // list of tableHeader
   tableBody: PropTypes.array, // list of tableBody
   onSelectCustomer:PropTypes.func, // selecting customer to choose

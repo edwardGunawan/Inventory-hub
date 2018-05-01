@@ -80,9 +80,9 @@ class InputField extends Component {
     console.log(this.state, 'in handle submit');
     let {code,brand,quantity,price} = this.state;
     if(code && quantity > 0 && price > 0) {
-      let toRet = [{code,brand,quantity,price}];
-      console.log(toRet);
-      this.props.onSubmitClick({code,brand,quantity,price});
+      let total = price * quantity;
+      let toRet = {code,brand,quantity,price,total};
+      this.props.onSubmitClick(toRet);
       this.clearInput();
     }
 
@@ -93,7 +93,7 @@ class InputField extends Component {
   // on select in customer when customer are typing or adding it will
   // get added to selectedOption
   handleInputChange(evt) {
-    console.log(evt.target.name);
+    // console.log(evt.target.name);
     this.setState({
       [evt.target.name] : evt.target.value
     });
@@ -115,9 +115,6 @@ class InputField extends Component {
     switch(this.props.parent) {
       case 'product':
         const {productItems} = otherInfo;
-      // TODO: Adding Button, when user input value, it will
-      // autofill the entire field when add enter on the button, it will show
-      // in the table
         return (
           <div inline>
             <FormGroup>

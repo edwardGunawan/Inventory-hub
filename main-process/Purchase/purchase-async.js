@@ -1,19 +1,19 @@
-// const {ipcMain} = require('electron');
+const {ipcMain} = require('electron');
 const db = require('../../db.js');
 // Transaction History
 
-/*ipcMain.on('purchase', async (event,data) => {
+ipcMain.on('purchase', async (event,data) => {
   // assuming data is an object of customer and
   // array of product quantity
   // discount
   try {
-    let {customer,productArr,discount, action} = data;
-    purchaseOrder(customer,productArr,discount,action);
+    let {customer,productArr,discount, action,totalPrice} = data;
+    purchaseOrder(data);
     event.sender.send('reply-purchase',{status:'OK', message:'Success'});
   }catch(e) {
     event.sender.send('reply-purchase',{status:'Error', message:e});
   }
-});*/
+});
 
 
 
@@ -26,15 +26,15 @@ const db = require('../../db.js');
 
   Total : to also get all total amount after discount
 */
-let purchaseOrder = ({customer, productArr,discount,action}) => {
+let purchaseOrder = ({customer, productArr,discount,action,totalPrice}) => {
   // preprocess the totalPrice adding all of them together
-  let total = productArr.reduce(reduceHelper,Promise.resolve(0));
-  total.then((totalPrice) => {
-    // if the action is not sold, then the totalPrice is negative
-    if(action === 'return') totalPrice = (-totalPrice);
-    return db.purchaseOrder.create({discount,totalPrice,action});
-  })
-  .then((order) => {
+  // let total = productArr.reduce(reduceHelper,Promise.resolve(0));
+  // total.then((totalPrice) => {
+  //   // if the action is not sold, then the totalPrice is negative
+  //   if(action === 'return') totalPrice = (-totalPrice);
+  //   return db.purchaseOrder.create({discount,totalPrice,action});
+  // })
+  db.purchaseOrder.create({discount,totalPrice,action}).then((order) => {
     // connect association to customer and purchaseOrder
     return db.customer.findOne({ where:{ name:customer}} ).then((cust_instance) => {
       cust_instance.addPurchaseOrder(order);
@@ -69,9 +69,10 @@ let purchaseOrder = ({customer, productArr,discount,action}) => {
     })
   })
   .catch(e => {
-    e.forEach(error => {
-      console.log(error.message);
-    });
+    console.log(e);
+    // e.forEach(error => {
+    //   console.log(error.message);
+    // });
   });
 }
 

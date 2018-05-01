@@ -6,6 +6,15 @@
   width: 100%;
 }
 
+.total-box {
+  width:40%;
+  float:right;
+}
+.total-box > h6 {
+  font-size:15px;
+  font-weight:400;
+}
+
 .show-table-container {
   height:300px;
   overflow:auto;
