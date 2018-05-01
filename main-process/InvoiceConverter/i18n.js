@@ -1,10 +1,10 @@
 module.exports = {
   en_US: {
     createdAt: 'Created At',
-    amount: 'Total',
+    total: 'Total',
     chargeStatus: 'Charge Status',
     chargeFor: 'Charge For: ',
-    description: 'Description',
+    price: 'Price',
     name: 'Name',
     brand:'Brand',
     quantity: 'Quantity'
