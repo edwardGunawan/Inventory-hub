@@ -18,6 +18,7 @@ ipcMain.on('show', async (event, data) => {
 
     event.sender.send('reply-show', {status: 'OK', message: docToIndex});
   } catch(e) {
+    console.log(e);
     event.sender.send('reply-show', {status: 'Error', message:'Error on showing'});
   }
 });

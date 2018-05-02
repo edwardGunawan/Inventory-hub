@@ -9,13 +9,16 @@ const CONTENT_LEFT_PADDING = 25
 function PDFInvoice({
   company, // {phone, email, address}
   customer, // {name, email}
-  items, // [{total, name, description}]
+  items, // [{total, code,brand, quantity price}]
+  discount, // discount
+  action // sell or return invoice
 }){
   const date = new Date()
   const charge = {
     createdAt: `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`,
     total: items.reduce((acc, item) => acc + item.price*item.quantity, 0),
   }
+  charge.total = charge.total*(1-discount/100);
   const doc = new pdfKit({size: 'A4', margin: 50});
 
   doc.fillColor('#333333');
@@ -35,8 +38,11 @@ function PDFInvoice({
       doc
        .fontSize(20)
        .text(company.name, CONTENT_LEFT_PADDING, 50);
+      doc
+       .fontSize(TEXT_SIZE)
+       .text(action)
 
-      const borderOffset = doc.currentLineHeight() + 70;
+      const borderOffset = doc.currentLineHeight() + 80;
 
       doc
         .fontSize(16)
@@ -76,7 +82,7 @@ function PDFInvoice({
 
     genTableHeaders(){
       [
-        'name',
+        'code',
         'brand',
         'quantity',
         'price',
@@ -91,11 +97,12 @@ function PDFInvoice({
     genTableRow(){
       items
         .map(item => Object.assign({}, item, {
-          price: numeral(item.price).format('$ 0,00.00')
+          price: numeral(item.price).format('$ 0,00.00'),
+          total: numeral(item.total).format('$ 0,00.00')
         }))
         .forEach((item, itemIndex) => {
           [
-            'name',
+            'code',
             'brand',
             'quantity',
             'price',
@@ -111,7 +118,7 @@ function PDFInvoice({
         //    .lineTo(divMaxWidth,table.y+offset)
         //    .stroke();
         doc.fontSize(TEXT_SIZE)
-           .text('Discount: 20%', table.x + (items.length) * table.inc, table.y + TEXT_SIZE + 6 + (items.length) * 20);
+           .text(`Discount: ${discount}%`, table.x + (items.length) * table.inc, table.y + TEXT_SIZE + 6 + (items.length) * 20);
         doc.fontSize(TEXT_SIZE)
            .text(charge.total,table.x + (items.length+1) * table.inc,table.y + TEXT_SIZE + 6 + (items.length) * 20);
 

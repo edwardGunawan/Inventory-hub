@@ -72,11 +72,11 @@ class CreateProduct extends Component {
   }
 
   handleSubmit() {
-    console.log('go throughha');
+    // console.log('go throughha');
     let{tableBody} = this.state;
-    tableBody.forEach((inputObj) => {
-      console.log(inputObj);
-    });
+    // tableBody.forEach((inputObj) => {
+    //   console.log(inputObj);
+    // });
     this.props.onSubmit(tableBody,'createProduct');
   }
 
@@ -97,7 +97,7 @@ class CreateProduct extends Component {
   }
 
   handleSubmitClick(newItemObj) {
-    console.log(this.state.tableBody);
+    // console.log(this.state.tableBody);
     this.setState({
       tableBody: this.state.tableBody.concat(newItemObj)
     });

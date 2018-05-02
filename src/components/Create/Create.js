@@ -72,6 +72,8 @@ class Create extends Component {
       let {status,message} = arg;
       if(status === 'OK') {
         console.log(message);
+        console.log('here after create');
+        this.props.history.replace('/Search'); // reroute to search
       }else {
         console.log(message);
       }
@@ -82,6 +84,7 @@ class Create extends Component {
     if(child === 'createCustomer') {
       this.fetch('create-customer',inputList);
     }else {
+      console.log('here in handleSubmit input list');
       this.fetch('create-product',inputList);
     }
   }

@@ -5,7 +5,7 @@ module.exports = {
     chargeStatus: 'Charge Status',
     chargeFor: 'Charge For: ',
     price: 'Price',
-    name: 'Name',
+    code: 'Code',
     brand:'Brand',
     quantity: 'Quantity'
 

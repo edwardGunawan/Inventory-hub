@@ -16,6 +16,7 @@ class Search extends Component {
     super(props);
     console.log(this.props.access === 'public_username');
     this.handleClickAction = this.handleClickAction.bind(this);
+    this.show = this.show.bind(this);
     // debouncing
     this.handleSearch = debounce(this.handleSearch,500);
     this.state = {
@@ -24,15 +25,20 @@ class Search extends Component {
       showTableButton: (this.props.access === 'public_username')? 'Delete' : 'Edit'
     }
   }
-  componentDidMount() {
+  componentWillMount() {
     // debounce
     // this.handleSearch= debounce(this.handleSearch,500)
-    console.log('Go through component Did Mount in Search');
+    // console.log('Go through component Did Mount in Search');
+    this.show();
+  }
+
+
+  show() {
     ipcRenderer.send('show', 'Initialized');
     ipcRenderer.on('reply-show', (event,arg) => {
       let {status, message} = arg;
       if(status === 'OK') {
-        // console.log(message);
+        console.log(message);
         // importing lunr through here in component will mount
         let idx = lunr(function() {
           this.ref('id')

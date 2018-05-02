@@ -8,15 +8,12 @@ ipcMain.on('purchase', async (event,data) => {
   // discount
   try {
     let {customer,productArr,discount, action,totalPrice} = data;
-    purchaseOrder(data);
+    await purchaseOrder(data);
     event.sender.send('reply-purchase',{status:'OK', message:'Success'});
   }catch(e) {
     event.sender.send('reply-purchase',{status:'Error', message:e});
   }
 });
-
-
-
 
 
 /*
@@ -26,15 +23,10 @@ ipcMain.on('purchase', async (event,data) => {
 
   Total : to also get all total amount after discount
 */
-let purchaseOrder = ({customer, productArr,discount,action,totalPrice}) => {
+let purchaseOrder = async ({customer, productArr,discount,action,totalPrice}) => {
+  console.log(typeof totalPrice, 'totalPrice in purchaseOrder');
   // preprocess the totalPrice adding all of them together
-  // let total = productArr.reduce(reduceHelper,Promise.resolve(0));
-  // total.then((totalPrice) => {
-  //   // if the action is not sold, then the totalPrice is negative
-  //   if(action === 'return') totalPrice = (-totalPrice);
-  //   return db.purchaseOrder.create({discount,totalPrice,action});
-  // })
-  db.purchaseOrder.create({discount,totalPrice,action}).then((order) => {
+  return db.purchaseOrder.create({discount,totalPrice,action}).then((order) => {
     // connect association to customer and purchaseOrder
     return db.customer.findOne({ where:{ name:customer}} ).then((cust_instance) => {
       cust_instance.addPurchaseOrder(order);
@@ -47,11 +39,13 @@ let purchaseOrder = ({customer, productArr,discount,action,totalPrice}) => {
       let {code,quantity} = prod;
       // find product based on code
       db.product.findOne({where:{code}}).then((prod_instance) => {
-        let totalPricePerItem = quantity * prod_instance.get('price');
+        let totalPricePerItem = parseInt(quantity) * prod_instance.get('price');
         if(action === 'sold') {
-          prod_instance.quantity -= quantity;
+          // quantity is string some how
+          prod_instance.quantity -= parseInt(quantity);
         }else {
-          prod_instance.quantity+= quantity;
+          console.log(typeof quantity , ' for quantity in purchase');
+          prod_instance.quantity += parseInt(quantity);
         }
         prod_instance.save().then((prod) => {
           console.log(prod, 'here in prod');
@@ -70,23 +64,20 @@ let purchaseOrder = ({customer, productArr,discount,action,totalPrice}) => {
   })
   .catch(e => {
     console.log(e);
-    // e.forEach(error => {
-    //   console.log(error.message);
-    // });
   });
 }
 
 // acc is a promise
 // therefore after return you need to use then to get the value
 // of the promise
-let reduceHelper = (acc,curr) => {
-  let{code,quantity} = curr;
-  return db.product.findOne({where:{code}}).then((prod) => {
-    return acc.then((curTotal) => {
-      let val = prod.get('price') * quantity+curTotal;
-      return val
-    })
-  }).catch(e => console.log(e));
-}
+// let reduceHelper = (acc,curr) => {
+//   let{code,quantity} = curr;
+//   return db.product.findOne({where:{code}}).then((prod) => {
+//     return acc.then((curTotal) => {
+//       let val = prod.get('price') * quantity+curTotal;
+//       return val
+//     })
+//   }).catch(e => console.log(e));
+// }
 
 module.exports = purchaseOrder;

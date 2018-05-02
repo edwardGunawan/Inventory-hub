@@ -22,19 +22,23 @@ class CreateCustomer extends Component {
 
   // handling submit on here to send value back to create
   handleSubmit(e) {
-    console.log(e);
+    // console.log(e);
     e.preventDefault();
-    console.log(this.state.name);
+    // console.log(this.state.name);
     this.props.onSubmit(this.state.name, 'createCustomer');
   }
 
   handleSelectEnter(value) {
     let {name} = this.state;
-    console.log(name);
+    // console.log(name);
     let obj = {name:value};
-    this.setState({
-      name: this.state.name.concat(obj)
-    });
+    let found = name.find((n) => n.name.toLowerCase() === value.toLowerCase());
+    if(typeof found === 'undefined') {
+      this.setState({
+        name: name.concat(obj)
+      });
+    }
+
   }
 
   handleClickAction(idx) {

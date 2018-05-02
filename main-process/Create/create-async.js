@@ -11,9 +11,9 @@ ipcMain.on('create-product', async (event,data) => {
   try {
     let {input_arr} = data;
     let products = await db.product.bulkCreate(input_arr,{returning:true});
-    event.sender.send('reply-create', {status:'OK', message:'all products is created'});
+    event.sender.send('reply-create-product', {status:'OK', message:'all products is created'});
   } catch(e) {
-    console.log('error in create', e);
+    // console.log('error in create', e);
     event.sender.send('reply-create-product', {status:'Error', message:e});
   }
 });
@@ -31,7 +31,7 @@ ipcMain.on('bulk-import',async (event,data) => {
     let products = await db.product.bulkCreate(excelObj,{returning:true}); // returning auto-generate id
     event.sender.send('reply-bulk-import', {status:'OK', message:'Import From Excel Succeed'});
   }catch(e) {
-    console.log('go through error',e);
+    // console.log('go through error',e);
     event.sender.send('reply-bulk-import', {status:'Error', message: e});
   }
 });

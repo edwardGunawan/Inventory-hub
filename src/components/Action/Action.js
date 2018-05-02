@@ -26,7 +26,6 @@ class Action extends Component {
     this.state = {
       customerNames: this.props.info.customerNames,
       productItems: this.props.info.productItems,
-      selected:this.props.inputField.selected,
       discount: this.props.inputField.discount,
       customer:this.props.inputField.customer,
       action:this.props.inputField.action
@@ -43,8 +42,8 @@ class Action extends Component {
         productItems: this.props.info.productItems
       });
     } else if (prevProps.inputField !== this.props.inputField) {
-      let {discount,selected,customer,action} = this.props.inputField
-      this.setState({discount,selected,customer,action});
+      let {discount,customer,action} = this.props.inputField
+      this.setState({discount,customer,action});
     }
   }
 
@@ -73,7 +72,7 @@ class Action extends Component {
 
   // toOptions for select Input
   toOptions(instanceArr) {
-    console.log(instanceArr);
+    // console.log(instanceArr);
     return instanceArr.map((item) => {
       if(typeof item === 'object') {
         return {
@@ -81,7 +80,7 @@ class Action extends Component {
           value: item.code
         }
       }else {
-        console.log('item in customer', item);
+        // console.log('item in customer', item);
         return {
           label:item,
           value:item
@@ -147,6 +146,12 @@ class Action extends Component {
               Return
             </Label>
           </FormGroup>
+          <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
+            <Label check>
+              <Input type="radio" name="radio1" checked={action === 'restock'} value="restock" onChange={this.handleRadioClick} />{' '}
+              Restock
+            </Label>
+          </FormGroup>
         </Form>
 
       <InputField
@@ -177,7 +182,7 @@ Action.propTypes = {
   info: PropTypes.object, // passing customer names, productItems, and toOption for both
   inputField: PropTypes.object, // pass to input component in action
   tableHeader: PropTypes.array, // list of tableHeader
-  tableBody: PropTypes.array, // list of tableBody
+  tableBody: PropTypes.array, // list of tableBody [code,brand,quantity,price,total]
   onSelectCustomer:PropTypes.func, // selecting customer to choose
   onDiscountChange:PropTypes.func, // handling discount change
   onSubmitClick: PropTypes.func, // adding inputField to ShowTable

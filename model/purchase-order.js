@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
       type:DataTypes.INTEGER,
       allowNull:false,
       validate: {
-        isNumeric:true
+        isFloat:true
       }
     },
     // buying or selling type
@@ -22,7 +22,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isIn:[['return','sold']]
+        isIn:[['return','sell','restock']]
       }
     },
   });

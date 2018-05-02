@@ -3,6 +3,7 @@ import {Table,Button} from 'reactstrap';
 import ModalStrap from '../Modal/ModalStrap'
 import PropTypes from 'prop-types';
 import './ShowTable.css';
+import numeral from 'numeral';
 /*
   Show table get passed of props as button on the right,
   all the thead that exist in that table
@@ -35,7 +36,7 @@ class ShowTable extends Component{
 
   componentDidUpdate(prevProps,prevState) {
     if(this.props.tableBody.length !== prevProps.tableBody.length) {
-      console.log('here in tableBody not the same', this.props.tableBody);
+      // console.log('here in tableBody not the same', this.props.tableBody);
       this.setState({
         tableBody: this.props.tableBody
       })
@@ -44,7 +45,7 @@ class ShowTable extends Component{
 
   // handle click on the modal
   handleTableClick = (idx) => (evt) => {
-    console.log(idx,' in showTable');
+    // console.log(idx,' in showTable');
     // console.log(this.state);
     // let {idx,actionButton} = this.state;
     // this.setState({
@@ -67,9 +68,9 @@ class ShowTable extends Component{
 
   render() {
     let {tableBody,actionButton,tableHeader,parent} = this.state;
-    console.log(actionButton);
-    console.log(parent);
-    console.log(tableBody,'in showTable');
+    // console.log(actionButton);
+    // console.log(parent);
+    // console.log(tableBody,'in showTable');
     let renderHeader = tableHeader.map((header, idx) => {
       return (
         <th key={idx}>{header}</th>
@@ -84,8 +85,8 @@ class ShowTable extends Component{
             <tr key={i}>
               <td>{id}</td>
               <td>{code}</td>
-              <td>{quantity}</td>
-              <td>{price}</td>
+              <td>{numeral(quantity).format('0,0')}</td>
+              <td>{numeral(price).format('$0,0.00')}</td>
               <td>{brand}</td>
               <td><Button onClick={this.handleTableClick}>{this.state.actionButton}</Button></td>
             </tr>
@@ -100,13 +101,13 @@ class ShowTable extends Component{
           );
         case 'product':
           // let {code,brand,quantity,price} = prod;
-          console.log(prod);
+          // console.log(prod);
           return (
             <tr key={i}>
               <td>{code}</td>
               <td>{brand}</td>
-              <td>{quantity}</td>
-              <td>{price}</td>
+              <td>{numeral(quantity).format('0,0')}</td>
+              <td>{numeral(price).format('$0,0.00')}</td>
               <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           )
@@ -115,9 +116,9 @@ class ShowTable extends Component{
             <tr key={i}>
               <td>{code}</td>
               <td>{brand}</td>
-              <td>{quantity}</td>
-              <td>{price}</td>
-              <td>{total}</td>
+              <td>{numeral(quantity).format('0,0')}</td>
+              <td>{numeral(price).format('$0,0.00')}</td>
+              <td>{numeral(total).format('0,0')}</td>
               <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           )
@@ -126,11 +127,11 @@ class ShowTable extends Component{
 
     let renderBodyArr = [];
     tableBody.forEach((product,idx,arr) => {
-      console.log(product, 'inside product');
+      // console.log(product, 'inside product');
       // loop through each name attribute in product
       renderBodyArr.push(getTd(product,idx));
     });
-    console.log(renderBodyArr);
+    // console.log(renderBodyArr);
 
     return (
       <div className="table-container">

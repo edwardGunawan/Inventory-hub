@@ -11,6 +11,7 @@ import {Button,
         Badge
 } from 'reactstrap';
 import Select from 'react-select';
+import numeral from 'numeral';
 import './Inout.css';
 let {ipcRenderer} = window.require('electron');
 /*
@@ -30,21 +31,23 @@ class Inout extends Component {
     this.handleRadioClick = this.handleRadioClick.bind(this);
     this.handleClickAction = this.handleClickAction.bind(this);
     this.handleDiscountChange = this.handleDiscountChange.bind(this);
+    this.convertToPdf = this.convertToPdf.bind(this);
+    this.purchase = this.purchase.bind(this);
     // this.toOptions = this.toOptions.bind(this);
     this.state = {
       customerNames: [],
       productItems:[],
-      selected:'',
       discount: 0,
       tableBody:[],
-      tableHeader:['Code','Quantity','Brand','Price','Total','Action'],
+      tableHeader:['Code','Brand','Quantity','Price','Total','Action'],
       customer:'',
       action:'sold',
       currWindow:'action', // use this to change the proceed button to go to invoiceConverter
       proceed:'Proceed',
       back:true,
       totalWithoutDiscount:0,
-      total:0
+      total:0,
+      doc:''
     }
   }
 
@@ -65,44 +68,68 @@ class Inout extends Component {
     let {currWindow} = this.state
     if(currWindow === 'action') {
       let {tableBody,discount,customer,action,total} = this.state;
-      console.log(customer.length);
-
-
-      // ipcRenderer.send('convert-pdf', {tableBody,discount,customer,action});
-      // ipcRenderer.on('reply-convert-pdf',(evt,arg) => {
-      //   let {message,status} = arg;
-      //   if(status === 'OK') {
-      //     console.log(message);
-      //   }else {
-      //     console.log(message);
-      //   }
-      // });
       // don't go next if the total is not zero and they didn't choose customer
       if(total !== 0 && customer.length > 0) {
         this.setState({
           currWindow:'invoiceConverter',
-          proceed:'Print Invoice',
+          proceed:'Confirm Invoice',
           back:false
         });
       }
 
     } else if(currWindow === 'invoiceConverter') {
       // print invoice converter
-      console.log('triggered invoice converter');
+      // console.log('triggered invoice converter');
       let {tableBody,customer,discount,action,total} = this.state;
-      let productArr = {}
-      ipcRenderer.send('purchase', {productArr:tableBody,customer,discount,action,totalPrice:total});
-      ipcRenderer.on('reply-purchase', (evt,arg) => {
-        let {message, status} = arg;
-        if(status === 'OK') {
-          console.log('All purchase has been note in db');
-        } else {
-          console.log(message);
-        }
-      })
+      this.purchase(tableBody,customer,discount,action,total);
+    //   ipcRenderer.send('purchase', {productArr:tableBody,customer,discount,action,totalPrice:total});
+    //   ipcRenderer.on('reply-purchase', (evt,arg) => {
+    //     let {message, status} = arg;
+    //     if(status === 'OK') {
+    //       console.log('All purchase has been note in db');
+    //       this.convertToPdf(tableBody,discount,customer,action,total); // convert here to pdf
+    //     } else {
+    //       console.log(message);
+    //     }
+    //   });
     }
 
     console.log(this.state,' in inout submitInputList');
+  }
+
+  purchase(tableBody,customer,discount,action,total) {
+    let productArr = {}
+    ipcRenderer.send('purchase', {productArr:tableBody,customer,discount,action,totalPrice:total});
+    ipcRenderer.on('reply-purchase', (evt,arg) => {
+      let {message, status} = arg;
+      if(status === 'OK') {
+        console.log('All purchase has been note in db');
+        this.convertToPdf(tableBody,discount,customer,action,total); // convert here to pdf
+      } else {
+        console.log(message);
+      }
+    });
+  }
+
+  convertToPdf(tableBody,discount,customer,action,total) {
+    // TODO : Convert items and set it to pdf render it on iframe
+    let items = tableBody.map((body) => {
+      console.log(body);
+      return {
+        price:body.price,
+        code:body.code,
+        quantity:body.quantity,
+        brand:body.brand,
+        total:body.total
+      }
+    });
+    ipcRenderer.send('convert-pdf', {items,discount,customer,action,total});
+    ipcRenderer.on('reply-convert-pdf', (evt,args) => {
+      let {status,message} = args;
+      if(status === 'OK') {
+        this.props.history.replace('/Search');
+      }
+    })
   }
 
   handleBackButton = () => {
@@ -115,9 +142,9 @@ class Inout extends Component {
   }
 
   handleSubmitClick(order) {
-    console.log(order,'in handleSubmit');
+    // console.log(order,'in handleSubmit');
     let found = this.state.tableBody.find((val) => val.code === order.code);
-    console.log(found, 'found');
+    // console.log(found, 'found');
     // ifonlyif found is undefined, that means it is already in the table
     if(typeof found === 'undefined') {
       this.setState({
@@ -135,7 +162,7 @@ class Inout extends Component {
   }
 
   handleDiscountChange(evt) {
-    console.log(`Get through here in Inout for handleDiscountChange ${evt}`);
+    // console.log(`Get through here in Inout for handleDiscountChange ${evt}`);
     this.setState({
       discount:evt.target.value,
       total: this.state.totalWithoutDiscount * (1-(evt.target.value/100))
@@ -151,7 +178,7 @@ class Inout extends Component {
   }
 
   handleRadioClick(evt) {
-    console.log(evt.target.value, ' in radioClick');
+    // console.log(evt.target.value, ' in radioClick');
     this.setState({action:evt.target.value});
   }
 
@@ -160,7 +187,7 @@ class Inout extends Component {
     ipcRenderer.send('get-product');
     ipcRenderer.on('reply-get-product', (evt,arg) => {
       let {message,status} = arg;
-      console.log('get through here in reply-get-product');
+      // console.log('get through here in reply-get-product');
       if(status==='OK') {
         this.setState({
           productItems:message
@@ -175,7 +202,7 @@ class Inout extends Component {
     ipcRenderer.send('get-customer');
     ipcRenderer.on('reply-get-customer', (event, arg) => {
       let {message,status} = arg;
-      console.log('get through here in reply-get-customer');
+      // console.log('get through here in reply-get-customer');
       if (status === 'OK') {
         this.setState({
           customerNames:message
@@ -192,27 +219,29 @@ class Inout extends Component {
       tableHeader,
       tableBody,
       discount,
-      selected,
       customer,
       action,
       currWindow,
       proceed,
       back,
       totalWithoutDiscount,
-      total} = this.state;
-    console.log(`In Inout ${customerNames}, ${productItems}, ${tableHeader}`);
+      total,
+      doc} = this.state;
+    // console.log(`In Inout ${customerNames}, ${productItems}, ${tableHeader}`);
     return (
       <div>
         {(currWindow === 'action') ? <Action info={{customerNames, productItems}}
           tableHeader={tableHeader}
           tableBody={tableBody}
-          inputField={{discount,selected,customer,action}}
+          inputField={{discount,customer,action}}
           onSubmitClick={this.handleSubmitClick}
           onSelectCustomer={this.handleSelectCustomer}
           onDiscountChange={this.handleDiscountChange}
           onClickAction={this.handleClickAction}
           onRadioClick={this.handleRadioClick}
-          /> : <InvoiceConverter/>}
+          /> : <InvoiceConverter
+                  info={{tableBody,customer,discount,action,total}}
+                  />}
         <div className="total-box">
           <h6>Total: {totalWithoutDiscount} in  <span className="text-success">{discount}%</span> = {total}</h6>
         </div>
