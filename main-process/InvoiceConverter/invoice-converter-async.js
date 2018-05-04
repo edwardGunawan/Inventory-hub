@@ -5,10 +5,7 @@ ipcMain.on('convert-pdf', (evt,data) => {
   let {items,discount,customer,action} = data;
   console.log(data);
   console.log(items, ' items in convert-pdf');
-  //TODO: converting to the invoice item format
-  // convert to the invoice(document, send it to the frontend)
-  // Document render then when people clikc print pdf, run purchase
-  // pipe it to download dir
+  
   let document = pdfInvoice({
     company: {
       phone:'(99)-999-9999',

@@ -1,6 +1,7 @@
 let {ipcMain} = require('electron');
 let db = require('../../db.js');
 let XLSX = require('xlsx');
+const moment = require('moment');
 
 /*
   Create new product
@@ -11,9 +12,12 @@ ipcMain.on('create-product', async (event,data) => {
   try {
     let {input_arr} = data;
     let products = await db.product.bulkCreate(input_arr,{returning:true});
+    products.forEach((prod) => {
+      console.log('prod createdAt', prod.get('timestamps'));
+    })
     event.sender.send('reply-create-product', {status:'OK', message:'all products is created'});
   } catch(e) {
-    // console.log('error in create', e);
+    console.log('error in create', e);
     event.sender.send('reply-create-product', {status:'Error', message:e});
   }
 });

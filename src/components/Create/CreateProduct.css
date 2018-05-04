@@ -3,5 +3,6 @@
 }
 
 .table {
-  height:200px;
+  overflow:auto;
+  height:300px;
 }

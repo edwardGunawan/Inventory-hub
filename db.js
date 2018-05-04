@@ -17,7 +17,9 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 // create many to many association for purchase (transaction) table
+// it needs to have hasMany and belongsTo
 db.customer.hasMany(db.purchaseOrder);
+db.purchaseOrder.belongsTo(db.customer);
 db.product.belongsToMany(db.purchaseOrder,{through:db.purchaseDetail});
 db.purchaseOrder.belongsToMany(db.product,{through:db.purchaseDetail});
 

@@ -1,3 +1,4 @@
+const moment = require('moment');
 /*
   Purchase Detail:
     product_id, totalQuantity, purchase_order_id, totalPricePerItem,
@@ -29,6 +30,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull:false,
       validate:{
         isNumeric:true
+      }
+    },
+    timestamps: {
+      type: DataTypes.BIGINT,
+      defaultValue: moment().valueOf(),
+      allowNull:false,
+      get: function() {
+        return this.getDataValue('timestamps');
       }
     }
   });

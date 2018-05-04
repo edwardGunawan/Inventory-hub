@@ -40,7 +40,7 @@ let purchaseOrder = async ({customer, productArr,discount,action,totalPrice}) =>
       // find product based on code
       db.product.findOne({where:{code}}).then((prod_instance) => {
         let totalPricePerItem = parseInt(quantity) * prod_instance.get('price');
-        if(action === 'sold') {
+        if(action === 'sell') {
           // quantity is string some how
           prod_instance.quantity -= parseInt(quantity);
         }else {

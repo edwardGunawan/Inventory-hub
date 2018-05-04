@@ -41,7 +41,7 @@ class Inout extends Component {
       tableBody:[],
       tableHeader:['Code','Brand','Quantity','Price','Total','Action'],
       customer:'',
-      action:'sold',
+      action:'sell',
       currWindow:'action', // use this to change the proceed button to go to invoiceConverter
       proceed:'Proceed',
       back:true,

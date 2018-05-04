@@ -1,3 +1,4 @@
+const moment = require('moment');
 /*
   Purchase_order: discount, totalPrice, customer_id,
   action(in or out)
@@ -25,6 +26,14 @@ module.exports = function(sequelize, DataTypes) {
         isIn:[['return','sell','restock']]
       }
     },
+    timestamps: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      defaultValue: moment().valueOf(),
+      get : function() { // convert createdAt to timestamps
+        return this.getDataValue('timestamps');
+      }
+    }
   });
   return purchaseOrder;
 }

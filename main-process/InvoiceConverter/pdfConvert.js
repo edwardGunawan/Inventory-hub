@@ -113,10 +113,7 @@ function PDFInvoice({
               .text(item[field], table.x + i * table.inc, table.y + TEXT_SIZE + 6 + itemIndex * 20);
           });
         })
-        // let offset = doc.currentLineHeight()+2;
-        // doc.moveTo(table.x,table.y+offset)
-        //    .lineTo(divMaxWidth,table.y+offset)
-        //    .stroke();
+      
         doc.fontSize(TEXT_SIZE)
            .text(`Discount: ${discount}%`, table.x + (items.length) * table.inc, table.y + TEXT_SIZE + 6 + (items.length) * 20);
         doc.fontSize(TEXT_SIZE)

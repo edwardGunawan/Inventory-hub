@@ -136,8 +136,8 @@ class Action extends Component {
           </FormGroup>
           <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
             <Label check>
-              <Input type="radio" onChange={this.handleRadioClick} checked={action === 'sold'} value="sold" name="radio1" />{' '}
-              Sold
+              <Input type="radio" onChange={this.handleRadioClick} checked={action === 'sell'} value="sell" name="radio1" />{' '}
+              Sell
             </Label>
           </FormGroup>
           <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
@@ -187,7 +187,7 @@ Action.propTypes = {
   onDiscountChange:PropTypes.func, // handling discount change
   onSubmitClick: PropTypes.func, // adding inputField to ShowTable
   onClickAction: PropTypes.func, //delete from TableBody
-  onRadioClick: PropTypes.func // onChange radio click sold or return
+  onRadioClick: PropTypes.func // onChange radio click sell, return or restock
 
 }
 

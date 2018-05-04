@@ -1,3 +1,4 @@
+const moment = require('moment');
 module.exports = function(sequelize,DataTypes) {
   var product = sequelize.define('product', {
     code : {
@@ -30,6 +31,14 @@ module.exports = function(sequelize,DataTypes) {
       allowNull: false,
       validate: {
         isNumeric: true
+      }
+    },
+    timestamps: {
+      type:DataTypes.BIGINT,
+      allowNull: false,
+      defaultValue: moment().valueOf(),
+      get: function() {
+        return this.getDataValue('timestamps');
       }
     }
   });
