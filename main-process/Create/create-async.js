@@ -1,4 +1,4 @@
-let {ipcMain} = require('electron');
+let {ipcMain, app} = require('electron');
 let db = require('../../db.js');
 let XLSX = require('xlsx');
 const moment = require('moment');

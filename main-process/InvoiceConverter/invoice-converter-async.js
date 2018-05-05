@@ -1,11 +1,11 @@
-const {ipcMain} = require('electron');
-const pdfInvoice = require('./pdfConvert.js');
+const {ipcMain,app} = require('electron');
+const pdfInvoice = require('../Helper/pdfConvert.js');
 
 ipcMain.on('convert-pdf', (evt,data) => {
   let {items,discount,customer,action} = data;
   console.log(data);
   console.log(items, ' items in convert-pdf');
-  
+
   let document = pdfInvoice({
     company: {
       phone:'(99)-999-9999',
