@@ -57,8 +57,8 @@ function convertExcel({
               (objKey(string)) -> (obj(value))
               CustomerName -> CustomerObj
             */
-
           for(let order of purchaseOrders) {
+            console.log('go through order purchase for loop');
             // NOTE: Can't do order.getCustomer because you didn't set the association belongsTo
             // need to set hasMany which put association key to order and belongsTo which put
             // connect that association key back to order in customer get
@@ -109,7 +109,6 @@ function convertExcel({
               // console.log(product, ' product instance here');
 
 
-
               let rawDataObj = {
                 date: moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
                 customer: customerName,
@@ -117,6 +116,7 @@ function convertExcel({
                 brand: product.get('brand'),
                 quantity: detail.get('quantity'),
                 discount: order.get('discount'),
+                action:order.get('action'),
                 price: detail.get('pricePerItem'),
                 subTotal: detail.get('totalPricePerItem')
               }
@@ -171,10 +171,10 @@ function convertExcel({
           if(startMonth > 12 || startMonth < 0 || endMonth > 12 || endMonth <= 0) {
             throw new Error('You insert either the wrong startMonth or endMonth argument');
           }
-          if(!yearMap.has(startYear)) throw `There are no transaction found in ${year}`;
+
+          if(!yearMap.has(startYear) || !yearMap.has(endYear)) throw `There are no transaction found in ${year}`;
 
           let objArr = [];
-
           let year = startYear;
           let month = startMonth;
           while(yearMap.has(year) && year <= endYear) {
@@ -182,11 +182,11 @@ function convertExcel({
             let monthObj = yearMap.get(year);
             for(let i = month ; i< 12; i++) {
               if(year === endYear && i > endMonth) break;
-              Object.keys(monthObj[month]).forEach((dateKey) => {
+              Object.keys(monthObj[i]).forEach((dateKey) => {
                 // console.log('in side object keys', dateKey);
                 // console.log(monthObj[startMonth][dateKey]);
-                for(let customerName in monthObj[startMonth][dateKey]) {
-                  objArr = [...objArr,...monthObj[startMonth][dateKey][customerName]];
+                for(let customerName in monthObj[i][dateKey]) {
+                  objArr = [...objArr,...monthObj[i][dateKey][customerName]];
                 }
               });
               i++;
@@ -200,7 +200,7 @@ function convertExcel({
           // console.log('objArr in getTransaction', objArr);
           return objArr;
         } catch(e) {
-          throw new Error(e);
+          throw e;
         }
       },
 
@@ -213,15 +213,15 @@ function convertExcel({
         let header = [];
         switch(based) {
           case 'customer':
-            header = ["customer","date","code","brand","quantity",
+            header = ["customer","date","action","code","brand","quantity",
             "discount","price","subTotal"];
             break;
           case 'product':
-            header=["code","brand","date","quantity","customer","discount",
+            header=["code","brand","date","action","quantity","customer","discount",
             "price","subTotal"];
             break;
           default:
-            header = ["date","customer","code","brand","quantity",
+            header = ["date","customer","code","brand","action","quantity",
             "discount","price","subTotal"];
         }
         let ws = XLSX.utils.json_to_sheet(objArr,{header:header});
