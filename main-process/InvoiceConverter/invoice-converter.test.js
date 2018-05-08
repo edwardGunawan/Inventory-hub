@@ -1,4 +1,4 @@
-const pdfInvoice = require('./pdfConvert.js');
+const pdfInvoice = require('../Helper/pdfConvert.js');
 
 const document = pdfInvoice({
   company: {
