@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import InputList from '../Input/InputList';
+// import InputList from '../Input/InputList';
 import InputField from '../Input/InputField';
 import PropTypes from 'prop-types';
 import ShowTable from '../ShowTable/ShowTable';
 import {Button} from 'reactstrap';
 
-let {ipcRenderer} = window.require('electron');
+// let {ipcRenderer} = window.require('electron');
 
 class CreateCustomer extends Component {
   constructor(props) {

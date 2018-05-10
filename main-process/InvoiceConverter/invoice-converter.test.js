@@ -15,6 +15,10 @@ const document = pdfInvoice({
     {price: 50.0, code: 'XYZ', quantity: 12, brand:'SamCafaso',total:1000},
     {price: 12.0, code: 'ABC', quantity: 12, brand:'SamCafaso',total:1000},
     {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+    {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+    {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+    {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+    {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000}
   ],
   discount:20,
   action:'Sold'
@@ -27,4 +31,4 @@ const fs = require('fs')
 
 document.generate() // triggers rendering
 // console.log(document.pdfKitDoc);
-document.pdfkitDoc.pipe(fs.createWriteStream(__dirname+'/my-invoice.pdf'))
+document.pdfkitDoc.pipe(fs.createWriteStream(__dirname+'/my-invoice.test.pdf'))

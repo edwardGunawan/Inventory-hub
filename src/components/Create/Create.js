@@ -119,7 +119,7 @@ class Create extends Component {
 
   render() {
     // TODO Set variable as the renderer as the button part
-    let {content,value,dropdownToggle} = this.state;
+    let {content,value} = this.state;
     return (
       <div>
         <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>

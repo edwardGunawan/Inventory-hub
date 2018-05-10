@@ -52,7 +52,7 @@ class InputField extends Component {
     // console.log(value,'in selectedChange ');
     // when selectedOption is null, the value is undefined
     if(selectedOption !== null && typeof selectedOption.value !== 'undefined'){
-    let {value, label} = selectedOption;
+    let {value} = selectedOption;
     // if it is actio and product go through this iff statement
       if(this.props.parent === 'action' || this.props.parent === 'product') {
         console.log(value, ' inside vlaue');
@@ -122,10 +122,10 @@ class InputField extends Component {
 
 
   inputGroup = () => {
-    const {selectedOption,otherInfo,code,brand,price,quantity} = this.state;
+    const {selectedOption,otherInfo,brand,price,quantity} = this.state;
     switch(this.props.parent) {
       case 'product':
-        const {productItems} = otherInfo;
+        // const {productItems} = otherInfo;
         return (
           <div>
             <FormGroup>
@@ -162,8 +162,8 @@ class InputField extends Component {
             <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
           </div>
         )
-        break;
-      case 'action' :
+      // case 'action' :
+      default:
         return (
           <div>
             <FormGroup style={{'width':'100%'}}>
@@ -197,7 +197,7 @@ class InputField extends Component {
     }
   }
   render() {
-    const {button} = this.props;
+    // const {button} = this.props;
 
     return (
       <div>

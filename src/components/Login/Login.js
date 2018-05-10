@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Modal from './../Modal/Modal';
 import './Login.css';
-import {Button, Form, FormGroup, Label, Input, FormText} from 'reactstrap';
+import {Button, Form, FormGroup, Label} from 'reactstrap';
 
 
 class Login extends Component {

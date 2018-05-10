@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import InputField from '../Input/InputField';
 import ShowTable from '../ShowTable/ShowTable';
 import PropTypes from 'prop-types';
-import {Button,
+import {
         Label,
         Input,
         Form,
@@ -28,7 +28,8 @@ class Action extends Component {
       productItems: this.props.info.productItems,
       discount: this.props.inputField.discount,
       customer:this.props.inputField.customer,
-      action:this.props.inputField.action
+      action:this.props.inputField.action,
+      isDisabled: false
     }
   }
 
@@ -67,6 +68,9 @@ class Action extends Component {
   }
 
   handleRadioClick(evt) {
+    this.setState({
+      isDisabled: (evt.target.value === 'restock')? true: false
+    });
     this.props.onRadioClick(evt);
   }
 
@@ -92,7 +96,7 @@ class Action extends Component {
 
 
   render() {
-    let {productItems,tableBody,customerNames,tableHeader,action,customer} = this.state;
+    let {productItems,customerNames,action} = this.state;
     // console.log(`here in Action ${productItems}, ${tableBody}, ${customerNames}, ${tableHeader}`);
     let productOptions = [], customerOptions = [];
     if(productItems.length > 0) {
@@ -111,6 +115,7 @@ class Action extends Component {
                 className="select-customer"
                 onChange={this.handleSelectCustomer}
                 isClearable
+                isDisabled={this.state.isDisabled}
                 name="form-field-name"
                 options={customerOptions}
                 isSearchable={false}

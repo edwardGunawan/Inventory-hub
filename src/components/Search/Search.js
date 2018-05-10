@@ -105,21 +105,23 @@ class Search extends Component {
       // console.log(this.state.idx);
       let {idx, message} = this.state;
       let res = idx.search(`${val}`);
-      let firstIdx = res[0];
       let toRender = res.map((item) => {
         let {ref} = item;
+        let toRen = {};
         for(let {id,code,quantity,price,brand} of message) {
           // NOTE: ref is object and id is number type
           if(Number(ref) === id) {
-            return {
+            toRen = {
               id,
               code,
               quantity,
               price,
               brand
             }
+            break;
           }
         }
+        return toRen;
       });
       this.setState({
         toRender

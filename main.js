@@ -46,6 +46,7 @@ function initialize() {
   }
 
   app.on('ready', () => {
+    console.log('go through on ready');
     createWindow();
     db.sequelize
       .authenticate()

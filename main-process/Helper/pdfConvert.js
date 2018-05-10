@@ -113,11 +113,11 @@ function PDFInvoice({
               .text(item[field], table.x + i * table.inc, table.y + TEXT_SIZE + 6 + itemIndex * 20);
           });
         })
-      
+        // console.log(items.length);
         doc.fontSize(TEXT_SIZE)
-           .text(`Discount: ${discount}%`, table.x + (items.length) * table.inc, table.y + TEXT_SIZE + 6 + (items.length) * 20);
+           .text(`Discount: ${discount}%`, table.x + 3 * table.inc, table.y + TEXT_SIZE + 6 + (items.length) * 20);
         doc.fontSize(TEXT_SIZE)
-           .text(charge.total,table.x + (items.length+1) * table.inc,table.y + TEXT_SIZE + 6 + (items.length) * 20);
+           .text(`$ ${charge.total}`,table.x + 4 * table.inc,table.y + TEXT_SIZE + 6 + (items.length) * 20);
 
     },
 

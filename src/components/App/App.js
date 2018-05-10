@@ -39,12 +39,13 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     console.log('go through componentDidUpdate in app.js', this.state.status, prevState.status);
     if(this.state.status !== prevState.status) {
-      switch(this.state.status) {
-        case 'aboutLogin' :
-          this.handleSubmitLogin();
-          break;
+      switch(this.state.status) {          
         case 'signUp' :
           this.setState({status:'signUp'});
+          break;
+        default:
+          this.handleSubmitLogin();
+          break;
       }
     }
   }

@@ -1,16 +1,12 @@
 import React, {Component} from 'react';
 import {Button,
-        Form,
         FormGroup,
         FormText,
         Label,
-        Input,
-        InputGroup,
-        InputGroupText,
-        InputGroupAddon
+        Input
       } from 'reactstrap';
 import PropTypes from 'prop-types';
-import InputList from '../Input/InputList';
+// import InputList from '../Input/InputList';
 import ShowTable from '../ShowTable/ShowTable';
 import InputField from '../Input/InputField';
 import './CreateProduct.css';
@@ -104,7 +100,7 @@ class CreateProduct extends Component {
   }
 
   render() {
-    let {isBulkCreate,buttonName,tableHeader,tableBody} = this.state;
+    let {isBulkCreate,tableHeader,tableBody} = this.state;
     console.log(tableBody,'in createProduct');
     let {productItems} = this.props;
     let options = this.toOptions(this.props.productItems);

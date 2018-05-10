@@ -111,7 +111,8 @@ class ShowTable extends Component{
               <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           )
-        case 'action':
+          // action
+        default:
           return (
             <tr key={i}>
               <td>{code}</td>

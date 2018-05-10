@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './Signup.css';
 import Modal from './../Modal/Modal';
-import {Button, Form, FormGroup, Label, Input, FormText} from 'reactstrap';
+import {Button, Form, FormGroup, Label} from 'reactstrap';
 // pass back to props in render()
 class Signup extends Component {
   constructor(props) {

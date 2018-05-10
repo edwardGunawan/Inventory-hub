@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Router, Route, Link} from 'react-router-dom';
+import {Router} from 'react-router-dom';
 import NavComp from '../Nav/Nav';
 import MainRoute from '../Route/MainRoute';
 import './Main.css';

@@ -41,13 +41,15 @@ let purchaseOrder = async ({customer, productArr,discount,action,totalPrice}) =>
         // finding all the product from product
         productArr.forEach((prod) => {
           let {code} = prod;
+
           // find product based on code
           let productFoundPromise = db.product.findOne({where:{code}}, {transaction:t});
           promises.push(productFoundPromise);
         });
-
+        
         // adding customer accessor to purchaseOrder to the promise and executed it too
         promises.push(db.customer.findOne({where:{name:customer}}, {transaction:t}));
+
         return Promise.all(promises).then((arr) => {
             let promises = [];
             // adding new purchase detail on schema purchase detail
@@ -71,8 +73,11 @@ let purchaseOrder = async ({customer, productArr,discount,action,totalPrice}) =>
                 }
                 promises.push(item.save({transaction:t}));
               } else { // the last value will be the customer since we push the customer promises
-                // adding customer foreign key cosntraint to order instance
-                promises.push(item.addPurchaseOrder(order,{transaction:t}));
+                if(item!== null) {
+                  // adding customer foreign key cosntraint to order instance
+                  promises.push(item.addPurchaseOrder(order,{transaction:t}));
+                }
+
               }
             });
             return Promise.all(promises);
