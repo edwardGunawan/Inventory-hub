@@ -36,6 +36,10 @@ class Create extends Component {
     ipcRenderer.removeAllListeners('reply-get-product');
     ipcRenderer.removeAllListeners('get-customer');
     ipcRenderer.removeAllListeners('reply-get-customer');
+    ipcRenderer.removeAllListeners('create-customer');
+    ipcRenderer.removeAllListeners('reply-create-customer');
+    ipcRenderer.removeAllListeners('create-product');
+    ipcRenderer.removeAllListeners('reply-create-product');
   }
 
   // fetch product
