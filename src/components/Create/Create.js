@@ -27,7 +27,6 @@ class Create extends Component {
   }
 
   componentDidMount() {
-    console.log('go to componentWillMount');
     this.getProduct();
     this.getCustomer();
   }
@@ -57,7 +56,7 @@ class Create extends Component {
     ipcRenderer.send('get-customer', '');
     ipcRenderer.on('reply-get-customer', (event,arg) => {
       let {message,status} = arg;
-      console.log('message on get customer', message);
+      // console.log('message on get customer', message);
       if(status === 'OK') {
         this.setState({customerNames: message});
       }else {
@@ -71,8 +70,8 @@ class Create extends Component {
     ipcRenderer.on(`reply-${channel}`, (event,arg)=>{
       let {status,message} = arg;
       if(status === 'OK') {
-        console.log(message);
-        console.log('here after create');
+        // console.log(message);
+        // console.log('here after create');
         this.props.history.replace('/Search'); // reroute to search
       }else {
         console.log(message);
@@ -90,7 +89,7 @@ class Create extends Component {
   }
 
   toggle() {
-    console.log('here in toggle');
+    // console.log('here in toggle');
     this.setState({
       dropdownOpen: !this.state.dropdownOpen
     });
@@ -102,7 +101,7 @@ class Create extends Component {
     // console.log(e.target.innerText);
     let selected = e.target.innerText;
     let {productItems, customerNames} = this.state;
-    console.log(customerNames,'inside then');
+    // console.log(customerNames,'inside then');
     this.setState({
       content: selected,
       value: (selected === 'Create Product') ?

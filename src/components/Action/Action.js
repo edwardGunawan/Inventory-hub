@@ -163,7 +163,7 @@ class Action extends Component {
         button={'Submit'}
         parent={'action'}
         onSubmitClick={this.handleSubmitClick}
-        otherInfo={{options:productOptions,productItems}}
+        otherInfo={{options:productOptions,productItems, action:action}}
         />
       <div className="show-table-container">
         <ShowTable  button={'delete'}

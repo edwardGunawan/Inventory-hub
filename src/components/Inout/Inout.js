@@ -49,10 +49,17 @@ class Inout extends Component {
   }
 
   componentWillUnmount(){
+
     ipcRenderer.removeAllListeners('get-customer');
     ipcRenderer.removeAllListeners('reply-get-customer');
     ipcRenderer.removeAllListeners('get-product');
     ipcRenderer.removeAllListeners('reply-get-product');
+    // don't forget to removeAllListeners to avoid memory leak
+    // re-triggered the purchase a few times and print duplicate invoice
+    ipcRenderer.removeAllListeners('reply-purchase');
+    ipcRenderer.removeAllListeners('purchase');
+    ipcRenderer.removeAllListeners('convert-pdf');
+    ipcRenderer.removeAllListeners('reply-convert-pdf')
   }
 
 
@@ -77,7 +84,7 @@ class Inout extends Component {
       this.purchase(tableBody,customer,discount,action,total);
     }
 
-    console.log(this.state,' in inout submitInputList');
+    // console.log(this.state,' in inout submitInputList');
   }
 
   purchase(tableBody,customer,discount,action,total) {
@@ -85,7 +92,6 @@ class Inout extends Component {
     ipcRenderer.on('reply-purchase', (evt,arg) => {
       let {message, status} = arg;
       if(status === 'OK') {
-        console.log('All purchase has been note in db');
         this.convertToPdf(tableBody,discount,customer,action,total); // convert here to pdf
       } else {
         console.log(message);
@@ -95,7 +101,7 @@ class Inout extends Component {
 
   convertToPdf(tableBody,discount,customer,action,total) {
     let items = tableBody.map((body) => {
-      console.log(body);
+      // console.log(body);
       return {
         price:body.price,
         code:body.code,
@@ -104,6 +110,7 @@ class Inout extends Component {
         total:numeral(body.total).format('0,0.0')
       }
     });
+
     ipcRenderer.send('convert-pdf', {items,discount,customer,action,total});
     ipcRenderer.on('reply-convert-pdf', (evt,args) => {
       let {status} = args;
@@ -118,6 +125,7 @@ class Inout extends Component {
       // try not to mutate the array by returning the shallow copy of it
       currWindow:'action',
       proceed:'Proceed',
+      customer:'',
       back: true
     });
   }
@@ -223,7 +231,7 @@ class Inout extends Component {
                   info={{tableBody,customer,discount,action,total}}
                   />}
         <div className="total-box">
-          <h6>Total: {totalWithoutDiscount} in  <span className="text-success">{discount}%</span> = {total}</h6>
+          <h6>Total: {totalWithoutDiscount} in  <span className="text-success">{discount}%</span> = {numeral(total).format('$0,0.00')}</h6>
         </div>
 
         <Button onClick={this.handleBackButton} size="sm" disabled={back}>Back</Button>

@@ -46,13 +46,12 @@ function initialize() {
   }
 
   app.on('ready', () => {
-    console.log('go through on ready');
     createWindow();
     db.sequelize
       .authenticate()
       .then(() => {
         console.log('Connection has been established successfully');
-        return db.sequelize.sync({});
+        return db.sequelize.sync({force:true});
       })
       .then(() => {
         console.log('db is already in sync');

@@ -77,7 +77,7 @@ class CreateProduct extends Component {
   }
 
   toOptions(productItems) {
-    console.log(productItems);
+    // console.log(productItems);
     return productItems.map((product) => {
       return {value:product.code,label:product.code};
     });
@@ -85,7 +85,7 @@ class CreateProduct extends Component {
 
 
   handleClickAction(idx) {
-    console.log(idx);
+    // console.log(idx);
     // decreasing the value of the tableBody
     this.setState({
       tableBody: this.state.tableBody.filter((obj,i) => i!==idx)
@@ -101,7 +101,7 @@ class CreateProduct extends Component {
 
   render() {
     let {isBulkCreate,tableHeader,tableBody} = this.state;
-    console.log(tableBody,'in createProduct');
+    // console.log(tableBody,'in createProduct');
     let {productItems} = this.props;
     let options = this.toOptions(this.props.productItems);
     let toogle = () => {

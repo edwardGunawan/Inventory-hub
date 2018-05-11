@@ -30,7 +30,7 @@ ipcMain.on('purchase', async (event,data) => {
    quantity: '02',
    total: 22 }
 */
-let purchaseOrder = async ({customer, productArr,discount,action,totalPrice}) => {
+async function purchaseOrder({customer, productArr,discount,action,totalPrice}){
   // console.log(typeof totalPrice, 'totalPrice in purchaseOrder');
 
   // preprocess the totalPrice adding all of them together
@@ -46,7 +46,7 @@ let purchaseOrder = async ({customer, productArr,discount,action,totalPrice}) =>
           let productFoundPromise = db.product.findOne({where:{code}}, {transaction:t});
           promises.push(productFoundPromise);
         });
-        
+
         // adding customer accessor to purchaseOrder to the promise and executed it too
         promises.push(db.customer.findOne({where:{name:customer}}, {transaction:t}));
 
@@ -105,5 +105,3 @@ let purchaseOrder = async ({customer, productArr,discount,action,totalPrice}) =>
 //     })
 //   }).catch(e => console.log(e));
 // }
-
-module.exports = purchaseOrder;

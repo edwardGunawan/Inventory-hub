@@ -37,47 +37,56 @@ class InputField extends Component {
       code:'',
       brand:'no model',
       quantity:0,
-      price:0
+      price:0,
+      isDisabled:true
     }
   }
 
   componentDidUpdate(prevState,prevProps) {
     if(prevProps.otherInfo !== this.props.otherInfo) {
-      this.setState({otherInfo:this.props.otherInfo});
+      this.setState({
+        otherInfo:this.props.otherInfo
+      });
+    }
+    if(this.props.parent === 'action' && (prevProps.otherInfo.action !== this.props.otherInfo.action)) {
+      this.clearInput();
     }
   }
 
   // handling Select change
   handleSelectChange = (selectedOption) => {
-    // console.log(value,'in selectedChange ');
+    // console.log(selectedOption,'in selectedChange ');
     // when selectedOption is null, the value is undefined
     if(selectedOption !== null && typeof selectedOption.value !== 'undefined'){
     let {value} = selectedOption;
-    // if it is actio and product go through this iff statement
+    // if it is action and product go through this if statement
       if(this.props.parent === 'action' || this.props.parent === 'product') {
-        console.log(value, ' inside vlaue');
-        let item = this.state.otherInfo.productItems.find((it) => it.code.toLowerCase() === value.toLowerCase());
-        console.log(item);
-        if(this.props.parent === 'action' && typeof item !== 'undefined') {
+        // console.log(value, ' inside vlaue');
+        let {productItems, action } = this.state.otherInfo;
+        let item = productItems.find((it) => it.code.toLowerCase() === value.toLowerCase());
+        // condition when it is at transaction
+        if(typeof item !== 'undefined') {
           this.setState({
             code:item.code,
             brand:item.brand,
             price:item.price,
             quantity:item.quantity,
-            selectedOption:(value === null) ? '' : value
+            selectedOption:(value === null) ? '' : value,
+            // if action is not sell then no matter what quantity it will always pass, or else if based on quantity
+            isDisabled: (this.props.parent === 'action' && (action !== 'sell' || item.quantity !== 0)) ? false : true
           });
         } else if(this.props.parent === 'product') {
-          // if it is created then set that as the state
+          // if the value is not created yet, then it will enabled the other options
           this.setState({
-            code:value
+            code:value,
+            isDisabled:!this.state.isDisabled
           });
         }
       } else if (this.props.parent === 'customer') {
-        let item = this.state.otherInfo.options.find((customer) => customer.name.toLowerCase() === value.toLowerCase());
+        let item = this.state.otherInfo.options.find((customer) => customer.label.toLowerCase() === value.toLowerCase());
         if(typeof item === 'undefined') {
           this.props.onSelectEnter(value); // pass it back to the parent, no button
         }
-
       }
     }
     else {
@@ -88,8 +97,9 @@ class InputField extends Component {
   // submit button
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(this.state, 'in handle submit');
-    let {code,brand,quantity,price} = this.state;
+    // console.log(this.state, 'in handle submit');
+    let {code,brand,quantity,price, otherInfo} = this.state;
+
     if(code && quantity > 0 && price > 0) {
       let total = price * quantity;
       let toRet = {code,brand,quantity,price,total};
@@ -115,7 +125,8 @@ class InputField extends Component {
       code:'',
       brand:'no model',
       quantity:0,
-      price:0
+      price:0,
+      isDisabled:true
     });
   }
 
@@ -130,23 +141,22 @@ class InputField extends Component {
           <div>
             <FormGroup>
               <Label for="code">Code</Label>
-              {/*<Input name="code" bsSize="sm" value={code} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="code" placeholder="code"/> */}
               <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
             </FormGroup>
             <Form inline>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="brand">Model</Label>
-                <Input name="brand" bsSize="sm" value={brand} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand"/>
+                <Input name="brand" bsSize="sm" value={brand} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={this.state.isDisabled}/>
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="quantity">Quantity</Label>
-                <Input name="quantity" className="mr-sm-2" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity"/>
+                <Input name="quantity" className="mr-sm-2" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity" disabled={this.state.isDisabled}/>
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="price">Price</Label>
-                <Input name="price" className="mr-sm-2" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price"/>
+                <Input name="price" className="mr-sm-2" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={this.state.isDisabled}/>
               </FormGroup>
-              <Button size="sm" onClick={this.handleSubmit}>{this.props.button}</Button>
+              <Button size="sm" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
             </Form>
 
           </div>
@@ -154,8 +164,8 @@ class InputField extends Component {
       case 'customer':
         // const {selectedOption,otherInfo} = this.state;
         // const {otherInfo} = this.props;
-        console.log(otherInfo.options);
-        console.log(selectedOption);
+        // console.log(otherInfo.options);
+        // console.log(selectedOption);
         return (
           <div>
             <Label for="name">Customer Name</Label>
@@ -178,7 +188,7 @@ class InputField extends Component {
             <Form inline>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="quantity">Quantity</Label>
-                <Input type="number" className="mr-sm-2" bsSize="sm" onChange={this.handleInputChange} name="quantity" id="quantity" value={numeral(quantity).format('0,0')}/>
+                <Input type="number" className="mr-sm-2" bsSize="sm" onChange={this.handleInputChange} name="quantity" id="quantity" disabled={this.state.isDisabled} value={numeral(quantity).format('0,0')}/>
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="brand">Model</Label>
@@ -189,7 +199,7 @@ class InputField extends Component {
                 <Input type="text" className="mr-sm-2" bsSize="sm" name="price" id="price" value={numeral(price).format('$0,0.00')} disabled />
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Button  size="sm" className="mr-sm-2" onClick={this.handleSubmit}>{this.props.button}</Button>
+                <Button  size="sm" className="mr-sm-2" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
               </FormGroup>
             </Form>
           </div>
