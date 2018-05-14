@@ -47,6 +47,7 @@ function initialize() {
 
   app.on('ready', () => {
     createWindow();
+
     db.sequelize
       .authenticate()
       .then(() => {
@@ -55,8 +56,27 @@ function initialize() {
       })
       .then(() => {
         console.log('db is already in sync');
+        return db.sequelize.transaction(function(t) {
+          return db.customer.findOrCreate({
+            where: { name:'Other' }, defaults:{name:'Other'},transaction:t}).then(() => {
+            let actions = ['sell','return','new','restock','delete'];
+            let promises = [];
+            actions.forEach((action) => {
+              promises.push(db.action.findOrCreate({ where: {action: action},transaction:t}));
+            });
+            return Promise.all(promises);
+          }).catch(e => {
+            console.log('something is wrong with transaction', e);
+            throw e;
+          });
+        })
+      }).then((res) => {
+        console.log(`finished initializing`);
       })
-      .catch(e => console.log('Unable to connect to the database', e));
+      .catch(e => {
+        console.log('Unable to connect/initialized to the database', e);
+        throw e;
+      });
   });
 
   /// for Mac

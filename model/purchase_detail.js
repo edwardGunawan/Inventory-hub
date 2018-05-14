@@ -5,7 +5,7 @@ const moment = require('moment');
     pricePerItem
 */
 module.exports = function(sequelize, DataTypes) {
-  let purchaseDetail = sequelize.define('purchase-detail', {
+  let purchaseDetail = sequelize.define('purchase_detail', {
     id: {
       type:DataTypes.INTEGER,
       primaryKey:true,

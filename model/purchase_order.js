@@ -1,10 +1,10 @@
 const moment = require('moment');
 /*
   Purchase_order: discount, totalPrice, customer_id,
-  action(in or out)
+  action
 */
 module.exports = function(sequelize, DataTypes) {
-  let purchaseOrder = sequelize.define('purchaseOrder', {
+  let purchaseOrder = sequelize.define('purchase_order', {
     discount: {
       type:DataTypes.FLOAT,
       validate: {
@@ -19,13 +19,13 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     // buying or selling type
-    action: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn:[['return','sell','restock']]
-      }
-    },
+    // action: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    //   validate: {
+    //     isIn:[['return','sell']]
+    //   }
+    // },
     timestamps: {
       type: DataTypes.BIGINT,
       allowNull: false,

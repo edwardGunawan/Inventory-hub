@@ -32,13 +32,16 @@
   },
   "scripts": {
     "react-start": "react-scripts start",
-    "electron-dev": "DEV_URL=http://localhost:3000 electron .",
+    "electron-dev": "DEV_URL=http://localhost:3000 electron . dev",
     "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && npm run electron-dev\"",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "test-backend": "mocha main-process/Create/create-async.test.js test",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "devtron": "^1.4.0"
+    "chai": "^4.1.2",
+    "devtron": "^1.4.0",
+    "mocha": "^5.1.1"
   }
 }

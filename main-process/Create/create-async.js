@@ -11,10 +11,7 @@ const moment = require('moment');
 ipcMain.on('create-product', async (event,data) => {
   try {
     let {input_arr} = data;
-    let products = await db.product.bulkCreate(input_arr,{returning:true});
-    products.forEach((prod) => {
-      console.log('prod createdAt', prod.get('timestamps'));
-    })
+    await createTransaction(input_arr,'product');
     event.sender.send('reply-create-product', {status:'OK', message:'all products is created'});
   } catch(e) {
     console.log('error in create', e);
@@ -46,9 +43,10 @@ ipcMain.on('bulk-import',async (event,data) => {
 ipcMain.on('create-customer', async (event, data) => {
   try {
     let{input_arr} = data;
-    let customers = db.customer.bulkCreate(input_arr,{return:true});
+    await createTransaction(input_arr,'customer');
     event.sender.send('reply-create-customer', {status:'OK', message:'all customers is created'});
   } catch(e) {
+    console.log('error in creating customer');
     event.sender.send('reply-create-customer', {status:'Error', message:e});
   }
 })
@@ -82,5 +80,45 @@ async function importExcel(path) {
     // console.log('go through error');
     throw new Error(e);
   }
+}
 
+async function createTransaction(input_arr,category) {
+  const t = await db.sequelize.transaction();
+  try {
+    let instances;
+    switch(category) {
+      case 'product':
+        instances = await db.product.bulkCreate(input_arr,{returning:true, transaction:t});
+        break;
+      case 'customer':
+        instances = await db.customer.bulkCreate(input_arr,{returning:true, transaction:t});
+        break;
+    }
+
+    let action = await db.action.findOne({where:{ action: 'new'}}, {transaction:t});
+    let promises = [];
+    instances.forEach((inst) => {
+      // console.log('inst createdAt', inst.get('timestamps'), inst.get('quantity'));
+      let through = {};
+      if(category === 'product') {
+        through = {timestamps: inst.get('timestamps'), quantity: inst.get('quantity')};
+      }else {
+        through = {timestamps: inst.get('timestamps')};
+      }
+      promises.push(inst.addAction(action, {through, transaction:t}));
+    });
+
+    await Promise.all(promises);
+    await t.commit();
+    console.log('transaction is succeeeded');
+  }catch(e) {
+    console.log(e);
+    await t.rollback();
+    throw e;
+  }
+
+};
+
+module.exports = {
+  createTransaction
 }

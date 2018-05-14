@@ -32,76 +32,38 @@ ipcMain.on('purchase', async (event,data) => {
 */
 async function purchaseOrder({customer, productArr,discount,action,totalPrice}){
   // console.log(typeof totalPrice, 'totalPrice in purchaseOrder');
+  let t = await db.sequelize.transaction();
+  try {
+    const order = await db.purchaseOrder.create({discount,totalPrice}, {transaction:t});
+    const actionInst = await db.action.findOne({where:{action}},{transaction:t});
+    const customerInst = await db.customer.findOne({where:{name:customer}}, {transaction:t});
 
-  // preprocess the totalPrice adding all of them together
-  return db.sequelize.transaction(function(t) {
-      return db.purchaseOrder.create({discount,totalPrice,action}, {transaction:t})
-      .then((order) => {
-        let promises = [];
-        // finding all the product from product
-        productArr.forEach((prod) => {
-          let {code} = prod;
+    // this is the correct based on what you write on your define method
+    await actionInst.addPurchase_order(order,{transaction:t});
+    await customerInst.addPurchase_order(order,{transaction:t});
 
-          // find product based on code
-          let productFoundPromise = db.product.findOne({where:{code}}, {transaction:t});
-          promises.push(productFoundPromise);
-        });
+    for(let {brand, code, price, quantity, total} of productArr) {
+      let product = await db.product.findOne({where:{code}},{transaction:t});
+      await product.addPurchase_order(order,{through:{
+        quantity,
+        totalPricePerItem:total,
+        pricePerItem: price
+      }, transaction:t});
 
-        // adding customer accessor to purchaseOrder to the promise and executed it too
-        promises.push(db.customer.findOne({where:{name:customer}}, {transaction:t}));
-
-        return Promise.all(promises).then((arr) => {
-            let promises = [];
-            // adding new purchase detail on schema purchase detail
-            // updating product value
-            arr.forEach((item,i) => {
-              if(i < productArr.length) {
-                let {quantity,total} = productArr[i];
-                // creating purchaseDetail on order and product
-                promises.push(item.addPurchaseOrder(order,{through:{
-                  quantity,
-                  totalPricePerItem:total,
-                  pricePerItem: item.get('price')
-                }, transaction:t}));
-                // update quantity of product table
-                if(action === 'sell') {
-                  // quantity is string some how
-                  item.quantity -= parseInt(quantity);
-                }else {
-                  // console.log(typeof quantity , ' for quantity in purchase');
-                  item.quantity += parseInt(quantity);
-                }
-                promises.push(item.save({transaction:t}));
-              } else { // the last value will be the customer since we push the customer promises
-                if(item!== null) {
-                  // adding customer foreign key cosntraint to order instance
-                  promises.push(item.addPurchaseOrder(order,{transaction:t}));
-                }
-
-              }
-            });
-            return Promise.all(promises);
-          }).catch(e => {
-            console.log(e);
-            throw e;
-          });
-        });
-      }).then(() => console.log('succeded'))
-      .catch(e => {
-        console.log(e);
-        throw e;
-      });
+      if(action === 'sell') {
+        // quantity is string some how
+        product.quantity -= parseInt(quantity);
+      }else {
+        // console.log(typeof quantity , ' for quantity in purchase');
+        product.quantity += parseInt(quantity);
+      }
+      await product.save({transaction:t})
     }
-
-// acc is a promise
-// therefore after return you need to use then to get the value
-// of the promise
-// let reduceHelper = (acc,curr) => {
-//   let{code,quantity} = curr;
-//   return db.product.findOne({where:{code}}).then((prod) => {
-//     return acc.then((curTotal) => {
-//       let val = prod.get('price') * quantity+curTotal;
-//       return val
-//     })
-//   }).catch(e => console.log(e));
-// }
+    await t.commit();
+    console.log('transaction successful');
+  } catch(e) {
+    console.log(e);
+    await t.rollback();
+    throw e;
+  }
+}
