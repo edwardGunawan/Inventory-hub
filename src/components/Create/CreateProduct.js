@@ -3,77 +3,48 @@ import {Button,
         FormGroup,
         FormText,
         Label,
-        Input
+        Input,
+        ButtonDropdown,
+        DropdownToggle,
+        DropdownMenu,
+        DropdownItem
       } from 'reactstrap';
 import PropTypes from 'prop-types';
 // import InputList from '../Input/InputList';
 import ShowTable from '../ShowTable/ShowTable';
 import InputField from '../Input/InputField';
 import './CreateProduct.css';
-const {ipcRenderer} = window.require('electron');
 
 class CreateProduct extends Component {
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleClickImport = this.handleClickImport.bind(this);
-    this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmitClick = this.handleSubmitClick.bind(this);
     // this.handleSelectEnter = this.handleSelectEnter.bind(this);
     this.handleClickAction = this.handleClickAction.bind(this);
     this.toOptions = this.toOptions.bind(this);
+    this.toggle = this.toggle.bind(this);
+    this.select = this.select.bind(this);
     this.state = {
-      path:'',
-      isBulkCreate: false,
-      buttonName: 'Manual Create Product', // buttonName for toggle button
       tableHeader:['Code','Brand', 'Quantity', 'Price','Action'],
-      tableBody:[]
+      tableBody:[],
+      action: 'New',
+      dropdownOpen: false
     }
   }
-  handleChange(files) {
-    console.log(files[0]);
-    this.setState({
-      path: files[0].path
-    });
-    // if it is not .xlsx format it should return error
-    // this.props.onImportExcel(files[0].path);
-    // console.log(this.props.history.push('/Search')); // push to router history
-  }
 
-  //TODO: Handling non .xlxs file
-  handleClickImport(e) {
-    e.preventDefault();
-
-    // path is a string
-    if(this.state.path.length > 0){
-      ipcRenderer.send('bulk-import', {path:this.state.path});
-      ipcRenderer.on('reply-bulk-import', (event,arg) => {
-        let {status,message} = arg;
-        if(status === 'OK') {
-          console.log('Success');
-        } else {
-          console.log(message);
-        }
-      });
-    }
-
-  }
-
-  handleToggleClick() {
-    this.setState({
-      isBulkCreate: !this.state.isBulkCreate,
-      buttonName: (this.state.buttonName === 'Manual Create Product') ? 'Import Excel' : 'Manual Create Product'
-    });
-  }
 
   handleSubmit() {
-    // console.log('go throughha');
     let{tableBody} = this.state;
     // tableBody.forEach((inputObj) => {
     //   console.log(inputObj);
     // });
-    this.props.onSubmit(tableBody,'createProduct');
+    if(this.state.action === 'New') {
+      this.props.onSubmit(tableBody,'createProduct');
+    } else {
+      this.props.onSubmit(tableBody,'restock')
+    }
+
   }
 
   toOptions(productItems) {
@@ -99,46 +70,51 @@ class CreateProduct extends Component {
     });
   }
 
+  toggle() {
+    this.setState({
+      dropdownOpen: !this.state.dropdownOpen
+    });
+  }
+
+  select(evt) {
+    this.setState({
+      action: evt.target.innerText,
+      tableBody:[]
+    });
+  }
+
   render() {
-    let {isBulkCreate,tableHeader,tableBody} = this.state;
+    let {tableHeader,tableBody,action} = this.state;
     // console.log(tableBody,'in createProduct');
     let {productItems} = this.props;
     let options = this.toOptions(this.props.productItems);
-    let toogle = () => {
-      if(isBulkCreate) {
-        return (
-          <FormGroup>
-            <Label for="excelImport">File</Label>
-            <Input type="file" innerRef="import" onChange={(e) => this.handleChange(e.target.files)} name="file" id="excelImport"/>
-            <FormText color="muted">
-              Find Excel Sheet to import to the database
-            </FormText>
-            <Button onClick={this.handleClickImport}>Import!</Button>
-          </FormGroup>
-        )
-      } else {
-        return (
-          <div>
-            <InputField button={'create'}
-                        parent={'product'}
-                        onSubmitClick={this.handleSubmitClick}
-                        otherInfo={{options,productItems}} />
-            <div className="table">
-              <ShowTable  button={'delete'}
-                        onClickAction={this.handleClickAction}
-                        tableBody={tableBody}
-                        tableHeader={tableHeader}
-                        parent={'product'} />
-            </div>
-            <Button onClick={this.handleSubmit}>Submit</Button>
-          </div>
-        )
-      }
-    }
     return (
       <div className="form-product">
-        {/*}<Button onClick={this.handleToggleClick}>{buttonName}</Button> */}
-        {toogle()}
+        <ButtonDropdown direction="right" isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+          <DropdownToggle caret size="sm" className="drop-down">
+            {action}
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={this.select}>
+              New
+            </DropdownItem>
+            <DropdownItem onClick={this.select}>
+              Restock
+            </DropdownItem>
+          </DropdownMenu>
+        </ButtonDropdown>
+        <InputField button={'submit'}
+                    parent={'product'}
+                    onSubmitClick={this.handleSubmitClick}
+                    otherInfo={{options,productItems,action}} />
+        <div className="table">
+          <ShowTable  button={'delete'}
+                    onClickAction={this.handleClickAction}
+                    tableBody={tableBody}
+                    tableHeader={tableHeader}
+                    parent={'product'} />
+        </div>
+        <Button size="sm" onClick={this.handleSubmit}>Submit</Button>
       </div>
     )
   }

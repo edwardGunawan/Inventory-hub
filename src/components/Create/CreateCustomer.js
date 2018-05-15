@@ -63,9 +63,6 @@ class CreateCustomer extends Component {
     // console.log(customerNames);
     return (
       <div>
-        {/*<InputList insideCreate={'customer'}
-                   inputField={{name:''}}
-                   onSubmitInputList={this.handleSubmitInputList}/> */}
           <InputField
                       button={'Add'}
                       parent={'customer'}
@@ -77,7 +74,7 @@ class CreateCustomer extends Component {
                      tableBody={name}
                      tableHeader={tableHeader}
                      parent={'customer'} />
-          <Button onClick={this.handleSubmit}>Submit</Button>
+                   <Button size="sm" onClick={this.handleSubmit}>Submit</Button>
       </div>
     )
   }

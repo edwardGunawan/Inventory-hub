@@ -151,12 +151,6 @@ class Action extends Component {
               Return
             </Label>
           </FormGroup>
-          <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
-            <Label check>
-              <Input type="radio" name="radio1" checked={action === 'restock'} value="restock" onChange={this.handleRadioClick} />{' '}
-              Restock
-            </Label>
-          </FormGroup>
         </Form>
 
       <InputField

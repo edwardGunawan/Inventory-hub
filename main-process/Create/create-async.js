@@ -15,9 +15,24 @@ ipcMain.on('create-product', async (event,data) => {
     event.sender.send('reply-create-product', {status:'OK', message:'all products is created'});
   } catch(e) {
     console.log('error in create', e);
+    throw e;
     event.sender.send('reply-create-product', {status:'Error', message:e});
   }
 });
+
+
+// restock item
+ipcMain.on('restock', async(evt,data) => {
+  try {
+    let {input_arr} = data;
+    await createTransaction(input_arr,'restock');
+    evt.sender.send('reply-restock',{status:'OK', message:'all product has been processed'});
+  } catch(e) {
+    console.log('error in restock', e);
+    throw e;
+    evt.sender.send('reply-restock', {status:'Error', message:e});
+  }
+})
 
 
 
@@ -85,30 +100,46 @@ async function importExcel(path) {
 async function createTransaction(input_arr,category) {
   const t = await db.sequelize.transaction();
   try {
-    let instances;
+    let instances, action;
     switch(category) {
       case 'product':
         instances = await db.product.bulkCreate(input_arr,{returning:true, transaction:t});
+        action = await db.action.findOne({where:{ action: 'new'}}, {transaction:t});
         break;
       case 'customer':
         instances = await db.customer.bulkCreate(input_arr,{returning:true, transaction:t});
+        action = await db.action.findOne({where:{ action: 'new'}}, {transaction:t});
+        break;
+      case 'restock' :
+        action = await db.action.findOne({where:{ action: 'restock'}}, {transaction:t});
+        for(let {code,brand,quantity,price} of input_arr) {
+          let prod = await db.product.findOne({where:{code}}, {transaction:t});
+          prod.quantity += parseInt(quantity);
+          await prod.save({transaction:t});
+          through = {quantity};
+          await prod.addAction(action,{through,transaction:t});
+        }
         break;
     }
 
-    let action = await db.action.findOne({where:{ action: 'new'}}, {transaction:t});
-    let promises = [];
-    instances.forEach((inst) => {
-      // console.log('inst createdAt', inst.get('timestamps'), inst.get('quantity'));
-      let through = {};
-      if(category === 'product') {
-        through = {timestamps: inst.get('timestamps'), quantity: inst.get('quantity')};
-      }else {
-        through = {timestamps: inst.get('timestamps')};
-      }
-      promises.push(inst.addAction(action, {through, transaction:t}));
-    });
 
-    await Promise.all(promises);
+
+    if(category === 'customer' || category === 'product') {
+      let promises = [];
+      instances.forEach((inst) => {
+        // console.log('inst createdAt', inst.get('timestamps'), inst.get('quantity'));
+        let through = {};
+        if(category === 'product') {
+          through = {timestamps: inst.get('timestamps'), quantity: inst.get('quantity')};
+        }else {
+          through = {timestamps: inst.get('timestamps')};
+        }
+        promises.push(inst.addAction(action, {through, transaction:t}));
+      });
+      await Promise.all(promises);
+    }
+
+
     await t.commit();
     console.log('transaction is succeeeded');
   }catch(e) {
@@ -118,7 +149,3 @@ async function createTransaction(input_arr,category) {
   }
 
 };
-
-module.exports = {
-  createTransaction
-}

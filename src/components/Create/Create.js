@@ -86,9 +86,11 @@ class Create extends Component {
   handleSubmit(inputList, child) {
     if(child === 'createCustomer') {
       this.fetch('create-customer',inputList);
-    }else {
+    }else if(child === 'createProduct') {
       console.log('here in handleSubmit input list');
       this.fetch('create-product',inputList);
+    } else {
+      this.fetch('restock',inputList);
     }
   }
 

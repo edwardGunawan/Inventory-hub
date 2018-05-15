@@ -33,9 +33,9 @@ class NavComp extends Component {
           <p>{access}</p>
           <Nav vertical>
             <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Search">Search</NavLink>
-            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Inout">In/Out</NavLink>
+            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Inout">Process</NavLink>
             <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/TransactionHistory">Transaction History</NavLink>
-            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Create">Create</NavLink>
+            <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Create">Create/Restock</NavLink>
           </Nav>
         </div>
       )

@@ -73,7 +73,7 @@ class InputField extends Component {
             quantity:item.quantity,
             selectedOption:(value === null) ? '' : value,
             // if action is not sell then no matter what quantity it will always pass, or else if based on quantity
-            isDisabled: (this.props.parent === 'action' && (action !== 'sell' || item.quantity !== 0)) ? false : true
+            isDisabled: ((this.props.parent === 'action' || action === 'Restock') && (action !== 'sell' || item.quantity !== 0)) ? false : true
           });
         } else if(this.props.parent === 'product') {
           // if the value is not created yet, then it will enabled the other options
@@ -101,8 +101,14 @@ class InputField extends Component {
     let {code,brand,quantity,price, otherInfo} = this.state;
 
     if(code && quantity > 0 && price > 0) {
-      let total = price * quantity;
-      let toRet = {code,brand,quantity,price,total};
+      let toRet;
+      if(this.props.parent === 'action') {
+        let total = price * quantity;
+        toRet = {code,brand,quantity,price,total};
+      }else {
+        toRet= {code,brand,quantity,price};
+      }
+
       this.props.onSubmitClick(toRet);
       this.clearInput();
     }
@@ -137,11 +143,19 @@ class InputField extends Component {
     switch(this.props.parent) {
       case 'product':
         // const {productItems} = otherInfo;
+        console.log(otherInfo.action);
         return (
           <div>
             <FormGroup>
               <Label for="code">Code</Label>
-              <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
+              {(otherInfo.action === 'New') ?
+              <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/> :
+                <Select
+                    onChange={this.handleSelectChange}
+                    isClearable
+                    name="form-field-name"
+                    options={otherInfo.options}
+                    />}
             </FormGroup>
             <Form inline>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
