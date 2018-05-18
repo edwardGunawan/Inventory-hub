@@ -19,26 +19,11 @@ module.exports = function(sequelize,DataTypes) {
     brand: {
       type:DataTypes.STRING
     },
-    // type : stock or return
-    // type: {
-    //   type: DataTypes.STRING,
-    //   validate: {
-    //     isAlpha: true
-    //   }
-    // },
     price: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         isNumeric: true
-      }
-    },
-    timestamps: {
-      type:DataTypes.BIGINT,
-      allowNull: false,
-      defaultValue: moment().valueOf(),
-      get: function() {
-        return this.getDataValue('timestamps');
       }
     }
   });

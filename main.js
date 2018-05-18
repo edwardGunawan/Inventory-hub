@@ -4,6 +4,7 @@ const path = require('path');
 const url = require('path');
 const debug = /--debug/.test(process.argv[2]);
 const db = require('./db.js');
+const moment = require('moment');
 
 
 let mainWindow = null;
@@ -57,6 +58,7 @@ function initialize() {
       .then(() => {
         console.log('db is already in sync');
         return db.sequelize.transaction(function(t) {
+          let timestamps = moment().valueOf();
           return db.customer.findOrCreate({
             where: { name:'Other' }, defaults:{name:'Other'},transaction:t}).then(() => {
             let actions = ['sell','return','new','restock','delete'];

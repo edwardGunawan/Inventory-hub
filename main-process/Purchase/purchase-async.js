@@ -1,5 +1,6 @@
 const {ipcMain} = require('electron');
 const db = require('../../db.js');
+const moment = require('moment');
 // Transaction History
 
 ipcMain.on('purchase', async (event,data) => {
@@ -34,7 +35,8 @@ async function purchaseOrder({customer, productArr,discount,action,totalPrice}){
   // console.log(typeof totalPrice, 'totalPrice in purchaseOrder');
   let t = await db.sequelize.transaction();
   try {
-    const order = await db.purchaseOrder.create({discount,totalPrice}, {transaction:t});
+    console.log(moment().valueOf());
+    const order = await db.purchaseOrder.create({discount,totalPrice,timestamps:moment().valueOf()}, {transaction:t});
     const actionInst = await db.action.findOne({where:{action}},{transaction:t});
     const customerInst = await db.customer.findOne({where:{name:customer}}, {transaction:t});
 
@@ -46,8 +48,7 @@ async function purchaseOrder({customer, productArr,discount,action,totalPrice}){
       let product = await db.product.findOne({where:{code}},{transaction:t});
       await product.addPurchase_order(order,{through:{
         quantity,
-        totalPricePerItem:total,
-        pricePerItem: price
+        totalPricePerItem:total
       }, transaction:t});
 
       if(action === 'sell') {

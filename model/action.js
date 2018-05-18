@@ -9,7 +9,9 @@ module.exports = function(sequelize,DataTypes) {
     timestamps: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      defaultValue: moment().valueOf(),
+      defaultValue: function() {
+        return moment().valueOf();
+      },
       get : function() { // convert createdAt to timestamps
         return this.getDataValue('timestamps');
       }

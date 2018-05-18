@@ -6,6 +6,5 @@ module.exports = function(sequelize, DataTypes) {
       isUnique:true
     }
   });
-  
   return customer;
 }

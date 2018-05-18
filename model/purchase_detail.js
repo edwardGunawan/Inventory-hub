@@ -18,26 +18,18 @@ module.exports = function(sequelize, DataTypes) {
         isInt:true
       }
     },
-    pricePerItem: {
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      validate:{
-        isNumeric:true
-      }
-    },
+    // pricePerItem: {
+    //   type:DataTypes.INTEGER,
+    //   allowNull:false,
+    //   validate:{
+    //     isNumeric:true
+    //   }
+    // },
     totalPricePerItem: {
       type:DataTypes.INTEGER,
       allowNull:false,
       validate:{
         isNumeric:true
-      }
-    },
-    timestamps: {
-      type: DataTypes.BIGINT,
-      defaultValue: moment().valueOf(),
-      allowNull:false,
-      get: function() {
-        return this.getDataValue('timestamps');
       }
     }
   });

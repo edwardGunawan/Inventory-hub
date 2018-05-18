@@ -25,183 +25,366 @@ function convertExcel({
       Author: author
     }
 
-    let rawData= [];
-    let yearMap = new Map(); // key map of map (month object , object based date)
+    let purchaseMap = new Map(); // timestamps as key and array as productData
+    let customerPurchaseIndex = new Map(); // customerName as key, and value will be the timstamps for index
+    let orderTimeStamps = []; // render all timestamps to the frontend
+
+    let customerHistory = new Object(); // timestampsObject - action (object) - customerName
+    let actionCustomerIndex = new Map(); // key string (action) - array () timestamps (this breaks down to year/month/date to index to customerHistoryMap)
+    let customerHistoryTimeStamps = [];
+
+    let productHistory = new Object(); // timestamps obj - action (object) - {productCode, quantity}
+    let actionProductIndex = new Map(); // key string (action) - array () timestamps (this breaks down to year/month/date to index to productHistory)
+    let productHistoryTimeStamps = [];
 
     return {
-
-      // Get all data from the database put it in rawData array
+      /**
+       init: Call initPurchaseDetail(), initCustomerHistory() and initProductHistory()
+       return all the value between the three
+      */
       async init() {
+        const t = await database.sequelize.transaction();
         try {
-          let purchaseOrders = await database.purchaseOrder.findAll();
+          await Promise.all([this.initPurchaseDetail({transaction:t}),this.initCustomerHistory({transaction:t}),this.initProductHistory({transaction:t})]);
+          await t.commit();
+          return {
+            purchaseDetail: {orderTimeStamps, purchaseMap, customerPurchaseIndex},
+            customerHistory:{actionCustomerIndex, customerHistory},
+            productHistory: {actionProductIndex,productHistory}
+          }
+        } catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw e;
+        }
+      },
+      /**
+        Data Structure:
+         purchaseMap: regular data for customerPurchaseIndexing and orderTimestamps
+           timestamps as key and array of productData
+         customerPurchaseIndex: indexing based on customer
+           customerName as key, and array of timestamps as value to index the timestamps
+         orderTimeStamps array of timestamps to render back to frontend
+      */
+      async initPurchaseDetail() {
+        const t = await database.sequelize.transaction();
+        try {
+          const orders = await database.purchaseOrder.findAll({transaction:t});
+          for(let order of orders) {
+            let customer = await order.getCustomer({transaction:t});
+            let customerName = customer.get('name', {transaction:t});
+            let timestamps = order.get('timestamps', {transaction:t});
+            let products = await order.getProducts({transaction:t});
+            let action = await order.getAction({transaction:t}).get('action',{transaction:t});
+            let productData = {}
 
-          /*
-            {
-              Date,
-              Code,
-              Brand,
-              Customer,
-              Quantity,
-              Discount,
-              Price,
-              totalPricePerItem,
-            }
-            */
-            /*
-              Map (Key,Value)
-              Year(number) -> Month (objKey (number))
-              (objKey(number)) -> (objKey (number))
-              Month -> Date
-              (objKey(number)) -> (objKey(string))
-              Date-> CustomerName
-              (objKey(string)) -> (obj(value))
-              CustomerName -> CustomerObj
-            */
-          for(let order of purchaseOrders) {
-            console.log('go through order purchase for loop');
-            // NOTE: Can't do order.getCustomer because you didn't set the association belongsTo
-            // need to set hasMany which put association key to order and belongsTo which put
-            // connect that association key back to order in customer get
-            // , you can do is setCustomer but not able to getCustomer
-            // you are able to getPurchaseOrder when calling customerInstance
-            // getting customer name
-            let customer = await order.getCustomer();
-            let customerName = customer.get('name');
-            let timestamps = order.get('timestamps');
-            let date = moment.utc(timestamps).local().date();
-            let month = moment.utc(timestamps).local().month()+1; // because month is zero indexed
-            let year = moment.utc(timestamps).local().year();
-            let id = order.get('id');
-
-            if(!yearMap.has(year)) {
-              let monthObj = {}; // key-month, value-date
-              yearMap.set(year,monthObj);
-            }
-
-            if(yearMap.get(year)[`${month}`] === undefined) { // key-date, value-customer
-              yearMap.get(year)[`${month}`] = {};
-            }
-            if(yearMap.get(year)[`${month}`][`${date}`] === undefined) { // key-customerName , value-array
-              yearMap.get(year)[`${month}`][`${date}`] = {};
-            }
-            if(yearMap.get(year)[`${month}`][`${date}`][`${customerName}`] === undefined) {
-              yearMap.get(year)[`${month}`][`${date}`][`${customerName}`] = []; // objValue will be an array
-            }
-
-
-            let purchaseDetails = await database.purchaseDetail.findAll({where:{purchaseOrderId : id}});
-            // console.log(`
-            //   Time: ${moment.utc(order.get('timestamps')).format('MM/DD/YYYY')}
-            //   Customer :`${customerName}
-            //   Order Number ${order.get('id')}
-            //
-            //   Discount: ${order.get('discount')}
-            //   Total: ${order.get('totalPrice')}
-            //   Action: ${order.get('action')}
-            //   `);
-            // can't do forEach cause: https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
-
-
-            for(let detail of purchaseDetails) {
-              let productId = detail.get('productId');
-              // get db product
-              let product = await database.product.findById(productId);
-              // console.log(product, ' product instance here');
-
-
-              let rawDataObj = {
+            for(let product of products) {
+              let subTotal = product.purchase_detail.get('totalPricePerItem');
+              let quantity = product.purchase_detail.get('quantity');
+              productData = {
                 date: moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
                 customer: customerName,
+                discount: order.get('discount'),
+                action,
                 code: product.get('code'),
                 brand: product.get('brand'),
-                quantity: detail.get('quantity'),
-                discount: order.get('discount'),
-                action:order.get('action'),
-                price: detail.get('pricePerItem'),
-                subTotal: detail.get('totalPricePerItem')
+                quantity,
+                price: product.get('price'),
+                subTotal
               }
-
-              rawData.push(rawDataObj);
-
-              yearMap.get(year)[`${month}`][`${date}`][`${customerName}`].push(rawDataObj);
+              if(!purchaseMap.has(timestamps)) {
+                purchaseMap.set(timestamps,[]);
+              }
+              purchaseMap.get(timestamps).push(productData);
+              if(!customerPurchaseIndex.has(customerName)) {
+                customerPurchaseIndex.set(customerName,[]);
+              }
+              customerPurchaseIndex.get(customerName).push(timestamps);
+              // push to customerPurchaseIndex
+              let timeStampsArr = customerPurchaseIndex.get(customerName)
+              if(!timeStampsArr.includes(timestamps)) {
+                timeStampsArr.push(timestamps);
+              }
+              // push the new timestamps into orderTimeStamps if it doesn't exist yet
+              if(!orderTimeStamps.includes(timestamps)) {
+                orderTimeStamps.push(timestamps);
+              }
             }
-
-
-            // order and product has many to many relationship
-            // let products = await order.getProducts();
-            // products.forEach((product) => {
-            //   console.log(`
-            //         Product: ${product.get('id')}
-            //             Code: ${product.get('code')}
-            //             Brand: ${product.get('brand')}
-            //         `);
-            // });
           }
-          ////// DEBUG ////////////
-          // console.log('rawdata',rawData);
-          // console.log('yearMap', yearMap);
-          // yearMap.forEach((monthObj,year) => {
-          //   console.log(year);
-          //   Object.keys(monthObj).forEach((monthKey) => {
-          //     console.log(`month : ${monthKey}`);
-          //     for(let dateKey in monthObj[monthKey]) {
-          //       console.log(`date: ${dateKey} `);
-          //       let dateObj = monthObj[monthKey][dateKey];
-          //       Object.keys(dateObj).forEach((customerKey) => {
-          //         console.log(`customerName: ${customerKey}`);
-          //         dateObj[customerKey].forEach((d) => console.log('objValue: ', d));
-          //       });
-          //     }
-          //   });
-          // })
-          /////////////////////////////
-          return rawData;
+          orderTimeStamps.sort((a,b) => a-b); // sort in ascending order (chronological)
+          await t.commit();
+
+          console.log('Successfully init order purchase');
         } catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw e;
+        }
+      },
+      /**
+        Object timestamps:
+         object action
+         customer name
+      // actionCustomerIndex:
+         map action
+         set timestamps (faster add and retrieval)
+      */
+      async initCustomerHistory() {
+        const t = await database.sequelize.transaction();
+        try {
+          const actions = await database.action.findAll({where:{[Op.or]: [{action:'new'}, {action:'update'},{action:'delete'}]}},{transaction:t});
+          for(let action of actions) {
+            let customers = await action.getCustomers({transaction:t});
+            let actionName = await action.get('action', {transaction:t});
+            for(let customer of customers) {
+              let timestamps = await customer.customer_transaction.get('timestamps',{transaction:t});
+              let customerName = await customer.get('name',{transaction:t});
+
+              if(typeof customerHistory[timestamps] === 'undefined') {
+                customerHistory[timestamps] = new Object();
+              }
+              if(typeof customerHistory[timestamps][actionName] === 'undefined') {
+                customerHistory[timestamps][actionName] = new Object();
+              }
+              if(!(customerHistory[timestamps][actionName] instanceof Array)){
+                customerHistory[timestamps][actionName] = [];
+              }
+              customerHistory[timestamps][actionName].push({timestamps,actionName,customerName});
+              if(!actionCustomerIndex.has(actionName)){
+                actionCustomerIndex.set(actionName,new Set());
+              }
+              if(!customerHistoryTimeStamps.includes(timestamps)) {
+                customerHistoryTimeStamps.push(timestamps);
+              }
+              actionCustomerIndex.get(actionName).add(timestamps);
+            }
+          }
+          customerHistoryTimeStamps.sort((a,b) => a-b); // sort the timestamps ascending order
+          await t.commit();
+          console.log('init customer history successful');
+        } catch(e) {
+          console.log(e);
+          await t.rollback();
           throw e;
         }
       },
 
-      // find PurchaseOrder (By Month) -> getCustomer, getPurchaseDetail ->
-      // getProduct -> get('Code'), get('Brand')
-      async getTransaction(startMonth=1, startYear=2018, endMonth=startMonth+1, endYear=startYear) {
+      /**
+        productHistory
+         object of timestamps
+         object of action
+         array of productData
+         product name, amount, action,
+      // actionProductIndex
+         map of string action
+         set of timestamps as value() because things needs to be distinct
+      */
+      async initProductHistory() {
+        const t = await database.sequelize.transaction();
         try {
-          if(yearMap.size === 0) {
-            throw new Error('You need to passed init first');
-          }
-          if(startMonth > 12 || startMonth < 0 || endMonth > 12 || endMonth <= 0) {
-            throw new Error('You insert either the wrong startMonth or endMonth argument');
-          }
-
-          if(!yearMap.has(startYear) || !yearMap.has(endYear)) throw `There are no transaction found in ${year}`;
-
-          let objArr = [];
-          let year = startYear;
-          let month = startMonth;
-          while(yearMap.has(year) && year <= endYear) {
-            // console.log('year in while loop', year);
-            let monthObj = yearMap.get(year);
-            for(let i = month ; i< 12; i++) {
-              if(year === endYear && i > endMonth) break;
-              Object.keys(monthObj[i]).forEach((dateKey) => {
-                // console.log('in side object keys', dateKey);
-                // console.log(monthObj[startMonth][dateKey]);
-                for(let customerName in monthObj[i][dateKey]) {
-                  objArr = [...objArr,...monthObj[i][dateKey][customerName]];
-                }
-              });
-              i++;
+          let actions = await database.action.findAll({where:{[Op.or]:[{action:'new'},{action:'restock'},{action:'delete'}]}},{transaction:t});
+          for(let action of actions) {
+            let products = await action.getProducts({transaction:t});
+            let actionName = await action.get('action',{transaction:t});
+            for(let product of products) {
+              let timestamps = await product.product_transaction_history.get('timestamps',{transaction:t});
+              let quantity = await product.product_transaction_history.get('quantity',{transaction:t});
+              let productCode = await product.get('code',{transaction:t});
+              let productData = {
+                timestamps,
+                quantity,
+                code:productCode,
+                action:actionName
+              }
+              if(typeof productHistory[timestamps] === 'undefined') {
+                productHistory[timestamps] = new Object();
+              }
+              if(typeof productHistory[timestamps][actionName] === 'undefined') {
+                productHistory[timestamps][actionName] = new Object();
+              }
+              if(!(productHistory[timestamps][actionName] instanceof Array)){
+                productHistory[timestamps][actionName] = [];
+              }
+              productHistory[timestamps][actionName].push(productData);
+              if(!actionProductIndex.has(actionName)){
+                actionProductIndex.set(actionName,new Set());
+              }
+              if(!productHistoryTimeStamps.includes(timestamps)) {
+                productHistoryTimeStamps.push(timestamps);
+              }
+              actionProductIndex.get(actionName).add(timestamps);
             }
-
-            month = 1; // reset month to 1
-            year++;
           }
-
-
-          // console.log('objArr in getTransaction', objArr);
-          return objArr;
+          productHistoryTimeStamps.sort((a,b) => a-b);
+          await t.commit();
+          console.log('Successful init product history');
         } catch(e) {
+          console.log(e);
+          await t.rollback();
           throw e;
         }
+      },
+
+      /**
+         get Customer History Detail based on Date, and Action
+         divide into date
+         divide into action
+         getting customerHistory, actionCustomerIndex, customerHistoryTimeStamps
+        ///////// Getting Raw Data //////////////////////
+         1. filter customerHistoryTimeStamps to begin and end timestamps
+         2. Find the Timestamps in customerHistory
+         3. store it into the obj array for the raw data
+
+        ///////// Getting Based Action ///////////////////
+         1. Filter Array of timestamps based on begin and end timestamps given
+         2. Search through customerHistory for timestamps and action given
+         3. Store it into the obj array based on action
+         return [basedDate,basedSale]
+      */
+      async getCustomerHistoryDetail(beginMonth=1,beginYear=2018, endMonth=beginMonth+1,endYear=beginYear) {
+        try {
+          if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
+            throw new Error('You insert either the wrong startMonth or endMonth argument');
+          }
+          let beginTimestamps = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
+          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
+          let range = customerHistoryTimeStamps.filter((timestamps) => timestamps >= beginTimestamps && timestamps < endTimestamps);
+          let basedDate = [];
+          range.forEach((timestamps) => {
+            Object.keys(customerHistory[timestamps]).forEach((action) => {
+              basedDate = [...basedDate,...customerHistory[timestamps][action]];
+            });
+          });
+          // per sale
+          let basedAction = [];
+          actionCustomerIndex.forEach((val,key) => {
+            range.forEach((timestamps) => {
+              // basedAction = [...basedAction, ...customerHistory[timestamps][key]];
+              basedSale.push(...customerHistory[timestamps][key])
+            });
+          });
+          return [basedDate,basedAction];
+        }catch (e) {
+          console.log(e);
+          throw e;
+        }
+      },
+
+      /* get all the Product History detail based on Date, and Action
+       get all Product History based on Date, Action
+       divide into dateBased
+       divide into actionBased
+       productHistory, actionProductIndex, productHistoryTimeStamps
+      ///// Getting Raw Data (date Based) /////////////
+       1. filter productHistoryTimeStamps to the begin and end given
+       2. Iterate through productHistory
+       3. Store it into dateBased of objArr
+
+      ///// Getting Based Action (action Based) //////////
+       1. iterating through key of actionProductIndex
+       2. through the filter productHistory, push the value to the actionBased
+
+       return [dateBased, actionBased]
+      */
+      async getProductHistoryDetail(beginMonth=01,beginYear=2018,endMonth=beginMonth+1,endYear=beginYear) {
+        try {
+          if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
+            throw new Error('You insert either the wrong startMonth or endMonth argument');
+          }
+          let beginTimestamps = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
+          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
+          let range = productHistoryTimeStamps.filter((timestamps) => timestamps >= beginTimestamps && timestamps < endTimestamps);
+          let dateBased = [];
+          range.forEach((timestamps) => {
+            Object.keys(productHistory[timestamps]).forEach((action) => {
+              dateBased = [...dateBased, ...productHistory[timestamps][action]];
+            })
+          });
+          let actionBased = [];
+          actionProductIndex.forEach((val,key) => {
+            range.forEach((timestamps) => {
+              actionBased = [...actionBased,...productHistory[timestamps][key]];
+            });
+          })
+          return [dateBased,actionBased];
+        }catch (e) {
+          console.log(e);
+          throw e;
+        }
+      },
+
+      /** Get all the purchase detail through month and year
+       divide into per customer
+       divide into per product
+       divide into raw data
+       getting purchaseMap, and customerPurchaseIndex
+      //////////// Getting Raw Data //////////////////
+        1. filter orderTimeStamps based on the begin and end timestamps
+        2. get from purchaseMap from orderTimeStamps in timestamps
+        3. store it in obj for raw data
+
+      //////////// Getting Based Customer /////////////
+       1. deep clone dateBased
+       2. sort based on Customer localeCompare
+
+      /////////// Getting Based Product ///////////////
+       1. deep clone dateBased
+       2. sort based on Product localeCompare
+
+       return [dateBased, customerBased, productBased]
+      */
+      async getPurchaseDetail(beginMonth=1,beginYear=2018,endMonth=beginMonth+1,endYear=beginYear) {
+        try {
+          if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
+            throw new Error('You insert either the wrong startMonth or endMonth argument');
+          }
+          let startTimestamps  = moment(`${beginYear} ${beginMonth}`, 'YYYY MM');
+          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM');
+          let range = orderTimeStamps.filter(timestamps => timestamps >= startTimestamps && timestamps < endTimestamps);
+          // per date
+          let dateBased = [];
+          range.forEach((timestamps) => {
+            dateBased = [...dateBased,...purchaseMap.get(timestamps)];
+          });
+          // per customer
+          let customerBased = JSON.parse(JSON.stringify(Object.assign([], dateBased))); // to deep clone, because src reference to an obj, it only copies that reference value
+          customerBased.sort((a,b) => a.customer.localeCompare(b.customer));
+          // per product
+          let productBased = JSON.parse(JSON.stringify(Object.assign([],dateBased)));
+          productBased.sort((a,b) => a.code.localeCompare(b.code));
+          return [dateBased,customerBased,productBased];
+        } catch(e) {
+          console.log(e);
+          throw e;
+        }
+      },
+
+      /**
+        TODO: Get all purchaseBased Customer
+      */
+      async getPurchaseDetail(customer){
+
+      },
+
+      /**
+        TODO : Get all productHistory Based on sales
+      */
+      async getProductHistory(actionName) {
+
+      },
+
+      /**
+        TODO: Get all specific product History
+      */
+      async getProductSpecificHistory(code) {
+
+      },
+
+      /**
+        TODO: Get all customerHistory Based on Sales
+      */
+      async getCustomerHistory(actionName) {
+
       },
 
       /*
@@ -227,6 +410,7 @@ function convertExcel({
         let ws = XLSX.utils.json_to_sheet(objArr,{header:header});
         return ws;
       },
+
       /*
         Append ws to wb and return it
       */

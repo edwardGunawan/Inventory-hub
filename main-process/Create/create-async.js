@@ -1,7 +1,6 @@
 let {ipcMain, app} = require('electron');
 let db = require('../../db.js');
 let XLSX = require('xlsx');
-const moment = require('moment');
 
 /*
   Create new product
@@ -127,19 +126,14 @@ async function createTransaction(input_arr,category) {
     if(category === 'customer' || category === 'product') {
       let promises = [];
       instances.forEach((inst) => {
-        // console.log('inst createdAt', inst.get('timestamps'), inst.get('quantity'));
         let through = {};
         if(category === 'product') {
-          through = {timestamps: inst.get('timestamps'), quantity: inst.get('quantity')};
-        }else {
-          through = {timestamps: inst.get('timestamps')};
+          through = {quantity: inst.get('quantity',{transaction:t})};
         }
         promises.push(inst.addAction(action, {through, transaction:t}));
       });
       await Promise.all(promises);
     }
-
-
     await t.commit();
     console.log('transaction is succeeeded');
   }catch(e) {
