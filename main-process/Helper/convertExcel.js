@@ -26,16 +26,16 @@ function convertExcel({
     }
 
     let purchaseMap = new Map(); // timestamps as key and array as productData
-    let customerPurchaseIndex = new Map(); // customerName as key, and value will be the timstamps for index
+    let customerPurchaseIndex = new Map(); // customerName as key, and value will be the timestamps for index
     let orderTimeStamps = []; // render all timestamps to the frontend
 
     let customerHistory = new Object(); // timestampsObject - action (object) - customerName
     let actionCustomerIndex = new Map(); // key string (action) - array () timestamps (this breaks down to year/month/date to index to customerHistoryMap)
-    let customerHistoryTimeStamps = [];
+    let customerHistoryTimeStamps = []; // render all timestamps to the frontend
 
     let productHistory = new Object(); // timestamps obj - action (object) - {productCode, quantity}
     let actionProductIndex = new Map(); // key string (action) - array () timestamps (this breaks down to year/month/date to index to productHistory)
-    let productHistoryTimeStamps = [];
+    let productHistoryTimeStamps = []; // render all timestamps to the frontend
 
     return {
       /**
@@ -99,7 +99,7 @@ function convertExcel({
               if(!customerPurchaseIndex.has(customerName)) {
                 customerPurchaseIndex.set(customerName,[]);
               }
-              customerPurchaseIndex.get(customerName).push(timestamps);
+
               // push to customerPurchaseIndex
               let timeStampsArr = customerPurchaseIndex.get(customerName)
               if(!timeStampsArr.includes(timestamps)) {
@@ -360,10 +360,28 @@ function convertExcel({
       },
 
       /**
-        TODO: Get all purchaseBased Customer
-      */
-      async getPurchaseDetail(customer){
+        getCustomerPurchaseDetail
+        Get all purchaseBased Customer
+        DS: customerPurchaseIndex, purchasMap
 
+        1. get timestamps from customerPurchaseIndex
+        2. get obj from purchaseMap associate with the customer
+
+        return [{obj}]
+      */
+      async getCustomerPurchaseDetail(customer='Other'){
+        try {
+          let timestamps_arr = customerPurchaseIndex.get(customer);
+          if(typeof timestamps_arr === 'undefined') throw 'Customer does not have any Transaction Detail';
+          let data = [];
+          console.log(timestamps_arr);
+          timestamps_arr.forEach((timestamp) => {
+            data = [...data, ...purchaseMap.get(timestamp)];
+          });
+          return data;
+        } catch(e) {
+          throw new Error(e);
+        }
       },
 
       /**

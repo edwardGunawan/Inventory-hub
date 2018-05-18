@@ -50,7 +50,7 @@ let convert;
 
 convert = convertExcel({database:db})
 convert.init().then((res) => {
-  return convert.getProductHistoryDetail(05,2018)
+  return convert.getCustomerPurchaseDetail('C');
 }).then((res) => {
   console.log(res);
 })
