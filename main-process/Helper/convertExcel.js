@@ -385,9 +385,31 @@ function convertExcel({
       },
 
       /**
-        TODO : Get all productHistory Based on sales
+        getProductHistory
+        Get all productHistory Based on sales
+        DS: productHistory, actionProductIndex
+
+        1. Get timestamps from actionProductIndex (array of timeStamps)
+        2. get all the timestamps from the productHistory Object and action and put it into
+        an object
+        3. All product that is that actionName
+
+        return [{obj}]
       */
-      async getProductHistory(actionName) {
+      async getProductHistory(actionName='new') {
+        try {
+          if(!actionProductIndex.has(actionName)) throw 'action name doesn\'t exist'
+          let timestamps = actionProductIndex.get(actionName);
+          let data = [];
+          timestamps.forEach((timestamp) => {
+            data = [...data,...productHistory[timestamp][actionName]];
+          });
+
+          return data;
+        } catch(e) {
+          console.log(e);
+          throw new Error(e);
+        }
 
       },
 
