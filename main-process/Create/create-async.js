@@ -99,7 +99,7 @@ async function importExcel(path) {
 async function createTransaction(input_arr,category) {
   const t = await db.sequelize.transaction();
   try {
-    let instances, action;
+    let instances, action,transactionHistory;
     switch(category) {
       case 'product':
         instances = await db.product.bulkCreate(input_arr,{returning:true, transaction:t});
@@ -113,10 +113,13 @@ async function createTransaction(input_arr,category) {
         action = await db.action.findOne({where:{ action: 'restock'}}, {transaction:t});
         for(let {code,brand,quantity,price} of input_arr) {
           let prod = await db.product.findOne({where:{code}}, {transaction:t});
+          let actionId = await action.get('action',{transaction:t});
+          transactionHistory = await db.productTransactionHistory.create({quantity},{transaction:t});
+          // adding hasMany from product to productTransactionHistory
+          await prod.addProduct_transaction_history(transactionHistory,{transaction:t});
+          await action.addProduct_transaction_history(transactionHistory,{transaction:t});
           prod.quantity += parseInt(quantity);
           await prod.save({transaction:t});
-          through = {quantity};
-          await prod.addAction(action,{through,transaction:t});
         }
         break;
     }
@@ -125,13 +128,16 @@ async function createTransaction(input_arr,category) {
 
     if(category === 'customer' || category === 'product') {
       let promises = [];
-      instances.forEach((inst) => {
-        let through = {};
+      for(let inst of instances) {
         if(category === 'product') {
-          through = {quantity: inst.get('quantity',{transaction:t})};
+          let quantity = await inst.get('quantity',{transaction:t});
+          transactionHistory = await db.productTransactionHistory.create({quantity},{transaction:t});
+          promises.push(inst.addProduct_transaction_history(transactionHistory,{transaction:t})); // product
+          promises.push(action.addProduct_transaction_history(transactionHistory,{transaction:t})); // action
+        }else {
+          promises.push(inst.addAction(action, {through:{},transaction:t}));
         }
-        promises.push(inst.addAction(action, {through, transaction:t}));
-      });
+      }
       await Promise.all(promises);
     }
     await t.commit();

@@ -5,6 +5,7 @@ module.exports = function(sequelize,DataTypes) {
     timestamps: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      primaryKey:true,
       defaultValue: function() {
         return moment().valueOf();
       },

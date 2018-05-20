@@ -414,9 +414,51 @@ function convertExcel({
       },
 
       /**
-        TODO: Get all specific product History
+        Get all specific product History
+        1. get product db in database
+        2. getActions for all the action in the product
+        object of code,quantity,action, timestamps
+        return [{obj}]
       */
-      async getProductSpecificHistory(code) {
+      async getProductSpecificHistory(code='') {
+        const t = await database.sequelize.transaction();
+        try {
+          if(!code) throw 'code is empty';
+          const productInstance = await database.product.findOne({
+            where:{code},
+            attributes:['code','brand'],
+            include:[{
+              model:database.action,
+              attributes:['action','id'],
+              required:true,
+              // through:{attributes:[]}  // this will get rid of the intermediary table
+            }
+          ]},
+          {transaction:t}
+        );
+        const actions = await productInstance.get('actions',{transaction:t});
+        const brand = await productInstance.get('brand',{transaction:t});
+        // console.log(actions);
+        for(let action of actions) {
+          let productTransaction = await action.get('product_transaction_history',{transaction:t});
+          let actionName = await action.get('name',{transaction:t});
+          console.log(productTransaction);
+        }
+
+        // console.log(productInstance.get('actions'));
+          // console.log(productInstance);
+          // console.log(productInstance);
+          // const actions = await productInstance.getActions({transaction:t});
+          // console.log(actions);
+          // actions.forEach((action) => {
+          //   console.log(action.product_transaction_history);
+          // });
+          await t.commit();
+        } catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw new Error(e);
+        }
 
       },
 

@@ -49,8 +49,17 @@ db.purchaseOrder.belongsTo(db.action);
 
 // product and action is M:N because 1 product can have many action and 1 action can be initiated
 // by multiple product
-db.product.belongsToMany(db.action,{through:db.productTransactionHistory});
-db.action.belongsToMany(db.product,{through:db.productTransactionHistory});
+// db.product.belongsToMany(db.action,{through:db.productTransactionHistory});
+// db.action.belongsToMany(db.product,{through:db.productTransactionHistory});
+
+// belongsToMany means many-to-many relation, it ensure that one entity will join with other entity
+// through only one row in the intermediary table. There are none duplicate table, and if there are
+// it will UPDATE and replace it instead of creating a new row to ensure that it is totally valid
+// to have multiple product having the same action we have to do action HasMany productTransactionHistory
+db.action.hasMany(db.productTransactionHistory);
+db.productTransactionHistory.belongsTo(db.action);
+db.product.hasMany(db.productTransactionHistory);
+db.productTransactionHistory.belongsTo(db.action);
 
 
 // customer and action is M:N because 1 customer can take many action, and 1 action can be

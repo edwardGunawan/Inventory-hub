@@ -1,10 +1,16 @@
 const moment = require('moment');
 module.exports = function(sequelize,DataTypes) {
   let productTransactionHistory = sequelize.define('product_transaction_history', {
+    id: {
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement:true
+    },
     timestamps: {
       type: DataTypes.BIGINT,
       allowNull: false,
       defaultValue: function() {
+        console.log('go through defaultValue',moment().valueOf());
         return moment().valueOf();
       },
       get : function() { // convert createdAt to timestamps
