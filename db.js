@@ -42,6 +42,11 @@ db.customer.hasMany(db.purchaseOrder);
 db.purchaseOrder.belongsTo(db.customer);
 db.product.belongsToMany(db.purchaseOrder,{through:db.purchaseDetail});
 db.purchaseOrder.belongsToMany(db.product,{through:db.purchaseDetail});
+// to create association between the intermediary table for join
+db.purchaseDetail.belongsTo(db.product);
+db.purchaseDetail.belongsTo(db.purchaseOrder);
+db.purchaseOrder.hasMany(db.purchaseDetail);
+db.product.hasMany(db.purchaseDetail);
 
  // action and purchaseOrder is 1:M action as a lookup table
 db.action.hasMany(db.purchaseOrder);

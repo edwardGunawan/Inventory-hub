@@ -80,7 +80,10 @@ function convertExcel({
               {
                 model: database.product,
                 attributes:['code','brand','price'],
-                required:true
+                required:true,
+                include:[
+                  {model:database.purchaseDetail,attributes:['quantity','totalPricePerItem']}
+                ]
               },
               {
                 model:database.action,
@@ -89,7 +92,8 @@ function convertExcel({
               }
             ]},
             {transaction:t});
-          // const orders = await database.purchaseDetail.findAll({include:[{model:database.purchaseOrder},{model:database.product}]},{transaction:t});
+            // console.log(orders);
+          // // const orders = await database.purchaseDetail.findAll({include:[{model:database.purchaseOrder},{model:database.product}]},{transaction:t});
           for(let order of orders) {
             let productData = {}
             let products = await order.get('products',{transaction:t});
@@ -124,7 +128,6 @@ function convertExcel({
               if(!customerPurchaseIndex.has(customerName)) {
                 customerPurchaseIndex.set(customerName,[]);
               }
-
               // push to customerPurchaseIndex
               let timeStampsArr = customerPurchaseIndex.get(customerName)
               if(!timeStampsArr.includes(timestamps)) {
@@ -136,9 +139,7 @@ function convertExcel({
               }
             }
           }
-          orderTimeStamps.sort((a,b) => a-b); // sort in ascending order (chronological)
           await t.commit();
-
           console.log('Successfully init order purchase');
         } catch(e) {
           console.log(e);
@@ -302,7 +303,7 @@ function convertExcel({
             let customerName = await customer.get('name',{transaction:t});
             let action = await history.get('action',{transaction:t});
             let actionName = await action.get('action',{transaction:t});
-            basedDate = [...basedDate,{timestamps,customerName,action:actionName}]
+            basedDate = [...basedDate,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),customerName,action:actionName}]
           }
           await t.commit();
           return basedDate;
@@ -350,7 +351,7 @@ function convertExcel({
             let code = await product.get('code',{transaction:t});
             let action = await history.get('action',{transaction:t});
             let actionName = await action.get('action',{transaction:t});
-            dateBased = [...dateBased,{timestamps,quantity,code,action:actionName}];
+            dateBased = [...dateBased,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),quantity,code,action:actionName}];
           }
           await t.commit();
           return dateBased;
@@ -361,7 +362,7 @@ function convertExcel({
         }
       },
 
-      /**  TODO: change it with findAll
+      /**
       Get all the purchase detail through month and year
        divide into per customer
        divide into per product
@@ -383,27 +384,79 @@ function convertExcel({
        return [dateBased, customerBased, productBased]
       */
       async getPurchaseDetail(beginMonth=1,beginYear=2018,endMonth=beginMonth+1,endYear=beginYear) {
+        const t = await database.sequelize.transaction();
         try {
           if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
             throw new Error('You insert either the wrong startMonth or endMonth argument');
           }
-          let startTimestamps  = moment(`${beginYear} ${beginMonth}`, 'YYYY MM');
-          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM');
-          let range = orderTimeStamps.filter(timestamps => timestamps >= startTimestamps && timestamps < endTimestamps);
+          let startTimestamps  = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
+          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
           // per date
           let dateBased = [];
-          range.forEach((timestamps) => {
-            dateBased = [...dateBased,...purchaseMap.get(timestamps)];
-          });
+          let orders = await database.purchaseOrder.findAll({
+            where:{
+              timestamps:{
+                [Op.lt]: endTimestamps,
+                [Op.gt]: startTimestamps
+              }
+            },
+            order:[['timestamps','ASC']],
+            attributes:['timestamps','discount','totalPrice'],
+            include:[
+              {
+                model:database.customer,
+                attributes:['name']
+              },{
+                model:database.action,
+                attributes:['action']
+              },{
+                model:database.product,
+                attributes:['code','brand'],
+                include:[
+                  {model:database.purchaseDetail,attributes:['quantity','totalPricePerItem']}
+                ]
+              }
+            ]
+          },{transaction:t});
+          for(let order of orders) {
+            let timestamps = await order.get('timestamps',{transaction:t});
+            let discount = await order.get('discount',{transaction:t});
+            let products = await order.get('products',{transaction:t});
+            let customer = await order.get('customer',{transaction:t});
+            let customerName = await customer.get('name',{transaction:t});
+            let action = await order.get('action',{transaction:t});
+            let actionName = await action.get('action',{transaction:t});
+            for(let product of products) {
+              let price = await product.get('price',{transaction:t});
+              let code = await product.get('code',{transaction:t});
+              let brand = await product.get('brand',{transaction:t});
+              let detail = await product.get('purchase_detail',{transaction:t});
+              let quantity = await detail.get('quantity',{transaction:t});
+              let subTotal = await detail.get('totalPricePerItem',{transaction:t});
+              dateBased.push({
+                date: moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+                customer: customerName,
+                discount,
+                action: actionName,
+                code,
+                brand,
+                quantity,
+                price,
+                subTotal
+              });
+            }
+          }
           // per customer
           let customerBased = JSON.parse(JSON.stringify(Object.assign([], dateBased))); // to deep clone, because src reference to an obj, it only copies that reference value
           customerBased.sort((a,b) => a.customer.localeCompare(b.customer));
           // per product
           let productBased = JSON.parse(JSON.stringify(Object.assign([],dateBased)));
           productBased.sort((a,b) => a.code.localeCompare(b.code));
+          await t.commit();
           return [dateBased,customerBased,productBased];
         } catch(e) {
           console.log(e);
+          await t.rollback();
           throw e;
         }
       },
@@ -469,7 +522,7 @@ function convertExcel({
             let quantity = await history.get('quantity',{transaction:t});
             let product = await history.get('product',{transaction:t});
             let code = await product.get('code',{transaction:t});
-            data = [...data,{timestamps,code,quantity}];
+            data = [...data,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),code,quantity}];
           }
           await t.commit();
           return data;
@@ -519,7 +572,7 @@ function convertExcel({
           let action = await history.get('action',{transaction:t});
           let actionName = await action.get('action',{transaction:t});
           data.push({
-            timestamps,
+            timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
             code,
             action:actionName,
             quantity
@@ -565,7 +618,7 @@ function convertExcel({
             let timestamps = await history.get('timestamps',{transaction:t});
             let customer = await history.get('customer',{transaction:t});
             let name = await customer.get('name',{transaction:t});
-            data.push({timestamps,name});
+            data.push({timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),name});
           }
           await t.commit();
           return data;
