@@ -461,31 +461,134 @@ function convertExcel({
         }
       },
 
-      /** TODO: change it to include
+      /**
         getCustomerPurchaseDetail
         Get all purchaseBased Customer
         DS: customerPurchaseIndex, purchasMap
 
-        1. get timestamps from customerPurchaseIndex
-        2. get obj from purchaseMap associate with the customer
-
-        return [{obj}]
+        return [{timestamps,code,brand,quantity,subTotal,action}]
       */
-      async getCustomerPurchaseDetail(customer='Other'){
+      async getCustomerPurchaseDetail(name='Other'){
+        const t = await database.sequelize.transaction();
         try {
-          let timestamps_arr = customerPurchaseIndex.get(customer);
-          if(typeof timestamps_arr === 'undefined') throw 'Customer does not have any Transaction Detail';
           let data = [];
-          console.log(timestamps_arr);
-          timestamps_arr.forEach((timestamp) => {
-            data = [...data, ...purchaseMap.get(timestamp)];
-          });
+          let customer = await database.customer.findOne({
+            where:{
+              name
+            },
+            attributes:['name'],
+            include:[
+              {
+                model:database.purchaseOrder,
+                attributes:['totalPrice','timestamps'],
+                order:[['timestamps','ASC']],
+                include:[
+                  {
+                    model:database.purchaseDetail,
+                    attributes:['quantity','totalPricePerItem'],
+                    include:[{model:database.product,attributes:['code','brand']}]
+                  },{
+                    model:database.action,
+                    attributes:['action']
+                  }
+                ]
+              }
+            ]
+          },{transaction:t})
+          const orders = await customer.get('purchase_orders',{transaction:t});
+          for(let order of orders) {
+            let timestamps = await order.get('timestamps',{transaction:t});
+            let details = await order.get('purchase_details',{transaction:t});
+            let action = await order.get('action',{transaction:t});
+            let actionName = await action.get('action',{transaction:t});
+            for(let detail of details){
+              let subTotal = await detail.get('totalPricePerItem',{transaction:t});
+              let quantity = await detail.get('quantity',{transaction:t});
+              let product = await detail.get('product',{transaction:t});
+              let code = await product.get('code',{transaction:t});
+              let brand = await product.get('brand',{transaction:t});
+              data.push({
+                timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+                code,
+                brand,
+                quantity,
+                subTotal,
+                action:actionName,
+              });
+            }
+          }
+          await t.commit();
           return data;
         } catch(e) {
+          await t.rollback();
+          throw new Error(e);
+        }
+      },
+      /**
+        getProudctPurchaseDetail:
+          getting all purchase history of that product code name
+          return [{}]
+      */
+      async getProductPurchaseDetail(code='') {
+        const t = await database.sequelize.transaction();
+        try {
+          const product = await database.product.findOne({
+            where:{code},
+            attribute:['brand','price'],
+            include:[
+              {
+                model: database.purchaseDetail,
+                attributes:['quantity','totalPricePerItem'],
+                include:[
+                  {model:database.purchaseOrder,attributes:['timestamps'],order:[['timestamps','ASC']],include:[database.action]}
+                ]
+              }
+            ]
+          },{transaction:t});
+          let data = [];
+          let brand = await product.get('brand',{transaction:t});
+          let price = await product.get('price',{transaction:t});
+          let details = await product.get('purchase_details',{transaction:t});
+          for(let detail of details) {
+            let quantity = await detail.get('quantity',{transaction:t});
+            let subTotal = await detail.get('totalPricePerItem',{transaction:t});
+            let order = await detail.get('purchase_order',{transaction:t});
+            let timestamps = await order.get('timestamps',{transaction:t});
+            let action = await order.get('action',{transaction:t});
+            let actionName = await action.get('action',{transaction:t});
+            data.push({
+              timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+              brand,
+              quantity,
+              price,
+              subTotal,
+              action:actionName
+            });
+          }
+          await t.commit();
+          return data;
+        }catch(e) {
+          await t.rollback();
           throw new Error(e);
         }
       },
 
+      /**
+        TODO:
+        getBrandPurchaseDetail
+        getting all product based on the brand and return all its purchase history
+
+        return [{}]
+        */
+        async getBrandPurchaseDetail(brand='') {
+          const t = await database.sequelize.transaction();
+          try {
+            await t.commit();
+          }catch(e) {
+            await t.rollback();
+            throw new Error(e);
+          }
+        },
       /**
         getProductHistory
         Get all productHistory Based on sales
@@ -494,7 +597,6 @@ function convertExcel({
       async getProductHistory(actionName='new') {
         const t = await database.sequelize.transaction();
         try {
-          // if(!actionProductIndex.has(actionName)) throw 'action name doesn\'t exist'
           const action = await database.action.findOne({
             where:{
               action:actionName.toLowerCase()
@@ -531,7 +633,6 @@ function convertExcel({
           await t.rollback();
           throw new Error(e);
         }
-
       },
 
       /**

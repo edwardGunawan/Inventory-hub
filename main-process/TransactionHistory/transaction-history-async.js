@@ -53,10 +53,10 @@ convert
 .init()
 .then((res) => {
   // console.log(res);
-  return convert.getPurchaseDetail(5,2018);
+  return convert.getProductPurchaseDetail('Product3');
 })
 .then((res) => {
-  console.log(res[1]);
+  console.log(res);
 })
 // .initProductHistory().then(({actionProductIndex,productHistory}) => {
 //   console.log(actionProductIndex);
