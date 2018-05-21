@@ -361,7 +361,8 @@ function convertExcel({
         }
       },
 
-      /** Get all the purchase detail through month and year
+      /**  TODO: change it with findAll
+      Get all the purchase detail through month and year
        divide into per customer
        divide into per product
        divide into raw data
@@ -407,7 +408,7 @@ function convertExcel({
         }
       },
 
-      /**
+      /** TODO: change it to include
         getCustomerPurchaseDetail
         Get all purchaseBased Customer
         DS: customerPurchaseIndex, purchasMap
@@ -435,26 +436,41 @@ function convertExcel({
       /**
         getProductHistory
         Get all productHistory Based on sales
-        DS: productHistory, actionProductIndex
-
-        1. Get timestamps from actionProductIndex (array of timeStamps)
-        2. get all the timestamps from the productHistory Object and action and put it into
-        an object
-        3. All product that is that actionName
-
-        return [{obj}]
+        return [{timestamps,code,quantity}]
       */
       async getProductHistory(actionName='new') {
         const t = await database.sequelize.transaction();
         try {
-          if(!actionProductIndex.has(actionName)) throw 'action name doesn\'t exist'
-
-          let timestamps = actionProductIndex.get(actionName);
+          // if(!actionProductIndex.has(actionName)) throw 'action name doesn\'t exist'
+          const action = await database.action.findOne({
+            where:{
+              action:actionName.toLowerCase()
+            },
+            attributes:['action'],
+            include:[
+              {
+                model:database.productTransactionHistory,
+                order:[['timestamps','ASC']],
+                attributes:['timestamps','quantity'],
+                include:[
+                  {
+                    model:database.product,
+                    attributes:['code']
+                  }
+                ]
+              }
+            ]
+          },{transaction:t});
           let data = [];
-          timestamps.forEach((timestamp) => {
-            data = [...data,...productHistory[timestamp][actionName]];
-          });
-
+          let histories = await action.get('product_transaction_histories',{transaction:t});
+          // console.log(histories);
+          for(let history of histories) {
+            let timestamps = await history.get('timestamps',{transaction:t});
+            let quantity = await history.get('quantity',{transaction:t});
+            let product = await history.get('product',{transaction:t});
+            let code = await product.get('code',{transaction:t});
+            data = [...data,{timestamps,code,quantity}];
+          }
           await t.commit();
           return data;
         } catch(e) {
@@ -516,13 +532,20 @@ function convertExcel({
           await t.rollback();
           throw new Error(e);
         }
-
       },
 
       /**
-        TODO: Get all customerHistory Based on Sales
+        Get all customerHistory Based on Sales
+        return [{timestamps,customername}]
       */
       async getCustomerHistory(actionName) {
+        try {
+
+        }catch(e) {
+          console.log(e);
+
+          throw new Error(e);
+        }
 
       },
 
