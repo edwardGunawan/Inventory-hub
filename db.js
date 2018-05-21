@@ -59,7 +59,7 @@ db.purchaseOrder.belongsTo(db.action);
 db.action.hasMany(db.productTransactionHistory);
 db.productTransactionHistory.belongsTo(db.action);
 db.product.hasMany(db.productTransactionHistory);
-db.productTransactionHistory.belongsTo(db.action);
+db.productTransactionHistory.belongsTo(db.product);
 
 
 // customer and action is M:N because 1 customer can take many action, and 1 action can be

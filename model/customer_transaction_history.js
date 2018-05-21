@@ -7,6 +7,7 @@ module.exports = function(sequelize,DataTypes) {
       allowNull: false,
       primaryKey:true,
       defaultValue: function() {
+        // console.log('go through moment value of ', moment().valueOf());
         return moment().valueOf();
       },
       get : function() { // convert createdAt to timestamps

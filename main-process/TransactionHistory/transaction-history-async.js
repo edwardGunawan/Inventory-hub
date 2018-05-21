@@ -49,13 +49,17 @@ let convert;
 
 
 convert = convertExcel({database:db})
-convert.init().then((res) => {
+convert
+.init()
+.then((res) => {
+  // console.log(res);
   return convert.getProductSpecificHistory('Product1');
-}).then((res) => {
+})
+.then((res) => {
   console.log(res);
 })
 // .initProductHistory().then(({actionProductIndex,productHistory}) => {
-//   // console.log(actionProductIndex);
+//   console.log(actionProductIndex);
 //   // console.log(productHistory);
 //   Object.keys(productHistory).forEach((timestamps) => {
 //     // console.log(timestamps);

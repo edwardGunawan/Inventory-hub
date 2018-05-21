@@ -182,46 +182,46 @@ function convertExcel({
       async initProductHistory() {
         const t = await database.sequelize.transaction();
         try {
-          let actions = await database.action.findAll({where:{[Op.or]:[{action:'new'},{action:'restock'},{action:'delete'}]}},{transaction:t});
-          for(let action of actions) {
-            let products = await action.getProducts({transaction:t});
+          let histories = await database.productTransactionHistory.findAll({include:[database.action,database.product]},{transaction:t});
+          for(let history of histories ) {
+            let product = await history.get('product', {transaction:t});
+            let code = await product.get('code',{transaction:t});
+            let action = await history.get('action', {transaction:t});
             let actionName = await action.get('action',{transaction:t});
-            for(let product of products) {
-              let timestamps = await product.product_transaction_history.get('timestamps',{transaction:t});
-              let quantity = await product.product_transaction_history.get('quantity',{transaction:t});
-              let productCode = await product.get('code',{transaction:t});
-              let productData = {
-                timestamps,
-                quantity,
-                code:productCode,
-                action:actionName
-              }
-              if(typeof productHistory[timestamps] === 'undefined') {
-                productHistory[timestamps] = new Object();
-              }
-              if(typeof productHistory[timestamps][actionName] === 'undefined') {
-                productHistory[timestamps][actionName] = new Object();
-              }
-              if(!(productHistory[timestamps][actionName] instanceof Array)){
-                productHistory[timestamps][actionName] = [];
-              }
-              productHistory[timestamps][actionName].push(productData);
-              if(!actionProductIndex.has(actionName)){
-                actionProductIndex.set(actionName,new Set());
-              }
-              if(!productHistoryTimeStamps.includes(timestamps)) {
-                productHistoryTimeStamps.push(timestamps);
-              }
-              actionProductIndex.get(actionName).add(timestamps);
+            let timestamps = await history.get('timestamps', {transaction:t});
+            let quantity = await history.get('quantity', {transaction:t});
+            let productData = {
+              timestamps,
+              quantity,
+              code,
+              action:actionName
             }
+            if(typeof productHistory[timestamps] === 'undefined') {
+              productHistory[timestamps] = new Object();
+            }
+            if(typeof productHistory[timestamps][actionName] === 'undefined') {
+              productHistory[timestamps][actionName] = new Object();
+            }
+            if(!(productHistory[timestamps][actionName] instanceof Array)){
+              productHistory[timestamps][actionName] = [];
+            }
+            productHistory[timestamps][actionName].push(productData);
+            if(!actionProductIndex.has(actionName)){
+              actionProductIndex.set(actionName,new Set());
+            }
+            if(!productHistoryTimeStamps.includes(timestamps)) {
+              productHistoryTimeStamps.push(timestamps);
+            }
+            actionProductIndex.get(actionName).add(timestamps);
           }
+
           productHistoryTimeStamps.sort((a,b) => a-b);
           await t.commit();
           console.log('Successful init product history');
         } catch(e) {
           console.log(e);
           await t.rollback();
-          throw e;
+          throw new Error(e);
         }
       },
 
@@ -424,36 +424,40 @@ function convertExcel({
         const t = await database.sequelize.transaction();
         try {
           if(!code) throw 'code is empty';
-          const productInstance = await database.product.findOne({
+          const product = await database.product.findOne({
             where:{code},
             attributes:['code','brand'],
             include:[{
-              model:database.action,
-              attributes:['action','id'],
+              model:database.productTransactionHistory,
+              attributes:['timestamps','quantity'],
               required:true,
               // through:{attributes:[]}  // this will get rid of the intermediary table
+              include:[{
+                model:database.action,
+                attributes:['action'],
+                required:true
+              }]
             }
           ]},
           {transaction:t}
         );
-        const actions = await productInstance.get('actions',{transaction:t});
-        const brand = await productInstance.get('brand',{transaction:t});
-        // console.log(actions);
-        for(let action of actions) {
-          let productTransaction = await action.get('product_transaction_history',{transaction:t});
-          let actionName = await action.get('name',{transaction:t});
-          console.log(productTransaction);
+        // console.log('histories',product.get('product_transaction_histories'));
+        let data = [];
+        let histories = await product.get('product_transaction_histories',{transaction:t});
+        for(let history of histories) {
+          let quantity = await history.get('quantity',{transaction:t});
+          let timestamps = await history.get('timestamps',{transaction:t});
+          let action = await history.get('action',{transaction:t});
+          let actionName = await action.get('action',{transaction:t});
+          data.push({
+            timestamps,
+            code,
+            action:actionName,
+            quantity
+          });
         }
-
-        // console.log(productInstance.get('actions'));
-          // console.log(productInstance);
-          // console.log(productInstance);
-          // const actions = await productInstance.getActions({transaction:t});
-          // console.log(actions);
-          // actions.forEach((action) => {
-          //   console.log(action.product_transaction_history);
-          // });
-          await t.commit();
+        await t.commit();
+        return data;
         } catch(e) {
           console.log(e);
           await t.rollback();
