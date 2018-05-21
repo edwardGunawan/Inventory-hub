@@ -64,8 +64,13 @@ db.productTransactionHistory.belongsTo(db.product);
 
 // customer and action is M:N because 1 customer can take many action, and 1 action can be
 // taken by many customer
+// through model doesn't set up association, therefore, not able to use eagerloading with customerTransactionHistory
 db.customer.belongsToMany(db.action,{through:db.customerTransactionHistory});
 db.action.belongsToMany(db.customer,{through:db.customerTransactionHistory});
+db.customer.hasMany(db.customerTransactionHistory);
+db.action.hasMany(db.customerTransactionHistory);
+db.customerTransactionHistory.belongsTo(db.action);
+db.customerTransactionHistory.belongsTo(db.customer);
 
 
 module.exports = db;

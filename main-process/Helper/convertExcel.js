@@ -156,13 +156,32 @@ function convertExcel({
       async initCustomerHistory() {
         const t = await database.sequelize.transaction();
         try {
-          const actions = await database.action.findAll({where:{[Op.or]: [{action:'new'}, {action:'update'},{action:'delete'}]}},{transaction:t});
+          const actions = await database.action.findAll({
+              where:{
+                [Op.or]: [{action:'new'}, {action:'update'},{action:'delete'}]
+              },
+              attributes:['action'],
+              include:[
+                {
+                  model:database.customer,
+                  attributes:['name'],
+                  required:true
+                },{
+                  model:database.customerTransactionHistory,
+                  attributes:['timestamps']
+                }
+              ]
+            },
+            {transaction:t}
+          );
+
           for(let action of actions) {
-            let customers = await action.getCustomers({transaction:t});
+            let customers = await action.get('customers',{transaction:t});
             let actionName = await action.get('action', {transaction:t});
             for(let customer of customers) {
-              let timestamps = await customer.customer_transaction.get('timestamps',{transaction:t});
               let customerName = await customer.get('name',{transaction:t});
+              let customerTransactionHistory = await customer.get('customer_transaction',{transaction:t});
+              let timestamps = await customerTransactionHistory.get('timestamps',{transaction:t});
 
               if(typeof customerHistory[timestamps] === 'undefined') {
                 customerHistory[timestamps] = new Object();
