@@ -156,51 +156,46 @@ function convertExcel({
       async initCustomerHistory() {
         const t = await database.sequelize.transaction();
         try {
-          const actions = await database.action.findAll({
-              where:{
-                [Op.or]: [{action:'new'}, {action:'update'},{action:'delete'}]
+          const histories = await database.customerTransactionHistory.findAll({
+            attributes:['timestamps'],
+            include:[
+              {
+                model:database.customer,
+                attributes:['name'],
+                required:true
               },
-              attributes:['action'],
-              include:[
-                {
-                  model:database.customer,
-                  attributes:['name'],
-                  required:true
-                },{
-                  model:database.customerTransactionHistory,
-                  attributes:['timestamps']
-                }
-              ]
-            },
-            {transaction:t}
-          );
+              {
+                model:database.action,
+                attributes:['action'],
+                required:true
+              }
+            ]
+          },{transaction:t});
 
-          for(let action of actions) {
-            let customers = await action.get('customers',{transaction:t});
-            let actionName = await action.get('action', {transaction:t});
-            for(let customer of customers) {
-              let customerName = await customer.get('name',{transaction:t});
-              let customerTransactionHistory = await customer.get('customer_transaction',{transaction:t});
-              let timestamps = await customerTransactionHistory.get('timestamps',{transaction:t});
+          for(let history of histories) {
+            let timestamps = await history.get('timestamps',{transaction:t});
+            let customer = await history.get('customer',{transaction:t});
+            let customerName = await customer.get('name',{transaction:t});
+            let action = await history.get('action', {transaction:t});
+            let actionName = await action.get('action',{transaction:t});
 
-              if(typeof customerHistory[timestamps] === 'undefined') {
-                customerHistory[timestamps] = new Object();
-              }
-              if(typeof customerHistory[timestamps][actionName] === 'undefined') {
-                customerHistory[timestamps][actionName] = new Object();
-              }
-              if(!(customerHistory[timestamps][actionName] instanceof Array)){
-                customerHistory[timestamps][actionName] = [];
-              }
-              customerHistory[timestamps][actionName].push({timestamps,actionName,customerName});
-              if(!actionCustomerIndex.has(actionName)){
-                actionCustomerIndex.set(actionName,new Set());
-              }
-              if(!customerHistoryTimeStamps.includes(timestamps)) {
-                customerHistoryTimeStamps.push(timestamps);
-              }
-              actionCustomerIndex.get(actionName).add(timestamps);
+            if(typeof customerHistory[timestamps] === 'undefined') {
+              customerHistory[timestamps] = new Object();
             }
+            if(typeof customerHistory[timestamps][actionName] === 'undefined') {
+              customerHistory[timestamps][actionName] = new Object();
+            }
+            if(!(customerHistory[timestamps][actionName] instanceof Array)){
+              customerHistory[timestamps][actionName] = [];
+            }
+            customerHistory[timestamps][actionName].push({timestamps,actionName,customerName});
+            if(!actionCustomerIndex.has(actionName)){
+              actionCustomerIndex.set(actionName,new Set());
+            }
+            if(!customerHistoryTimeStamps.includes(timestamps)) {
+              customerHistoryTimeStamps.push(timestamps);
+            }
+            actionCustomerIndex.get(actionName).add(timestamps);
           }
           customerHistoryTimeStamps.sort((a,b) => a-b); // sort the timestamps ascending order
           await t.commit();
@@ -285,30 +280,47 @@ function convertExcel({
          return [basedDate,basedSale]
       */
       async getCustomerHistoryDetail(beginMonth=1,beginYear=2018, endMonth=beginMonth+1,endYear=beginYear) {
+        const t = await database.sequelize.transaction();
         try {
           if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
             throw new Error('You insert either the wrong startMonth or endMonth argument');
           }
+          // // per sale
+          let basedDate = [];
           let beginTimestamps = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
           let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
-          let range = customerHistoryTimeStamps.filter((timestamps) => timestamps >= beginTimestamps && timestamps < endTimestamps);
-          let basedDate = [];
-          range.forEach((timestamps) => {
-            Object.keys(customerHistory[timestamps]).forEach((action) => {
-              basedDate = [...basedDate,...customerHistory[timestamps][action]];
-            });
-          });
-          // per sale
-          let basedAction = [];
-          actionCustomerIndex.forEach((val,key) => {
-            range.forEach((timestamps) => {
-              // basedAction = [...basedAction, ...customerHistory[timestamps][key]];
-              basedSale.push(...customerHistory[timestamps][key])
-            });
-          });
+          let histories = await database.customerTransactionHistory.findAll({
+            where:{
+              timestamps: {
+                [Op.lt]: endTimestamps,
+                [Op.gt]: beginTimestamps
+              }
+            },
+            attributes:['timestamps'],
+            order:['timestamps'],
+            include:[
+              {model:database.customer,attributes:['name']},
+              {model:database.action, attributes:['action']}
+            ]
+          }, {transaction:t});
+
+          for(let history of histories) {
+            // console.log(history);
+            let timestamps = await history.get('timestamps',{transaction:t});
+            let customer = await history.get('customer',{transaction:t});
+            let customerName = await customer.get('name',{transaction:t});
+            let action = await history.get('action',{transaction:t});
+            let actionName = await action.get('action',{transaction:t});
+            console.log(customerName, actionName, timestamps);
+            basedDate = [...basedDate,{timestamps,customerName,action:actionName}]
+          }
+
+          await t.commit();
+          console.log(basedDate);
           return [basedDate,basedAction];
         }catch (e) {
           console.log(e);
+          await t.rollback();
           throw e;
         }
       },
@@ -323,11 +335,7 @@ function convertExcel({
        2. Iterate through productHistory
        3. Store it into dateBased of objArr
 
-      ///// Getting Based Action (action Based) //////////
-       1. iterating through key of actionProductIndex
-       2. through the filter productHistory, push the value to the actionBased
-
-       return [dateBased, actionBased]
+       return dateBased
       */
       async getProductHistoryDetail(beginMonth=01,beginYear=2018,endMonth=beginMonth+1,endYear=beginYear) {
         try {
@@ -349,7 +357,7 @@ function convertExcel({
               actionBased = [...actionBased,...productHistory[timestamps][key]];
             });
           })
-          return [dateBased,actionBased];
+          return dateBased;
         }catch (e) {
           console.log(e);
           throw e;
