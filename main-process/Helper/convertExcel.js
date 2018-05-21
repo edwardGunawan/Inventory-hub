@@ -69,27 +69,51 @@ function convertExcel({
       async initPurchaseDetail() {
         const t = await database.sequelize.transaction();
         try {
-          const orders = await database.purchaseOrder.findAll({transaction:t});
+          const orders = await database.purchaseOrder.findAll({
+            include:[
+              {
+                model:database.customer,
+                attributes:['name'],
+                required:true
+              },
+              {
+                model: database.product,
+                attributes:['code','brand','price'],
+                required:true
+              },
+              {
+                model:database.action,
+                attributes:['action'],
+                required:true
+              }
+            ]},
+            {transaction:t});
+          // const orders = await database.purchaseDetail.findAll({include:[{model:database.purchaseOrder},{model:database.product}]},{transaction:t});
           for(let order of orders) {
-            let customer = await order.getCustomer({transaction:t});
-            let customerName = customer.get('name', {transaction:t});
-            let timestamps = order.get('timestamps', {transaction:t});
-            let products = await order.getProducts({transaction:t});
-            let action = await order.getAction({transaction:t}).get('action',{transaction:t});
             let productData = {}
-
+            let products = await order.get('products',{transaction:t});
+            let timestamps = await order.get('timestamps',{transaction:t});
+            let discount = await order.get('discount',{transaction:t});
+            let customer = await order.get('customer',{transaction:t});
+            let customerName = await customer.get('name',{transaction:t});
+            let action = await order.get('action',{transaction:t});
+            let actionName = await action.get('action',{transaction:t});
             for(let product of products) {
-              let subTotal = product.purchase_detail.get('totalPricePerItem');
-              let quantity = product.purchase_detail.get('quantity');
+              let code = await product.get('code',{transaction:t});
+              let brand = await product.get('brand',{transaction:t});
+              let price = await product.get('price',{transaction:t});
+              let purchaseDetail = await product.get('purchase_detail',{transaction:t});
+              let quantity = await purchaseDetail.get('quantity',{transaction:t});
+              let subTotal = await purchaseDetail.get('totalPricePerItem',{transaction:t});
               productData = {
                 date: moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
                 customer: customerName,
-                discount: order.get('discount'),
-                action,
-                code: product.get('code'),
-                brand: product.get('brand'),
+                discount,
+                action: actionName,
+                code,
+                brand,
                 quantity,
-                price: product.get('price'),
+                price,
                 subTotal
               }
               if(!purchaseMap.has(timestamps)) {

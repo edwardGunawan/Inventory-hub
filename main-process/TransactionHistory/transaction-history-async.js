@@ -52,8 +52,8 @@ convert = convertExcel({database:db})
 convert
 .init()
 .then((res) => {
-  // console.log(res);
-  return convert.getProductSpecificHistory('Product1');
+  console.log(res);
+  // return convert.getProductSpecificHistory('Product1');
 })
 .then((res) => {
   console.log(res);
