@@ -53,7 +53,7 @@ convert
 .init()
 .then((res) => {
   // console.log(res);
-  return convert.getProductPurchaseDetail('Product3');
+  return convert.getBrandPurchaseDetail('Pierl Jill');
 })
 .then((res) => {
   console.log(res);
