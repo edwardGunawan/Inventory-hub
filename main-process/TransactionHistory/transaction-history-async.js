@@ -53,7 +53,7 @@ convert
 .init()
 .then((res) => {
   // console.log(res);
-  return convert.getCustomerHistoryDetail(05,2018);
+  return convert.getProductHistoryDetail(05,2018);
 })
 .then((res) => {
   console.log(res);

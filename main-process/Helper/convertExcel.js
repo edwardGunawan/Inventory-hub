@@ -70,6 +70,7 @@ function convertExcel({
         const t = await database.sequelize.transaction();
         try {
           const orders = await database.purchaseOrder.findAll({
+            order:[['timestamps','ASC']],
             include:[
               {
                 model:database.customer,
@@ -158,6 +159,7 @@ function convertExcel({
         try {
           const histories = await database.customerTransactionHistory.findAll({
             attributes:['timestamps'],
+            order:[['timestamps','ASC']],
             include:[
               {
                 model:database.customer,
@@ -220,7 +222,7 @@ function convertExcel({
       async initProductHistory() {
         const t = await database.sequelize.transaction();
         try {
-          let histories = await database.productTransactionHistory.findAll({include:[database.action,database.product]},{transaction:t});
+          let histories = await database.productTransactionHistory.findAll({order:[['timestamps','ASC']],include:[database.action,database.product]},{transaction:t});
           for(let history of histories ) {
             let product = await history.get('product', {transaction:t});
             let code = await product.get('code',{transaction:t});
@@ -264,20 +266,9 @@ function convertExcel({
       },
 
       /**
-         get Customer History Detail based on Date, and Action
+         get Customer History Detail based on Date
          divide into date
-         divide into action
-         getting customerHistory, actionCustomerIndex, customerHistoryTimeStamps
-        ///////// Getting Raw Data //////////////////////
-         1. filter customerHistoryTimeStamps to begin and end timestamps
-         2. Find the Timestamps in customerHistory
-         3. store it into the obj array for the raw data
-
-        ///////// Getting Based Action ///////////////////
-         1. Filter Array of timestamps based on begin and end timestamps given
-         2. Search through customerHistory for timestamps and action given
-         3. Store it into the obj array based on action
-         return [basedDate,basedSale]
+         return basedDate
       */
       async getCustomerHistoryDetail(beginMonth=1,beginYear=2018, endMonth=beginMonth+1,endYear=beginYear) {
         const t = await database.sequelize.transaction();
@@ -297,7 +288,7 @@ function convertExcel({
               }
             },
             attributes:['timestamps'],
-            order:['timestamps'],
+            order:[['timestamps','ASC']],
             include:[
               {model:database.customer,attributes:['name']},
               {model:database.action, attributes:['action']}
@@ -311,13 +302,10 @@ function convertExcel({
             let customerName = await customer.get('name',{transaction:t});
             let action = await history.get('action',{transaction:t});
             let actionName = await action.get('action',{transaction:t});
-            console.log(customerName, actionName, timestamps);
             basedDate = [...basedDate,{timestamps,customerName,action:actionName}]
           }
-
           await t.commit();
-          console.log(basedDate);
-          return [basedDate,basedAction];
+          return basedDate;
         }catch (e) {
           console.log(e);
           await t.rollback();
@@ -325,41 +313,50 @@ function convertExcel({
         }
       },
 
-      /* get all the Product History detail based on Date, and Action
-       get all Product History based on Date, Action
-       divide into dateBased
-       divide into actionBased
-       productHistory, actionProductIndex, productHistoryTimeStamps
-      ///// Getting Raw Data (date Based) /////////////
-       1. filter productHistoryTimeStamps to the begin and end given
-       2. Iterate through productHistory
-       3. Store it into dateBased of objArr
-
-       return dateBased
+      /*
+        get all the Product History detail based on Date
+        divide into dateBased
+        return dateBased
       */
       async getProductHistoryDetail(beginMonth=01,beginYear=2018,endMonth=beginMonth+1,endYear=beginYear) {
+        const t = await database.sequelize.transaction();
         try {
           if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
             throw new Error('You insert either the wrong startMonth or endMonth argument');
           }
           let beginTimestamps = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
           let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
-          let range = productHistoryTimeStamps.filter((timestamps) => timestamps >= beginTimestamps && timestamps < endTimestamps);
+
+          // let range = productHistoryTimeStamps.filter((timestamps) => timestamps >= beginTimestamps && timestamps < endTimestamps);
           let dateBased = [];
-          range.forEach((timestamps) => {
-            Object.keys(productHistory[timestamps]).forEach((action) => {
-              dateBased = [...dateBased, ...productHistory[timestamps][action]];
-            })
-          });
-          let actionBased = [];
-          actionProductIndex.forEach((val,key) => {
-            range.forEach((timestamps) => {
-              actionBased = [...actionBased,...productHistory[timestamps][key]];
-            });
-          })
+          let histories = await database.productTransactionHistory.findAll({
+            where:{
+              timestamps:{
+                [Op.lt]:endTimestamps,
+                [Op.gt]:beginTimestamps
+              }
+            },
+            attributes:['timestamps','quantity'],
+            order:[['timestamps','ASC']],
+            include:[
+              {model:database.action,attributes:['action']},
+              {model:database.product,attributes:['code']}
+            ]
+          },{transaction:t});
+          for(let history of histories) {
+            let timestamps = await history.get('timestamps',{transaction:t});
+            let quantity = await history.get('quantity',{transaction:t});
+            let product = await history.get('product',{transaction:t});
+            let code = await product.get('code',{transaction:t});
+            let action = await history.get('action',{transaction:t});
+            let actionName = await action.get('action',{transaction:t});
+            dateBased = [...dateBased,{timestamps,quantity,code,action:actionName}];
+          }
+          await t.commit();
           return dateBased;
         }catch (e) {
           console.log(e);
+          await t.rollback();
           throw e;
         }
       },
@@ -448,17 +445,21 @@ function convertExcel({
         return [{obj}]
       */
       async getProductHistory(actionName='new') {
+        const t = await database.sequelize.transaction();
         try {
           if(!actionProductIndex.has(actionName)) throw 'action name doesn\'t exist'
+
           let timestamps = actionProductIndex.get(actionName);
           let data = [];
           timestamps.forEach((timestamp) => {
             data = [...data,...productHistory[timestamp][actionName]];
           });
 
+          await t.commit();
           return data;
         } catch(e) {
           console.log(e);
+          await t.rollback();
           throw new Error(e);
         }
 
@@ -481,6 +482,7 @@ function convertExcel({
             include:[{
               model:database.productTransactionHistory,
               attributes:['timestamps','quantity'],
+              order:[['timestamps','ASC'],['quantity','ASC']],
               required:true,
               // through:{attributes:[]}  // this will get rid of the intermediary table
               include:[{
