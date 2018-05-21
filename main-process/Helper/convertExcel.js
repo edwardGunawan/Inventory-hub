@@ -538,15 +538,42 @@ function convertExcel({
         Get all customerHistory Based on Sales
         return [{timestamps,customername}]
       */
-      async getCustomerHistory(actionName) {
+      async getCustomerHistory(actionName='new') {
+        const t = await database.sequelize.transaction();
         try {
-
+          let data =[];
+          let action = await database.action.findOne({
+            where:{
+              action:actionName.toLowerCase()
+            },
+            include:[
+              {
+                model:database.customerTransactionHistory,
+                attributes:['timestamps'],
+                order:[['timestamps','ASC']],
+                include:[
+                  {
+                    model:database.customer,
+                    attribute:['name']
+                  }
+                ]
+              }
+            ]
+          },{transaction:t});
+          let histories = await action.get('customer_transactions',{transaction:t});
+          for(let history of histories) {
+            let timestamps = await history.get('timestamps',{transaction:t});
+            let customer = await history.get('customer',{transaction:t});
+            let name = await customer.get('name',{transaction:t});
+            data.push({timestamps,name});
+          }
+          await t.commit();
+          return data;
         }catch(e) {
           console.log(e);
-
+          await t.rollback();
           throw new Error(e);
         }
-
       },
 
       /*
