@@ -8,7 +8,7 @@ let db = require('../../db.js');
 // get customer
 ipcMain.on('get-customer', async(event,data) => {
   try {
-    let customers = await db.customer.findAll();
+    let customers = await db.customer.findAll({where:{deleted:false}});
     let customerNames = customers.map((customer) => {
       return customer.get('name');
     });
@@ -22,7 +22,7 @@ ipcMain.on('get-customer', async(event,data) => {
 // get all product
 ipcMain.on('get-product', async(event,data) => {
   try {
-    let products = await db.product.findAll();
+    let products = await db.product.findAll({where:{deleted:false}});
     let productItems = products.map((product) => {
       return {
         code: product.get('code'),

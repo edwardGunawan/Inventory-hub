@@ -52,8 +52,8 @@ let update_arr_product = [
   {where:{code:'Product2'},updates:{brand:'Rolex',price:'1000'}}
 ];
 
-let destroy_customer = {name:['Customer1','Toko Pedia']};
-let destroy_product={code:['Product4']};
+let destroy_customer = {name:['Toko Pedia','Toko Sinarmata']};
+let destroy_product={code:['Product3']};
 
 let customer_input_arr = [
   {name:'Customer1'},
@@ -76,31 +76,31 @@ let restock_input_arr = [
 
 let libInstance = lib({database:db});
 libInstance
-// .delete(destroy_customer,'customer').then((numAffectedRows) => {
-//   console.log(numAffectedRows);
-// })
-
-.createTransaction(customer_input_arr,'customer').then(() => {
-  console.log('finish creating customer, creating product now....');
-  return libInstance.createTransaction(product_input_arr,'product');
-}).then(() => {
-  console.log('finish creating product, restocking product now .....');
-  return libInstance.createTransaction(restock_input_arr,'restock');
-}).then(() => {
-  console.log('finish restoring product, get product history now');
-  return libInstance.getProductHistory('new');
-}).then((data) => {
-  console.log('product history new', data);
-  return libInstance.getProductHistory('restock');
-}).then((data) => {
-  console.log('product history restock', data);
-  return libInstance.update(update_arr_product,'product')
-}).then(() => {
-  console.log('finish updating product, now update customer....');
-  return libInstance.update(update_arr_customer,'customer');
-}).then(() => {
-  console.log('finish updating customer');
+.delete(destroy_customer,'customer').then((numAffectedRows) => {
+  console.log(numAffectedRows);
 })
+
+// .createTransaction(customer_input_arr,'customer').then(() => {
+//   console.log('finish creating customer, creating product now....');
+//   return libInstance.createTransaction(product_input_arr,'product');
+// }).then(() => {
+//   console.log('finish creating product, restocking product now .....');
+//   return libInstance.createTransaction(restock_input_arr,'restock');
+// }).then(() => {
+//   console.log('finish restoring product, get product history now');
+//   return libInstance.getProductHistory('new');
+// }).then((data) => {
+//   console.log('product history new', data);
+//   return libInstance.getProductHistory('restock');
+// }).then((data) => {
+//   console.log('product history restock', data);
+//   return libInstance.update(update_arr_product,'product')
+// }).then(() => {
+//   console.log('finish updating product, now update customer....');
+//   return libInstance.update(update_arr_customer,'customer');
+// }).then(() => {
+//   console.log('finish updating customer');
+// })
 // .initProductHistory().then(({actionProductIndex,productHistory}) => {
 //   console.log(actionProductIndex);
 //   // console.log(productHistory);

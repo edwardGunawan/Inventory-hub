@@ -142,14 +142,14 @@ function lib({
       },
       /**
        DELETE Customer/Product
-       will also delete the history and transaction on them
+       only put deletedAt to true so all records is still save
        where: {[name:[] | code:[] ]}
        category: customer | product
        */
       async delete(where,category) {
         const t = await database.sequelize.transaction();
         try {
-          let db;
+          let db,transactionHistory;
           switch(category) {
             case 'product':
               db = database.product;
@@ -158,8 +158,31 @@ function lib({
               db = database.customer;
               break;
           }
-          let numAffectedRows = await db.destroy({where},{transaction:t});
+          let numAffectedRows = await db.update({deleted:true},{where},{transaction:t});
           console.log(numAffectedRows);
+          if(numAffectedRows.length > 0){
+            let allDeletedItems = await db.findAll({where},{transaction:t});
+            let action = await database.action.findOne({where:{action:'delete'}},{transaction:t});
+            let promises = [];
+            for(let item of allDeletedItems) {
+              if(category === 'product') {
+                let code = await item.get('code',{transaction:t});
+                let brand = await item.get('brand',{transaction:t});
+                let price = await item.get('price',{transaction:t});
+                let quantity = await item.get('quantity',{transaction:t});
+                let prodTransaction = await database.productTransactionHistory.create({code,brand,price,quantity},{transaction:t});
+                promises.push(action.addProduct_transaction_history(prodTransaction,{transaction:t}));
+                promises.push(item.addProduct_transaction_history(prodTransaction,{transaction:t}));
+              }
+              else {
+                let name = await item.get('name',{transaction:t});
+                let customerTransaction = await database.customerTransactionHistory.create({name},{transaction:t});
+                promises.push(action.addCustomer_transaction(customerTransaction,{transaction:t}));
+                promises.push(item.addCustomer_transaction(customerTransaction,{transaction:t}));
+              }
+            }
+            await Promise.all(promises);
+          }
           await t.commit();
           return numAffectedRows;
         } catch(e) {
