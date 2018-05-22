@@ -53,7 +53,7 @@ function initialize() {
       .authenticate()
       .then(() => {
         console.log('Connection has been established successfully');
-        return db.sequelize.sync({});
+        return db.sequelize.sync({force:true});
       })
       .then(() => {
         console.log('db is already in sync');
@@ -61,7 +61,7 @@ function initialize() {
           let timestamps = moment().valueOf();
           return db.customer.findOrCreate({
             where: { name:'Other' }, defaults:{name:'Other'},transaction:t}).then(() => {
-            let actions = ['sell','return','new','restock','delete'];
+            let actions = ['sell','return','new','restock','delete','update'];
             let promises = [];
             actions.forEach((action) => {
               promises.push(db.action.findOrCreate({ where: {action: action},transaction:t}));

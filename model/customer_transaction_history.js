@@ -17,6 +17,10 @@ module.exports = function(sequelize,DataTypes) {
       get : function() { // convert createdAt to timestamps
         return this.getDataValue('timestamps');
       }
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull:false
     }
   });
 

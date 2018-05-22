@@ -4,6 +4,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull:false,
       isUnique:true
+    },
+    deleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue:false
     }
   });
   return customer;

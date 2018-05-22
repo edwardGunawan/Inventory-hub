@@ -25,6 +25,10 @@ module.exports = function(sequelize,DataTypes) {
       validate: {
         isNumeric: true
       }
+    },
+    deleted: {
+      type:DataTypes.BOOLEAN,
+      defaultValue:false
     }
   });
   return product;

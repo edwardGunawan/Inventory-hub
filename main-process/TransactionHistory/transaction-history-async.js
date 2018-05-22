@@ -43,29 +43,63 @@ const path = require('path');
 //   }
 // }
 
-let input_arr_customer = [
+let update_arr_customer = [
   {where:{name:'Customer1'},updates:{name: 'Toko Sinarmata'}},
   {where:{name:'Customer2'}, updates:{name:'Toko Pedia'}}
 ];
-let input_arr_product = [
+let update_arr_product = [
   {where:{code:'Product1'},updates:{brand:'Movado',price:'12'}},
   {where:{code:'Product2'},updates:{brand:'Rolex',price:'1000'}}
 ];
 
-let destroy_customer = ['Customer1','Customer2'];
-let destroy_product=['Product4'];
+let destroy_customer = {name:['Customer1','Toko Pedia']};
+let destroy_product={code:['Product4']};
+
+let customer_input_arr = [
+  {name:'Customer1'},
+  {name:'Customer2'},
+  {name:'Customer3'}
+]
+
+let product_input_arr = [
+  {code:'Product1',brand:'Sam Cafaso',quantity:10, price:1000},
+  {code:'Product2',brand:'Pierl Jill',quantity:100, price:1000},
+  {code:'Product3',brand:'Sam Cafaso',quantity:20, price:1000},
+  {code:'Product4',brand:'Movado',quantity:30, price:1000},
+  {code:'Product5',brand:'Rolex',quantity:10, price:1000},
+];
+let restock_input_arr = [
+  {code:'Product1',brand:'Sam Cafaso',quantity:11, price:1000},
+  {code:'Product5',brand:'Rolex',quantity:11, price:1000},
+];
+
 
 let libInstance = lib({database:db});
 libInstance
-.init()
-.then((res) => {
-  // console.log(res);
-  // return libInstance.update(input_arr_customer,'customer');
-  return libInstance.update(input_arr_product,'product');
-})
-.then((res) => {
-  // console.log(res);
+// .delete(destroy_customer,'customer').then((numAffectedRows) => {
+//   console.log(numAffectedRows);
+// })
 
+.createTransaction(customer_input_arr,'customer').then(() => {
+  console.log('finish creating customer, creating product now....');
+  return libInstance.createTransaction(product_input_arr,'product');
+}).then(() => {
+  console.log('finish creating product, restocking product now .....');
+  return libInstance.createTransaction(restock_input_arr,'restock');
+}).then(() => {
+  console.log('finish restoring product, get product history now');
+  return libInstance.getProductHistory('new');
+}).then((data) => {
+  console.log('product history new', data);
+  return libInstance.getProductHistory('restock');
+}).then((data) => {
+  console.log('product history restock', data);
+  return libInstance.update(update_arr_product,'product')
+}).then(() => {
+  console.log('finish updating product, now update customer....');
+  return libInstance.update(update_arr_customer,'customer');
+}).then(() => {
+  console.log('finish updating customer');
 })
 // .initProductHistory().then(({actionProductIndex,productHistory}) => {
 //   console.log(actionProductIndex);

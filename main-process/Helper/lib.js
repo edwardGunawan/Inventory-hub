@@ -53,7 +53,7 @@ function lib({
               for(let {code,brand,quantity,price} of input_arr) {
                 let prod = await database.product.findOne({where:{code}}, {transaction:t});
                 let actionId = await action.get('action',{transaction:t});
-                transactionHistory = await database.productTransactionHistory.create({quantity},{transaction:t});
+                transactionHistory = await database.productTransactionHistory.create({quantity,code,brand,price},{transaction:t});
                 // adding hasMany from product to productTransactionHistory
                 await prod.addProduct_transaction_history(transactionHistory,{transaction:t});
                 await action.addProduct_transaction_history(transactionHistory,{transaction:t});
@@ -67,11 +67,17 @@ function lib({
             for(let inst of instances) {
               if(category === 'product') {
                 let quantity = await inst.get('quantity',{transaction:t});
-                transactionHistory = await database.productTransactionHistory.create({quantity},{transaction:t});
+                let code = await inst.get('code',{transaction:t});
+                let price = await inst.get('price',{transaction:t});
+                let brand = await inst.get('brand',{transaction:t});
+                transactionHistory = await database.productTransactionHistory.create({quantity,code,price,brand},{transaction:t});
                 promises.push(inst.addProduct_transaction_history(transactionHistory,{transaction:t})); // product
                 promises.push(action.addProduct_transaction_history(transactionHistory,{transaction:t})); // action
               }else {
-                promises.push(inst.addAction(action, {through:{},transaction:t}));
+                let name = await inst.get('name',{transaction:t});
+                transactionHistory = await database.customerTransactionHistory.create({name},{transaction:t});
+                promises.push(inst.addCustomer_transaction(transactionHistory,{transaction:t})); // customer
+                promises.push(action.addCustomer_transaction(transactionHistory,{transaction:t})); // action
               }
             }
             await Promise.all(promises);
@@ -95,6 +101,54 @@ function lib({
       async update(input_arr,category){
         const t = await database.sequelize.transaction();
         try {
+          let db,transactionHistory;
+          switch(category) {
+            case 'product':
+              db = database.product;
+              break;
+            case 'customer':
+              db = database.customer;
+              break;
+          }
+          let promises = [];
+          for(let input of input_arr) {
+            let {where,updates} = input;
+            let instance = await db.findOne({where},{transaction:t});
+            let action = await database.action.findOne({where:{action:'update'}},{transaction:t});
+            let updatedInstance = await instance.update(updates,{transaction:t});
+            if(category === 'product') {
+              let quantity = await updatedInstance.get('quantity',{transaction:t});
+              let code = await updatedInstance.get('code',{transaction:t});
+              let price = await updatedInstance.get('price',{transaction:t});
+              let brand = await updatedInstance.get('brand',{transaction:t});
+              transactionHistory = await database.productTransactionHistory.create({quantity,code,price,brand},{transaction:t});
+              promises.push(instance.addProduct_transaction_history(transactionHistory,{transaction:t})); // product
+              promises.push(action.addProduct_transaction_history(transactionHistory,{transaction:t})); // action
+            }else {
+              let name = await updatedInstance.get('name',{transaction:t});
+              transactionHistory = await database.customerTransactionHistory.create({name},{transaction:t});
+              promises.push(instance.addCustomer_transaction(transactionHistory,{transaction:t})); // customer
+              promises.push(action.addCustomer_transaction(transactionHistory,{transaction:t})); // action
+            }
+          }
+          await Promise.all(promises);
+          await t.commit();
+          console.log('finished updating');
+        } catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw new Error(e);
+        }
+      },
+      /**
+       DELETE Customer/Product
+       will also delete the history and transaction on them
+       where: {[name:[] | code:[] ]}
+       category: customer | product
+       */
+      async delete(where,category) {
+        const t = await database.sequelize.transaction();
+        try {
           let db;
           switch(category) {
             case 'product':
@@ -104,28 +158,15 @@ function lib({
               db = database.customer;
               break;
           }
-          for(let input of input_arr) {
-            let {where,updates} = input;
-            let instance = await db.findOne({where},{transaction:t});
-            console.log(instance);
-            let updatedInstance = await instance.update(updates,{transaction:t});
-            console.log(updatedInstance);
-          }
+          let numAffectedRows = await db.destroy({where},{transaction:t});
+          console.log(numAffectedRows);
           await t.commit();
-          console.log('finished updating');
+          return numAffectedRows;
         } catch(e) {
           console.log(e);
           await t.rollback();
           throw new Error(e);
         }
-      },
-      /** TODO
-       DELETE Customer
-       input_arr: [name | code ]
-       category: customer | product
-       */
-      async delete(input_arr,category) {
-
       },
       /*
         Preprocess productArr, getting total price
@@ -174,7 +215,7 @@ function lib({
         } catch(e) {
           console.log(e);
           await t.rollback();
-          throw e;
+          throw new Error(e);
         }
       },
 
@@ -276,14 +317,18 @@ function lib({
             let product = await history.get('product', {transaction:t});
             let code = await product.get('code',{transaction:t});
             let brand = await product.get('brand',{transaction:t});
-            let action = await history.get('action', {transaction:t});
-            let actionName = await action.get('action',{transaction:t});
+            // let action = await history.get('action', {transaction:t});
+            // let actionName = await action.get('action',{transaction:t});
             let timestamps = await history.get('timestamps', {transaction:t});
-            if(!productHistoryTimeStamps.includes(timestamps)) {
-              productHistoryTimeStamps.push(timestamps);
+            let deleted = await product.get('deleted',{transaction:t});
+            if(!deleted) {
+              if(!productHistoryTimeStamps.includes(timestamps)) {
+                productHistoryTimeStamps.push(timestamps);
+              }
+              codes.push(code);
+              brands.add(brand);
             }
-            codes.push(code);
-            brands.add(brand);
+
           }
           await t.commit();
           console.log('Successful init product history');
