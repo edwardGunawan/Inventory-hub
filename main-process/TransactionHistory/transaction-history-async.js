@@ -1,10 +1,9 @@
 // const {ipcMain, app} = require('electron');
 const db = require('../../db.js');
-const convertExcel = require('../Helper/convertExcel.js');
+const lib = require('../Helper/lib.js');
 const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
-let convert;
 // ipcMain.on('transaction-history-init', async(evt,data) => {
 //   try {
 //     const dirPath = app.getPath('desktop');
@@ -47,13 +46,12 @@ let convert;
 
 
 
-
-convert = convertExcel({database:db})
-convert
+let libInstance = lib({database:db});
+libInstance
 .init()
 .then((res) => {
   // console.log(res);
-  return convert.getBrandPurchaseDetail('Pierl Jill');
+  return libInstance.getBrandPurchaseDetail('Pierl Jill');
 })
 .then((res) => {
   console.log(res);
@@ -84,7 +82,7 @@ convert
 .catch(e => {
   console.log(e);
 });
-// then(()=> convert.getTransaction(05,2018))
+// then(()=> lib.getTransaction(05,2018))
 // .then(
 //   (objArr) => convert.writeToSheet(['based Date','based Customer','based Product'],objArr,'date','customer','product'))
 // .then(() => console.log('finish executing'))
