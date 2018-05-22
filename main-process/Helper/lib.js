@@ -32,6 +32,153 @@ function lib({
 
     return {
       /**
+        createTransaction
+        create either product, or customer, and restock
+      */
+      async createTransaction(input_arr,category) {
+        const t = await database.sequelize.transaction();
+        try {
+          let instances, action,transactionHistory;
+          switch(category) {
+            case 'product':
+              instances = await database.product.bulkCreate(input_arr,{returning:true, transaction:t});
+              action = await database.action.findOne({where:{ action: 'new'}}, {transaction:t});
+              break;
+            case 'customer':
+              instances = await database.customer.bulkCreate(input_arr,{returning:true, transaction:t});
+              action = await database.action.findOne({where:{ action: 'new'}}, {transaction:t});
+              break;
+            case 'restock' :
+              action = await database.action.findOne({where:{ action: 'restock'}}, {transaction:t});
+              for(let {code,brand,quantity,price} of input_arr) {
+                let prod = await database.product.findOne({where:{code}}, {transaction:t});
+                let actionId = await action.get('action',{transaction:t});
+                transactionHistory = await database.productTransactionHistory.create({quantity},{transaction:t});
+                // adding hasMany from product to productTransactionHistory
+                await prod.addProduct_transaction_history(transactionHistory,{transaction:t});
+                await action.addProduct_transaction_history(transactionHistory,{transaction:t});
+                prod.quantity += parseInt(quantity);
+                await prod.save({transaction:t});
+              }
+              break;
+          }
+          if(category === 'customer' || category === 'product') {
+            let promises = [];
+            for(let inst of instances) {
+              if(category === 'product') {
+                let quantity = await inst.get('quantity',{transaction:t});
+                transactionHistory = await database.productTransactionHistory.create({quantity},{transaction:t});
+                promises.push(inst.addProduct_transaction_history(transactionHistory,{transaction:t})); // product
+                promises.push(action.addProduct_transaction_history(transactionHistory,{transaction:t})); // action
+              }else {
+                promises.push(inst.addAction(action, {through:{},transaction:t}));
+              }
+            }
+            await Promise.all(promises);
+          }
+          await t.commit();
+          console.log('transaction is succeeeded');
+        }catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw new Error(e);
+        }
+      },
+      /**
+        update
+        bulkUpdate customer for its name
+        input_arr = [
+          {where: {attr:value}, updates:{attribute:value} }
+        ];
+        category: product or customer
+        */
+      async update(input_arr,category){
+        const t = await database.sequelize.transaction();
+        try {
+          let db;
+          switch(category) {
+            case 'product':
+              db = database.product;
+              break;
+            case 'customer':
+              db = database.customer;
+              break;
+          }
+          for(let input of input_arr) {
+            let {where,updates} = input;
+            let instance = await db.findOne({where},{transaction:t});
+            console.log(instance);
+            let updatedInstance = await instance.update(updates,{transaction:t});
+            console.log(updatedInstance);
+          }
+          await t.commit();
+          console.log('finished updating');
+        } catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw new Error(e);
+        }
+      },
+      /** TODO
+       DELETE Customer
+       input_arr: [name | code ]
+       category: customer | product
+       */
+      async delete(input_arr,category) {
+
+      },
+      /*
+        Preprocess productArr, getting total price
+        Create new PurchaseOrder instance and add Customer in it and totalPrice and discount
+        Add Product to PurchaseOrder with PurchaseDetail
+
+        Total : to also get all total amount after discount
+        Item inside product Arr
+        { brand: 'PierlJill',
+         code: 'Product2',
+         price: 11,
+         quantity: '02',
+         total: 22 }
+      */
+      async purchaseOrder({customer, productArr,discount,action,totalPrice}){
+        // console.log(typeof totalPrice, 'totalPrice in purchaseOrder');
+        const t = await database.sequelize.transaction();
+        try {
+          console.log(moment().valueOf());
+          const order = await database.purchaseOrder.create({discount,totalPrice,timestamps:moment().valueOf()}, {transaction:t});
+          const actionInst = await database.action.findOne({where:{action}},{transaction:t});
+          const customerInst = await database.customer.findOne({where:{name:customer}}, {transaction:t});
+
+          // this is the correct based on what you write on your define method
+          await actionInst.addPurchase_order(order,{transaction:t});
+          await customerInst.addPurchase_order(order,{transaction:t});
+
+          for(let {brand, code, price, quantity, total} of productArr) {
+            let product = await database.product.findOne({where:{code}},{transaction:t});
+            await product.addPurchase_order(order,{through:{
+              quantity,
+              totalPricePerItem:total
+            }, transaction:t});
+
+            if(action === 'sell') {
+              // quantity is string some how
+              product.quantity -= parseInt(quantity);
+            }else {
+              // console.log(typeof quantity , ' for quantity in purchase');
+              product.quantity += parseInt(quantity);
+            }
+            await product.save({transaction:t})
+          }
+          await t.commit();
+          console.log('transaction successful');
+        } catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw e;
+        }
+      },
+
+      /**
        init: Call initPurchaseDetail(), initCustomerHistory() and initProductHistory()
        return all the value between the three
       */

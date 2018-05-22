@@ -43,18 +43,29 @@ const path = require('path');
 //   }
 // }
 
+let input_arr_customer = [
+  {where:{name:'Customer1'},updates:{name: 'Toko Sinarmata'}},
+  {where:{name:'Customer2'}, updates:{name:'Toko Pedia'}}
+];
+let input_arr_product = [
+  {where:{code:'Product1'},updates:{brand:'Movado',price:'12'}},
+  {where:{code:'Product2'},updates:{brand:'Rolex',price:'1000'}}
+];
 
-
+let destroy_customer = ['Customer1','Customer2'];
+let destroy_product=['Product4'];
 
 let libInstance = lib({database:db});
 libInstance
 .init()
 .then((res) => {
   // console.log(res);
-  return libInstance.getBrandPurchaseDetail('Pierl Jill');
+  // return libInstance.update(input_arr_customer,'customer');
+  return libInstance.update(input_arr_product,'product');
 })
 .then((res) => {
-  console.log(res);
+  // console.log(res);
+
 })
 // .initProductHistory().then(({actionProductIndex,productHistory}) => {
 //   console.log(actionProductIndex);
