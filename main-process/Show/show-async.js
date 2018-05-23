@@ -5,7 +5,7 @@ let lunr = require('lunr');
 ipcMain.on('show', async (event, data) => {
   try {
     // do full-text search here
-    const products = await db.product.all();
+    const products = await db.product.findAll({where:{deleted:false}});
     let docToIndex = products.map((product) => {
       return {
         id: product.get('id'),

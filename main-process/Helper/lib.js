@@ -240,10 +240,9 @@ function lib({
          total: 22 }
       */
       async purchaseOrder({customer, productArr,discount,action,totalPrice}){
-        // console.log(typeof totalPrice, 'totalPrice in purchaseOrder');
         const t = await database.sequelize.transaction();
         try {
-          console.log(moment().valueOf());
+          // console.log(moment().valueOf());
           const order = await database.purchaseOrder.create({discount,totalPrice,timestamps:moment().valueOf()}, {transaction:t});
           const actionInst = await database.action.findOne({where:{action}},{transaction:t});
           const customerInst = await database.customer.findOne({where:{name:customer}}, {transaction:t});
@@ -383,8 +382,6 @@ function lib({
             let product = await history.get('product', {transaction:t});
             let code = await product.get('code',{transaction:t});
             let brand = await product.get('brand',{transaction:t});
-            // let action = await history.get('action', {transaction:t});
-            // let actionName = await action.get('action',{transaction:t});
             let timestamps = await history.get('timestamps', {transaction:t});
 
             if(!productHistoryTimeStamps.includes(timestamps)) {
