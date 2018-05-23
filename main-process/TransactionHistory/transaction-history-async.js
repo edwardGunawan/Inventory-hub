@@ -76,9 +76,12 @@ let restock_input_arr = [
 
 let libInstance = lib({database:db});
 libInstance
-.delete(destroy_customer,'customer').then((numAffectedRows) => {
-  console.log(numAffectedRows);
+.init().then((res) => {
+  console.log(res);
 })
+// .delete(destroy_customer,'customer').then((numAffectedRows) => {
+//   console.log(numAffectedRows);
+// })
 
 // .createTransaction(customer_input_arr,'customer').then(() => {
 //   console.log('finish creating customer, creating product now....');

@@ -276,12 +276,16 @@ function lib({
         const t = await database.sequelize.transaction();
         try {
           const orders = await database.purchaseOrder.findAll({
-            order:[['timestamps','ASC']]},
+              order:[['timestamps','ASC']],
+              include:[{model:database.customer,attributes:['deleted']}]
+            },
             {transaction:t});
           for(let order of orders) {
             let timestamps = await order.get('timestamps',{transaction:t});
+            let customer = await order.get('customer',{transaction:t});
+            let deleted = await customer.get('deleted',{transaction:t});
             // push the new timestamps into orderTimeStamps if it doesn't exist yet
-            if(!orderTimeStamps.includes(timestamps)) {
+            if(!deleted && !orderTimeStamps.includes(timestamps)) {
               orderTimeStamps.push(timestamps);
             }
           }
@@ -300,6 +304,8 @@ function lib({
       // actionCustomerIndex:
          map action
          set timestamps (faster add and retrieval)
+         NOTE: User should still be able to see which product is deleted through the history, so it will still render
+         all item included the delted ones
       */
       async initCustomerHistory() {
         const t = await database.sequelize.transaction();
@@ -331,6 +337,8 @@ function lib({
       // actionProductIndex
          map of string action
          set of timestamps as value() because things needs to be distinct
+         NOTE : User should still be able to get all produt history including
+         the deleted ones
       */
       async initProductHistory() {
         const t = await database.sequelize.transaction();
@@ -343,14 +351,12 @@ function lib({
             // let action = await history.get('action', {transaction:t});
             // let actionName = await action.get('action',{transaction:t});
             let timestamps = await history.get('timestamps', {transaction:t});
-            let deleted = await product.get('deleted',{transaction:t});
-            if(!deleted) {
-              if(!productHistoryTimeStamps.includes(timestamps)) {
-                productHistoryTimeStamps.push(timestamps);
-              }
-              codes.push(code);
-              brands.add(brand);
+
+            if(!productHistoryTimeStamps.includes(timestamps)) {
+              productHistoryTimeStamps.push(timestamps);
             }
+            codes.push(code);
+            brands.add(brand);
 
           }
           await t.commit();
