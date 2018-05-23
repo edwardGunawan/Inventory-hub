@@ -1,6 +1,7 @@
 let {ipcMain, app} = require('electron');
 let db = require('../../db.js');
 let XLSX = require('xlsx');
+let libInstance = require('../Helper/lib.js')({database:db});
 
 /*
   Create new product
@@ -10,7 +11,7 @@ let XLSX = require('xlsx');
 ipcMain.on('create-product', async (event,data) => {
   try {
     let {input_arr} = data;
-    await createTransaction(input_arr,'product');
+    await libInstance.createTransaction(input_arr,'product');
     event.sender.send('reply-create-product', {status:'OK', message:'all products is created'});
   } catch(e) {
     console.log('error in create', e);
@@ -24,7 +25,7 @@ ipcMain.on('create-product', async (event,data) => {
 ipcMain.on('restock', async(evt,data) => {
   try {
     let {input_arr} = data;
-    await createTransaction(input_arr,'restock');
+    await libInstance.createTransaction(input_arr,'restock');
     evt.sender.send('reply-restock',{status:'OK', message:'all product has been processed'});
   } catch(e) {
     console.log('error in restock', e);
@@ -57,7 +58,7 @@ ipcMain.on('bulk-import',async (event,data) => {
 ipcMain.on('create-customer', async (event, data) => {
   try {
     let{input_arr} = data;
-    await createTransaction(input_arr,'customer');
+    await libInstance.createTransaction(input_arr,'customer');
     event.sender.send('reply-create-customer', {status:'OK', message:'all customers is created'});
   } catch(e) {
     console.log('error in creating customer');
@@ -95,57 +96,3 @@ async function importExcel(path) {
     throw new Error(e);
   }
 }
-
-async function createTransaction(input_arr,category) {
-  const t = await db.sequelize.transaction();
-  try {
-    let instances, action,transactionHistory;
-    switch(category) {
-      case 'product':
-        instances = await db.product.bulkCreate(input_arr,{returning:true, transaction:t});
-        action = await db.action.findOne({where:{ action: 'new'}}, {transaction:t});
-        break;
-      case 'customer':
-        instances = await db.customer.bulkCreate(input_arr,{returning:true, transaction:t});
-        action = await db.action.findOne({where:{ action: 'new'}}, {transaction:t});
-        break;
-      case 'restock' :
-        action = await db.action.findOne({where:{ action: 'restock'}}, {transaction:t});
-        for(let {code,brand,quantity,price} of input_arr) {
-          let prod = await db.product.findOne({where:{code}}, {transaction:t});
-          let actionId = await action.get('action',{transaction:t});
-          transactionHistory = await db.productTransactionHistory.create({quantity},{transaction:t});
-          // adding hasMany from product to productTransactionHistory
-          await prod.addProduct_transaction_history(transactionHistory,{transaction:t});
-          await action.addProduct_transaction_history(transactionHistory,{transaction:t});
-          prod.quantity += parseInt(quantity);
-          await prod.save({transaction:t});
-        }
-        break;
-    }
-
-
-
-    if(category === 'customer' || category === 'product') {
-      let promises = [];
-      for(let inst of instances) {
-        if(category === 'product') {
-          let quantity = await inst.get('quantity',{transaction:t});
-          transactionHistory = await db.productTransactionHistory.create({quantity},{transaction:t});
-          promises.push(inst.addProduct_transaction_history(transactionHistory,{transaction:t})); // product
-          promises.push(action.addProduct_transaction_history(transactionHistory,{transaction:t})); // action
-        }else {
-          promises.push(inst.addAction(action, {through:{},transaction:t}));
-        }
-      }
-      await Promise.all(promises);
-    }
-    await t.commit();
-    console.log('transaction is succeeeded');
-  }catch(e) {
-    console.log(e);
-    await t.rollback();
-    throw e;
-  }
-
-};

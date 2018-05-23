@@ -18,14 +18,6 @@ module.exports = function(sequelize, DataTypes) {
         isFloat:true
       }
     },
-    // buying or selling type
-    // action: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    //   validate: {
-    //     isIn:[['return','sell']]
-    //   }
-    // },
     timestamps: {
       type: DataTypes.BIGINT,
       allowNull: false,

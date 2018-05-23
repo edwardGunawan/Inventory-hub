@@ -4,15 +4,12 @@
 
 let {ipcMain} = require('electron');
 let db = require('../../db.js');
+let libInstance = require('./lib.js')({database:db});
 
 // get customer
 ipcMain.on('get-customer', async(event,data) => {
   try {
-    let customers = await db.customer.findAll({where:{deleted:false}});
-    let customerNames = customers.map((customer) => {
-      return customer.get('name');
-    });
-    console.log(customerNames);
+    let customerNames = await libInstance.get(data,'customer');
     event.sender.send('reply-get-customer', {status:'OK', message:customerNames});
   } catch(e) {
     event.sender.send('reply-get-customer', {status:'Error', message:'Error in getting customer'})
@@ -22,15 +19,7 @@ ipcMain.on('get-customer', async(event,data) => {
 // get all product
 ipcMain.on('get-product', async(event,data) => {
   try {
-    let products = await db.product.findAll({where:{deleted:false}});
-    let productItems = products.map((product) => {
-      return {
-        code: product.get('code'),
-        quantity:  product.get('quantity'),
-        price: product.get('price'),
-        brand: product.get('brand')
-      }
-    });
+    let productItems = await libInstance.get(data,'product');
     event.sender.send('reply-get-product', {status:'OK', message:productItems});
   }catch (e) {
     event.sender.send('reply-get-product',{status:'Error', message:e});

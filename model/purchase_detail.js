@@ -18,13 +18,6 @@ module.exports = function(sequelize, DataTypes) {
         isInt:true
       }
     },
-    // pricePerItem: {
-    //   type:DataTypes.INTEGER,
-    //   allowNull:false,
-    //   validate:{
-    //     isNumeric:true
-    //   }
-    // },
     totalPricePerItem: {
       type:DataTypes.INTEGER,
       allowNull:false,

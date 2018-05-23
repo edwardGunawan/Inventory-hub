@@ -91,6 +91,41 @@ function lib({
         }
       },
       /**
+        GET
+        customer | product
+      **/
+      async get(input_arr,category) {
+        const t = await database.sequelize.transaction();
+        try {
+          let data = [];
+          switch(category) {
+            case 'product':
+              let products = await database.product.findAll({where:{deleted:false}});
+              data = products.map((product) => {
+                return {
+                  code: product.get('code'),
+                  quantity:  product.get('quantity'),
+                  price: product.get('price'),
+                  brand: product.get('brand')
+                }
+              });
+              break;
+            case 'customer':
+              let customers = await database.customer.findAll({where:{deleted:false}});
+              data = customers.map((customer) => {
+                return customer.get('name');
+              });
+              break;
+          }
+          await t.commit();
+          return data;
+        }catch(e) {
+          console.log(e);
+          await t.rollback();
+          throw new Error(e);
+        }
+      },
+      /**
         update
         bulkUpdate customer for its name
         input_arr = [
