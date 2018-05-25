@@ -22,13 +22,13 @@ function lib({
     }
 
     const Op = database.Sequelize.Op;
-    let orderTimeStamps = []; // render all timestamps to the frontend
+    let orderDates = []; // render all timestamps to the frontend
 
     let brands = new Set(); // all brand that will be render to the frontend for react select
     let codes = []; // all code that can be render to the frontend
 
-    let customerHistoryTimeStamps = []; // render all timestamps to the frontend
-    let productHistoryTimeStamps = []; // render all timestamps to the frontend
+    let customerHistoryDates = []; // render all timestamps to the frontend
+    let productHistoryDates = []; // render all timestamps to the frontend
 
     return {
       /**
@@ -286,9 +286,9 @@ function lib({
           await Promise.all([this.initPurchaseDetail({transaction:t}),this.initCustomerHistory({transaction:t}),this.initProductHistory({transaction:t})]);
           await t.commit();
           return {
-            orderTimeStamps: orderTimeStamps,
-            customerHistoryTimeStamps,
-            productHistoryTimeStamps,
+            orderDates: orderDates,
+            customerHistoryDates,
+            productHistoryDates,
             brands,
             codes
           }
@@ -300,11 +300,11 @@ function lib({
       },
       /**
         Data Structure:
-         purchaseMap: regular data for customerPurchaseIndexing and orderTimestamps
+         purchaseMap: regular data for customerPurchaseIndexing and orderDates
            timestamps as key and array of productData
          customerPurchaseIndex: indexing based on customer
            customerName as key, and array of timestamps as value to index the timestamps
-         orderTimeStamps array of timestamps to render back to frontend
+         orderDates array of timestamps to render back to frontend
       */
       async initPurchaseDetail() {
         const t = await database.sequelize.transaction();
@@ -318,9 +318,11 @@ function lib({
             let timestamps = await order.get('timestamps',{transaction:t});
             let customer = await order.get('customer',{transaction:t});
             let deleted = await customer.get('deleted',{transaction:t});
-            // push the new timestamps into orderTimeStamps if it doesn't exist yet
-            if(!deleted && !orderTimeStamps.includes(timestamps)) {
-              orderTimeStamps.push(timestamps);
+            // convert to year/month/date if it is the same then dont push it to orderDates
+            let orderTime = moment(timestamps).format('YYYY-MM-DD');
+            // push the new timestamps into orderDates if it doesn't exist yet
+            if(!deleted && !orderDates.includes(orderTime)) {
+              orderDates.push(orderTime);
             }
           }
           await t.commit();
@@ -349,8 +351,9 @@ function lib({
 
           for(let history of histories) {
             let timestamps = await history.get('timestamps',{transaction:t});
-            if(!customerHistoryTimeStamps.includes(timestamps)) {
-              customerHistoryTimeStamps.push(timestamps);
+            let customerHistory = moment(timestamps).format('YYYY-MM-DD');
+            if(!customerHistoryDates.includes(customerHistory)) {
+              customerHistoryDates.push(customerHistory);
             }
           }
           await t.commit();
@@ -383,9 +386,9 @@ function lib({
             let code = await product.get('code',{transaction:t});
             let brand = await product.get('brand',{transaction:t});
             let timestamps = await history.get('timestamps', {transaction:t});
-
-            if(!productHistoryTimeStamps.includes(timestamps)) {
-              productHistoryTimeStamps.push(timestamps);
+            let productHistory = moment(timestamps).format('YYYY-MM-DD');
+            if(!productHistoryDates.includes(productHistory)) {
+              productHistoryDates.push(productHistory);
             }
             codes.push(code);
             brands.add(brand);
@@ -405,16 +408,14 @@ function lib({
          divide into date
          return basedDate
       */
-      async getCustomerHistoryDetail(beginMonth=1,beginYear=2018, endMonth=beginMonth+1,endYear=beginYear) {
+      async getCustomerHistoryDetail(beginTimestamps, endTimestamps) {
         const t = await database.sequelize.transaction();
         try {
-          if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
-            throw new Error('You insert either the wrong startMonth or endMonth argument');
+          if(typeof beginTimestamps === 'undefined' || beginTimestamps < 0 || typeof endTimestamps === 'undefined' || endTimestamps < beginTimestamps) {
+            throw new Error('You insert either the wrong beginTimestamps or endTimestamps argument');
           }
           // // per sale
           let basedDate = [];
-          let beginTimestamps = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
-          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
           let histories = await database.customerTransactionHistory.findAll({
             where:{
               timestamps: {
@@ -453,39 +454,44 @@ function lib({
         divide into dateBased
         return dateBased
       */
-      async getProductHistoryDetail(beginMonth=01,beginYear=2018,endMonth=beginMonth+1,endYear=beginYear) {
+      async getProductHistoryDetail(beginTimestamps,endTimestamps) {
         const t = await database.sequelize.transaction();
         try {
-          if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
-            throw new Error('You insert either the wrong startMonth or endMonth argument');
+          if(typeof beginTimestamps === 'undefined' || beginTimestamps < 0 || typeof endTimestamps === 'undefined' || endTimestamps < beginTimestamps) {
+            throw new Error('You insert either the wrong beginTimestamps or endTimestamps  argument');
           }
-          let beginTimestamps = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
-          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
 
-          // let range = productHistoryTimeStamps.filter((timestamps) => timestamps >= beginTimestamps && timestamps < endTimestamps);
           let dateBased = [];
           let histories = await database.productTransactionHistory.findAll({
-            where:{
+            where: {
               timestamps:{
                 [Op.lt]:endTimestamps,
                 [Op.gt]:beginTimestamps
               }
             },
-            attributes:['timestamps','quantity'],
+            attributes:['timestamps','quantity','price','brand','code'],
             order:[['timestamps','ASC']],
             include:[
-              {model:database.action,attributes:['action']},
-              {model:database.product,attributes:['code']}
+              {
+                model:database.action,
+                attributes:['action']
+              },
+              {
+                model:database.product,
+                attributes:['code']
+              }
             ]
           },{transaction:t});
           for(let history of histories) {
             let timestamps = await history.get('timestamps',{transaction:t});
             let quantity = await history.get('quantity',{transaction:t});
             let product = await history.get('product',{transaction:t});
+            let brand = await history.get('brand',{transaction:t});
+            let price = await history.get('price',{transaction:t});
             let code = await product.get('code',{transaction:t});
             let action = await history.get('action',{transaction:t});
             let actionName = await action.get('action',{transaction:t});
-            dateBased = [...dateBased,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),quantity,code,action:actionName}];
+            dateBased = [...dateBased,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),quantity,code,brand,price,action:actionName}];
           }
           await t.commit();
           return dateBased;
@@ -503,8 +509,8 @@ function lib({
        divide into raw data
        getting purchaseMap, and customerPurchaseIndex
       //////////// Getting Raw Data //////////////////
-        1. filter orderTimeStamps based on the begin and end timestamps
-        2. get from purchaseMap from orderTimeStamps in timestamps
+        1. filter orderDates based on the begin and end timestamps
+        2. get from purchaseMap from orderDates in timestamps
         3. store it in obj for raw data
 
       //////////// Getting Based Customer /////////////
@@ -515,23 +521,22 @@ function lib({
        1. deep clone dateBased
        2. sort based on Product localeCompare
 
+
        return [dateBased, customerBased, productBased]
       */
-      async getPurchaseDetail(beginMonth=1,beginYear=2018,endMonth=beginMonth+1,endYear=beginYear) {
+      async getPurchaseDetail(beginTimestamps,endTimestamps) {
         const t = await database.sequelize.transaction();
         try {
-          if(beginMonth > 12 || beginMonth < 0 || endMonth > 12 || endMonth <= 0) {
-            throw new Error('You insert either the wrong startMonth or endMonth argument');
+          if(typeof beginTimestamps === 'undefined' || typeof endTimestamps === 'undefined' || beginTimestamps< 0 || endTimestamps < beginTimestamps) {
+            throw new Error('You insert either the wrong beginTimestamps or endTimestamps argument');
           }
-          let startTimestamps  = moment(`${beginYear} ${beginMonth}`, 'YYYY MM').valueOf();
-          let endTimestamps = moment(`${endYear} ${endMonth}`, 'YYYY MM').valueOf();
           // per date
           let dateBased = [];
           let orders = await database.purchaseOrder.findAll({
             where:{
               timestamps:{
                 [Op.lt]: endTimestamps,
-                [Op.gt]: startTimestamps
+                [Op.gt]: beginTimestamps
               }
             },
             order:[['timestamps','ASC']],
@@ -545,7 +550,7 @@ function lib({
                 attributes:['action']
               },{
                 model:database.product,
-                attributes:['code','brand'],
+                attributes:['code','brand','price'],
                 include:[
                   {model:database.purchaseDetail,attributes:['quantity','totalPricePerItem']}
                 ]
@@ -580,14 +585,8 @@ function lib({
               });
             }
           }
-          // per customer
-          let customerBased = JSON.parse(JSON.stringify(Object.assign([], dateBased))); // to deep clone, because src reference to an obj, it only copies that reference value
-          customerBased.sort((a,b) => a.customer.localeCompare(b.customer));
-          // per product
-          let productBased = JSON.parse(JSON.stringify(Object.assign([],dateBased)));
-          productBased.sort((a,b) => a.code.localeCompare(b.code));
           await t.commit();
-          return [dateBased,customerBased,productBased];
+          return dateBased;
         } catch(e) {
           console.log(e);
           await t.rollback();
@@ -900,6 +899,20 @@ function lib({
           await t.rollback();
           throw new Error(e);
         }
+      },
+
+      /*
+        Transform the filtered data to per customer, per product,
+        per date
+      */
+      async toObjArr(dateBased){
+        // per customer
+        let customerBased = JSON.parse(JSON.stringify(Object.assign([], dateBased))); // to deep clone, because src reference to an obj, it only copies that reference value
+        customerBased.sort((a,b) => a.customer.localeCompare(b.customer));
+        // per product
+        let productBased = JSON.parse(JSON.stringify(Object.assign([],dateBased)));
+        productBased.sort((a,b) => a.code.localeCompare(b.code));
+        return [dateBased,customerBased,productBased];
       },
 
       /*
