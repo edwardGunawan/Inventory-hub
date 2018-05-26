@@ -76,7 +76,7 @@ class Create extends Component {
       if(status === 'OK') {
         // console.log(message);
         // console.log('here after create');
-        this.props.history.replace('/Search'); // reroute to search
+        this.props.history.replace('/InOut'); // reroute to search
       }else {
         console.log(message);
       }

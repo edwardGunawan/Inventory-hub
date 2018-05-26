@@ -115,7 +115,7 @@ class Inout extends Component {
     ipcRenderer.on('reply-convert-pdf', (evt,args) => {
       let {status} = args;
       if(status === 'OK') {
-        this.props.history.replace('/Search');
+        this.props.history.push('/TransactionHistory');
       }
     })
   }

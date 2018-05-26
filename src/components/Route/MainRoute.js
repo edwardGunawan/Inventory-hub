@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Route} from 'react-router-dom';
-import Search from '../Search/Search';
+// import Search from '../Search/Search';
 import Inout from '../Inout/Inout';
 import Settings from '../Settings/Settings';
 import Analytics from '../Analytics/Analytics';
@@ -33,7 +33,7 @@ class MainRoute extends Component {
     if(access === 'admin_username') {
       return (
         <div>
-          <Route exact path="/Search" render={() => <Search access={access}/>} />
+          {/*}<Route exact path="/Search" render={() => <Search access={access}/>} /> */}
           <Route path="/Analytics" component={Analytics}/>
           <Route path="/Settings" component={Settings}/>
         </div>
@@ -41,8 +41,8 @@ class MainRoute extends Component {
     } else {
       return (
         <div>
-          <Route exact path="/Search" render={() => <Search access={access}/>} />
-          <Route path="/InOut" component={Inout}/>
+          {/*<Route exact path="/Search" render={() => <Search access={access}/>} /> */}
+          <Route exact path="/InOut" component={Inout}/>
           <Route path="/Create" component={Create}/>
           <Route path="/TransactionHistory" component={TransactionHistory}/>
                 {/*}  render={() =>
