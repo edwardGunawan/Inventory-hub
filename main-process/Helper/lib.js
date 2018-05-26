@@ -3,23 +3,12 @@ const numeral = require('numeral');
 const path = require('path');
 
 function lib({
-  SheetNames=[], // SheetNames
-  Sheets={}, // Sheet
-  title ='Transaction',
-  author='Edward Huang',
   database,
   pathname=path.join(__dirname,'../TransactionHistory/out.xlsx')
 } = {}) {
   try {
     if(typeof database === 'undefined') {
-      // throw new Error('Need to provide database');
       throw 'Need to provide database';
-    }
-
-    const wb = {SheetNames, Sheets};
-    wb.Props = {
-      Title: title,
-      Author: author
     }
 
     const Op = database.Sequelize.Op;
@@ -965,6 +954,9 @@ function lib({
       */
       appendToWb(ws={}, ws_name='raw data') {
         try {
+          let SheetNames =[];
+          let Sheets ={};
+          wb={SheetNames,Sheets};
           XLSX.utils.book_append_sheet(wb,ws,ws_name);
         } catch(e) {
           console.log(e);
@@ -988,9 +980,9 @@ function lib({
           // console.log('write to excel pathname:', pathname, 'wb: ', wb);
           let fileName;
           if(ws_name.length > 1){
-            fileName = `purchase_${moment().format('YYYY_MM_DD_HH_MM_SS')}.xlsx`
+            fileName = `purchase_${moment().format('YYYY_MM_DD_HH_MM_SS_x')}.xlsx`
           }else {
-            fileName=`${based[0]}_${moment().format('YYYY_MM_DD_HH_MM_SS')}.xlsx`
+            fileName=`${based[0]}_${moment().format('YYYY_MM_DD_HH_MM_SS_x')}.xlsx`
           }
           XLSX.writeFile(wb,`${pathname}/${fileName}`);
         } catch(e) {
