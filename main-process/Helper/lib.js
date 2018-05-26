@@ -536,8 +536,8 @@ function lib({
           let orders = await database.purchaseOrder.findAll({
             where:{
               timestamps:{
-                [Op.lt]: endTimestamps,
-                [Op.gt]: beginTimestamps
+                [Op.gte]: beginTimestamps,
+                [Op.lt]: endTimestamps
               }
             },
             order:[['timestamps','ASC']],
@@ -906,14 +906,26 @@ function lib({
         Transform the filtered data to per customer, per product,
         per date
       */
-      async toObjArr(dateBased){
-        // per customer
-        let customerBased = JSON.parse(JSON.stringify(Object.assign([], dateBased))); // to deep clone, because src reference to an obj, it only copies that reference value
-        customerBased.sort((a,b) => a.customer.localeCompare(b.customer));
-        // per product
-        let productBased = JSON.parse(JSON.stringify(Object.assign([],dateBased)));
-        productBased.sort((a,b) => a.code.localeCompare(b.code));
-        return [dateBased,customerBased,productBased];
+      async toObjArr(dateBased,category){
+        try {
+          let ret=JSON.parse(JSON.stringify(Object.assign([], dateBased)));
+          switch(category) {
+            case 'customer':
+              // per customer
+              ret = JSON.parse(JSON.stringify(Object.assign([], dateBased))); // to deep clone, because src reference to an obj, it only copies that reference value
+              ret.sort((a,b) => a.customer.localeCompare(b.customer));
+              break;
+            case 'product':
+              // per product
+              ret = JSON.parse(JSON.stringify(Object.assign([],dateBased)));
+              ret.sort((a,b) => a.code.localeCompare(b.code));
+              break;
+          }
+          return ret;
+        } catch(e) {
+          console.log(e);
+          throw new Error(e);
+        }
       },
 
       /*
@@ -923,20 +935,28 @@ function lib({
       createSheet(objArr=[], based='date') {
         if(typeof require !== 'undefined') XLSX = require('xlsx');
         let header = [];
+        let newObjArr=JSON.parse(JSON.stringify(Object.assign([], objArr)));
         switch(based) {
           case 'customer':
-            header = ["customer","date","action","code","brand","quantity",
+            header=["customer","date","action","code","brand","quantity",
             "discount","price","subTotal"];
             break;
           case 'product':
             header=["code","brand","date","action","quantity","customer","discount",
             "price","subTotal"];
             break;
+          case 'customerHistory':
+            header=["date","name","action"];
+            break;
+          case 'productHistory':
+            header=["date","quantity","code","brand","price","action"];
+            break;
           default:
-            header = ["date","customer","code","brand","action","quantity",
+            header=["date","customer","code","brand","action","quantity",
             "discount","price","subTotal"];
         }
-        let ws = XLSX.utils.json_to_sheet(objArr,{header:header});
+        // console.log('header ', header, 'based', based, 'newbjArr', newObjArr);
+        let ws = XLSX.utils.json_to_sheet(newObjArr,{header:header});
         return ws;
       },
 
@@ -947,23 +967,35 @@ function lib({
         try {
           XLSX.utils.book_append_sheet(wb,ws,ws_name);
         } catch(e) {
+          console.log(e);
           throw new Error(e);
         }
 
       },
       // https://github.com/SheetJS/js-xlsx/issues/610
       /*
-        Argument takes array of objArr, content and array of ws_name sheetname
+        Argument takes array of objArr, content and array of
+        ws_name sheetname for excel
+        based is for iterating the which section of the header
         */
       writeToSheet(ws_name=[],objArr,...based) {
         try {
           ws_name.forEach((name,index) => {
-            // console.log('obj based: ', based[index], name);
+            // console.log(based[index]);
+            // console.log('obj based: ', name);
             this.appendToWb(this.createSheet(objArr,based[index]),name);
           });
-          XLSX.writeFile(wb,pathname);
+          // console.log('write to excel pathname:', pathname, 'wb: ', wb);
+          let fileName;
+          if(ws_name.length > 1){
+            fileName = `purchase_${moment().format('YYYY_MM_DD_HH_MM_SS')}.xlsx`
+          }else {
+            fileName=`${based[0]}_${moment().format('YYYY_MM_DD_HH_MM_SS')}.xlsx`
+          }
+          XLSX.writeFile(wb,`${pathname}/${fileName}`);
         } catch(e) {
-          throw e;
+          console.log(e);
+          throw new Error(e);
         }
       }
     }

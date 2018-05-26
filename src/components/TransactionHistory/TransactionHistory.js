@@ -46,6 +46,8 @@ class TransactionHistory extends Component {
     ipcRenderer.removeAllListeners('reply-transaction-history-init');
     ipcRenderer.removeAllListeners('get-transaction');
     ipcRenderer.removeAllListeners('reply-get-transaction');
+    ipcRenderer.removeAllListeners('transfer-excel');
+    ipcRenderer.removeAllListeners('reply-transfer-excel');
   }
 
   init() {
@@ -197,6 +199,18 @@ class TransactionHistory extends Component {
   handleSubmit(e) {
     e.preventDefault();
     console.log('submit button', e);
+    let {optionTitle,filterResult} = this.state;
+    ipcRenderer.send('transfer-excel',{category:optionTitle,filterResult});
+    ipcRenderer.on('reply-transfer-excel',(evt,data) => {
+      let {status,message} = data;
+      if(status === 'OK') {
+        console.log(message);
+        ipcRenderer.removeAllListeners('transfer-excel');
+        ipcRenderer.removeAllListeners('reply-transfer-excel');
+      }else {
+        console.log(message);
+      }
+    })
 
   }
 

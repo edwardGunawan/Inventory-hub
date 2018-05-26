@@ -7,6 +7,7 @@ const path = require('path');
 const dirPath = app.getPath('desktop');
 let libInstance;
 checkOrCreateDir(path.join(dirPath,'inventoryTransactionHistory')).then((transactionPath) => {
+  console.log('in transactionHistory', transactionPath);
   libInstance = require('../Helper/lib.js')({database:db,pathname:transactionPath});
 });
 
@@ -28,7 +29,7 @@ ipcMain.on('get-transaction', async (evt, data) => {
     // it can only be assigned to default if the value is undefined
     let {beginTimestamps,endTimestamps=moment(beginTimestamps).add(1,'months').valueOf(),category} = data;
     let transactionHistory;
-    console.log('endTimestamps', endTimestamps);
+
     switch(category) {
       case 'Product':
         transactionHistory = await libInstance.getProductHistoryDetail(beginTimestamps,endTimestamps);
@@ -40,6 +41,7 @@ ipcMain.on('get-transaction', async (evt, data) => {
         transactionHistory = await libInstance.getCustomerHistoryDetail(beginTimestamps,endTimestamps);
         break;
     }
+    console.log('transactionHistory', transactionHistory);
     evt.sender.send('reply-get-transaction', {status:'OK', message:transactionHistory});
   }catch (e) {
     evt.sender.send('reply-get-trasaction', {status:'Error', message:e});
@@ -47,9 +49,28 @@ ipcMain.on('get-transaction', async (evt, data) => {
   }
 });
 
-// TODO:
   // Transform to Excel
-
+ipcMain.on('transfer-excel', async(evt,data) => {
+  try {
+    let {category, filterResult} = data;
+    let objArr =[];
+    switch(category) {
+      case 'Order':
+        libInstance.writeToSheet(['based Date','based Customer','based Product'],filterResult,'date','customer','product');
+        break;
+      case 'Product':
+        libInstance.writeToSheet(['based Date'],filterResult,'productHistory');
+        break;
+      case 'Customer':
+        libInstance.writeToSheet(['based Date'],filterResult,'customerHistory');
+        break;
+    }
+    evt.sender.send('reply-transfer-excel',{status:'OK', message:'All data is converted'});
+  } catch(e) {
+    console.log(e);
+    throw e;
+  }
+});
 
 async function checkOrCreateDir(path) {
   try {
