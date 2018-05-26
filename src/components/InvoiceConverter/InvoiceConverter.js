@@ -35,30 +35,32 @@ class InvoiceConverter extends Component {
         <Alert color="info">
           Charge For: {other.customer}
         </Alert>
-        <Table borderless="true" className="table-invoice">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Brand</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item,i) => {
-              return (
-                <tr key={i}>
-                  <th scope="row">{item.code}</th>
-                  <td>{item.brand}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.price}</td>
-                  <td>{item.total}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </Table>
+        <div className="table-invoice">
+          <Table borderless="true">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Brand</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item,i) => {
+                return (
+                  <tr key={i}>
+                    <th scope="row">{item.code}</th>
+                    <td>{item.brand}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.price}</td>
+                    <td>{item.total}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </Table>
+        </div>
       </div>
 
     )

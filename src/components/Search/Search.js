@@ -29,7 +29,7 @@ class Search extends Component {
     // debounce
     // this.handleSearch= debounce(this.handleSearch,500)
     // console.log('Go through component Did Mount in Search');
-    this.show();
+    /*this.show();*/
   }
 
 
@@ -144,7 +144,7 @@ class Search extends Component {
     return (
       <div>
         {access}
-        <Input type="text" placeholder="search" onChange={(e) => this.onSearch(e.target.value)}/>
+        {/*}<Input type="text" placeholder="search" onChange={(e) => this.onSearch(e.target.value)}/> */}
         <div className="progress-table-container">
           {(isLoaded) ? <Progress animated color="info" value="100"/>:
              <ShowTable

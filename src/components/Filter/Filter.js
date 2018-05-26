@@ -3,21 +3,23 @@ import PropTypes from 'prop-types';
 import {Container,Row,Col} from 'reactstrap';
 import Select from 'react-select';
 import moment from 'moment';
+import './Filter.css';
 
 class Filter extends Component {
   constructor(props) {
     super(props);
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.toOption = this.toOption.bind(this);
-    this.filterObj = this.filterObj.bind(this);
-    this.showFilter = this.showFilter.bind(this)
+    this.disabledFilter = this.disabledFilter.bind(this);
     this.state = {
       startOptions:[],
       endOptions: [],
+      actionOptions:[],
+      brandOptions:[],
+      customerOptions:[],
       beginTimestamps:'',
       disabled:true,
-      transactionHistory:{},
-      filterComponent:''
+      transactionHistory:{}
     }
   }
 
@@ -28,14 +30,23 @@ class Filter extends Component {
         beginTimestamps:0,
         disabled:true,
         startDateValue:'', // all value option is cleared
-        endDateValue:'' // all vlaue option is cleared
+        endDateValue:'', // all vlaue option is cleared
+        transactionHistory:{}, // reset the entire transactionHistory
+        brandDateValue:'',
+        customerDateValue:'',
+        actionDateValue:''
       })
       this.toOption(nextProps.dates,'startOptions');
     }
     if(nextProps.transactionHistory !== this.props.transactionHistory) {
       console.log('go through transactionHistory');
-      this.showFilter(nextProps.optionTitle);
-      this.setState({transactionHistory:nextProps.transactionHistory});
+      // this.showFilter(nextProps.optionTitle);
+      this.setState({
+        transactionHistory:nextProps.transactionHistory,
+        actionOptions: nextProps.filter.actionOptions,
+        brandOptions: nextProps.filter.brandOptions,
+        customerOptions: nextProps.filter.customerOptions
+      });
     }
   }
 
@@ -43,6 +54,7 @@ class Filter extends Component {
     return (selectedOption) => { // apply currying for all filter
       if(selectedOption !== null && typeof selectedOption.value !== 'undefined') {
         let {value,label} = selectedOption;
+        console.log('selecteOption', selectedOption);
         switch(category) {
           case 'startOptions':
             let filterDate = this.props.dates.filter((date) => moment(date,["MM-DD-YYYY", "YYYY-MM-DD"]).isAfter(moment(label,["MMM-DD-YYYY", "YYYY-MMM-DD"])));
@@ -58,9 +70,17 @@ class Filter extends Component {
             this.setState({endDateValue:selectedOption});
             this.props.onChangeDate({beginTimestamps:this.state.beginTimestamps,endTimestamps:value});
             break;
+          default:
+            let attr = category.substring(0,category.indexOf('Options'));
+            // console.log('selectedOption in default', selectedOption);
+            this.setState({[`${attr}DateValue`]:selectedOption});
+            this.props.onFilter({[`${attr}`]:value});
         }
+      } else {
+        let attr = category.substring(0,category.indexOf('Options'));
+        this.setState({[`${attr}DateValue`]:''});
+        this.props.onFilter({[`${attr}`]:''});
       }
-
     }
   }
 
@@ -75,49 +95,47 @@ class Filter extends Component {
     this.setState({[optionType]:option});
   }
 
-  // TODO:
-  /*
-    dynamic filter option
-  */
-  filterObj(transactionHistory) {
 
-  }
-  //TODO
-  /*
-    getting the filtered Component
-  */
-  showFilter(optionTitle){
-    let filterComponent;
-    switch(optionTitle) {
-      case 'Order':
-        break;
+  disabledFilter(category) {
+    const {transactionHistory} = this.state;
+    let bool = !(typeof transactionHistory !== 'undefined' && transactionHistory.length > 0);
+    switch(this.props.optionTitle) {
       case 'Product':
-        break;
+        return !(category === 'brand' || category === 'action') || bool;
       case 'Customer':
-        break;
+        return !(category === 'action') || bool;
+      default:
+        return false || bool;
     }
-    this.setState({filterComponent});
   }
-
-
 
   render() {
     let {startOptions,
         endOptions,
+        actionOptions,
+        brandOptions,
+        customerOptions,
         disabled,
         startDateValue,
         endDateValue,
+        brandDateValue,
+        customerDateValue,
+        actionDateValue,
         filterComponent} = this.state;
     return (
       <div>
-        <Container>
+        <Container className="filter-container">
           <Row>
             <Col sm="6"><Select value={startDateValue} onChange={this.handleSelectChange('startOptions')} options={startOptions} placeholder="start date"/></Col>
             <Col sm="6"><Select value={endDateValue} onChange={this.handleSelectChange('endOptions')} options={endOptions} placeholder="end date" isDisabled={disabled}/></Col>
           </Row>
         </Container>
-        <Container>
-          {filterComponent}
+        <Container className="filter-container">
+          <Row>
+            <Col sm="4"><Select value={brandDateValue} onChange={this.handleSelectChange('brandOptions')} options={brandOptions} placeholder="brand" isDisabled={this.disabledFilter('brand')} isClearable={true}/></Col>
+            <Col sm="4"><Select value={customerDateValue} onChange={this.handleSelectChange('customerOptions')} options={customerOptions} placeholder="customer name" isDisabled={this.disabledFilter('customer')} isClearable={true}/></Col>
+            <Col sm="4"><Select value={actionDateValue} onChange={this.handleSelectChange('actionOptions')} options={actionOptions} placeholder="action type" isDisabled={this.disabledFilter('action')} isClearable={true}/></Col>
+          </Row>
         </Container>
       </div>
     )
@@ -126,7 +144,7 @@ class Filter extends Component {
 
 Filter.propTypes = {
   optionTitle: PropTypes.string, // whats the parent element
-  filter: PropTypes.arrayOf(PropTypes.object), // the filter options based on each optionTitle
+  filter: PropTypes.objectOf(PropTypes.array), // the filter options based on each optionTitle
   transactionHistory: PropTypes.arrayOf(PropTypes.object), // filter content after user changing the selection
   dates: PropTypes.arrayOf(PropTypes.string), // dates
   onChangeDate: PropTypes.func, // handling dates change

@@ -80,17 +80,6 @@ class ShowTable extends Component{
     let getTd = (prod,i) => {
       let {id,price,brand,code,quantity,total} = prod;
       switch(parent) {
-        case 'search':
-          return (
-            <tr key={i}>
-              <td>{id}</td>
-              <td>{code}</td>
-              <td>{numeral(quantity).format('0,0')}</td>
-              <td>{numeral(price).format('$0,0.00')}</td>
-              <td>{brand}</td>
-              <td><Button onClick={this.handleTableClick}>{this.state.actionButton}</Button></td>
-            </tr>
-          );
         case 'customer':
           let {name} = prod;
           return (

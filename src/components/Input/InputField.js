@@ -120,7 +120,6 @@ class InputField extends Component {
   // on select in customer when customer are typing or adding it will
   // get added to selectedOption
   handleInputChange(evt) {
-    // console.log(evt.target.name);
     this.setState({
       [evt.target.name] : evt.target.value
     });

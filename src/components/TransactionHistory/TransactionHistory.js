@@ -1,11 +1,16 @@
 import React, {Component} from 'react';
 import Filter from '../Filter/Filter';
+import PreviewTable from './PreviewTable';
 import {
    ButtonDropdown,
    DropdownToggle,
    DropdownMenu,
-   DropdownItem } from 'reactstrap';
+   DropdownItem,
+   Button } from 'reactstrap';
+import './TransactionHistory.css';
+
 const {ipcRenderer} = window.require('electron');
+
 
 class TransactionHistory extends Component {
   constructor(props) {
@@ -15,14 +20,20 @@ class TransactionHistory extends Component {
     this.select = this.select.bind(this);
     this.handleChangeDate = this.handleChangeDate.bind(this);
     this.handleFilter = this.handleFilter.bind(this);
+    this.handleRenderFilter = this.handleRenderFilter.bind(this);
     this.renderDates = this.renderDates.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
-      orderDates:{},
-      customerHistoryDates:{},
-      productHistoryDates:{},
-      transactionHistory:[], // the transactionHistory that is given
-      optionTitle: 'Options',
-      dropdownOpen:false
+      orderDates:{}, // from timestamps initOrderHistory
+      customerHistoryDates:{}, // from timestamps init customerHistory
+      productHistoryDates:{}, // from timestamps init productHistory
+      transactionHistory:[], // the transactionHistory after search for the dates
+      optionTitle: 'Options', // option title, customer, product, order
+      filterResult:[], // the result that will convert to excel
+      filterObj:{}, // filter field, and value from the filter underneath the dates
+      dropdownOpen:false,
+      tableHeader:[]
     }
   }
 
@@ -65,11 +76,12 @@ class TransactionHistory extends Component {
 
   select(evt) {
     this.setState({
-      optionTitle: evt.target.innerText
+      optionTitle: evt.target.innerText,
+      transactionHistory:[]
     });
   }
 
-  // TODO:
+
   // trigger ipcMain getCustomerHistoryDetail, getProductHistoryDetail,
   // getPurchaseDetail
   // dates obj where there is start and end timestamps
@@ -81,8 +93,9 @@ class TransactionHistory extends Component {
         let {status,message} = data;
         if(status === 'OK') {
           console.log(message);
-          this.setState({transactionHistory:message});
-        }else {
+          const tableHeader = Object.keys(message[0]);
+          this.setState({transactionHistory:message,tableHeader,filterResult:message});
+        } else {
           console.log(message);
         }
         ipcRenderer.removeAllListeners('get-transaction');
@@ -91,10 +104,75 @@ class TransactionHistory extends Component {
     }
   }
 
-  //TODO:
-  // sort product, brand, customer while user get choosing between them
-  handleFilter(obj){
+  // sort action, brand, customer while user get choosing between them
+  handleRenderFilter(arr){
+    let actionOptions = [];
+    let brandOptions = [];
+    let customerOptions = [];
+    let set = new Set();
+    for(let {action,brand,customer} of arr) {
+      if(!set.has(action)) {
+        actionOptions.push({value:action, label:action});
+      }
+      if(!set.has(brand)) {
+        brandOptions.push({value:brand, label:brand});
+      }
+      if(!set.has(customer)) {
+        customerOptions.push({value:customer, label:customer});
+      }
+      set.add(action);
+      set.add(brand);
+      set.add(customer);
+    }
+    return {actionOptions,brandOptions,customerOptions};
+  }
 
+
+  /*
+    handle all filter
+    setState for filter
+  */
+  handleFilter(obj){
+    let {filterObj} = this.state;
+    Object.keys(obj).forEach((o) => {
+      if(obj[o]){
+        filterObj = {...filterObj,[o]:obj[o]};
+      }else {
+        delete filterObj[o];
+      }
+    });
+    this.handleSearch(filterObj);
+  }
+
+  /*
+    handleSearch
+    loop through each transactionHistory
+    filter based on brand
+    filter based on customer
+    filter based on action
+    send it to showTable
+  */
+  handleSearch(filterObj) {
+    const {transactionHistory} = this.state;
+    let filterResult = [];
+
+    let {brand='all',customer='all',action='all'} = filterObj;
+    console.log('go through handle Search ', brand,customer,action);
+    filterResult = transactionHistory.filter((obj) => {
+      return brand === 'all' || obj.brand === brand;
+    });
+    console.log('filterResult after brand', filterResult);
+    filterResult = filterResult.filter((obj) => {
+      return customer === 'all' || obj.customer === customer;
+    });
+    filterResult = filterResult.filter((obj) => {
+      return action === 'all' || obj.action === action;
+    });
+
+    this.setState({
+      filterResult,
+      filterObj
+    });
   }
 
   /*
@@ -116,8 +194,15 @@ class TransactionHistory extends Component {
     return dates;
   }
 
+  handleSubmit(e) {
+    e.preventDefault();
+    console.log('submit button', e);
+
+  }
+
   render() {
-    let {optionTitle,transactionHistory} = this.state;
+    let {optionTitle,transactionHistory,tableHeader,filterResult} = this.state;
+    let filterOptions = this.handleRenderFilter(transactionHistory);
     let dates = this.renderDates(optionTitle);
     return (
       <div>
@@ -136,8 +221,11 @@ class TransactionHistory extends Component {
                 dates={dates}
                 onChangeDate={this.handleChangeDate(optionTitle)}
                 onFilter={this.handleFilter}
+                filter={filterOptions}
                 transactionHistory={transactionHistory}/>
-              {/*optionContent*/}
+        {(transactionHistory.length === 0)? '' :
+              <PreviewTable tableHeader={tableHeader} tableBody={filterResult} />}
+        <Button className="submit-button" outline size="sm" onClick={this.handleSubmit} color="success">Convert To Excel</Button>
       </div>
     );
   }

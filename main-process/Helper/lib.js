@@ -1,4 +1,5 @@
 const moment = require('moment');
+const numeral = require('numeral');
 const path = require('path');
 
 function lib({
@@ -104,7 +105,7 @@ function lib({
               data = products.map((product) => {
                 return {
                   code: product.get('code'),
-                  quantity:  product.get('quantity'),
+                  quantity: product.get('quantity'),
                   price: product.get('price'),
                   brand: product.get('brand')
                 }
@@ -438,7 +439,7 @@ function lib({
             let customerName = await customer.get('name',{transaction:t});
             let action = await history.get('action',{transaction:t});
             let actionName = await action.get('action',{transaction:t});
-            basedDate = [...basedDate,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),customerName,action:actionName}]
+            basedDate = [...basedDate,{date:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),customerName,action:actionName}]
           }
           await t.commit();
           return basedDate;
@@ -491,7 +492,7 @@ function lib({
             let code = await product.get('code',{transaction:t});
             let action = await history.get('action',{transaction:t});
             let actionName = await action.get('action',{transaction:t});
-            dateBased = [...dateBased,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),quantity,code,brand,price,action:actionName}];
+            dateBased = [...dateBased,{date:moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),quantity:numeral(quantity).format('0.0'),code,brand,price:numeral(price).format('$0,0.00'),action:actionName}];
           }
           await t.commit();
           return dateBased;
@@ -573,15 +574,15 @@ function lib({
               let quantity = await detail.get('quantity',{transaction:t});
               let subTotal = await detail.get('totalPricePerItem',{transaction:t});
               dateBased.push({
-                date: moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+                date: moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),
                 customer: customerName,
-                discount,
+                discount:numeral(discount).format('0.0%'),
                 action: actionName,
                 code,
                 brand,
-                quantity,
-                price,
-                subTotal
+                quantity:numeral(quantity).format('0.0'),
+                price: numeral(price).format('$0,0.00'),
+                subTotal: numeral(subTotal).format('$0,0.00')
               });
             }
           }
@@ -641,11 +642,11 @@ function lib({
               let code = await product.get('code',{transaction:t});
               let brand = await product.get('brand',{transaction:t});
               data.push({
-                timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+                date:moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),
                 code,
                 brand,
-                quantity,
-                subTotal,
+                quantity: numeral(quantity).format('0.0'),
+                subTotal: numeral(subTotal).format('$0,0.00'),
                 action:actionName,
               });
             }
@@ -692,11 +693,11 @@ function lib({
             let customer = await order.get('customer',{transaction:t});
             let customerName = await customer.get('name',{transaction:t});
             data.push({
-              timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+              date:moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),
               brand,
-              quantity,
-              price,
-              subTotal,
+              quantity: numeral(quantity).format('0.0'),
+              price: numeral(price).format('$0,0.00'),
+              subTotal: numeral(subTotal).format('$0,0.00'),
               action:actionName,
               customer:customerName
             });
@@ -744,11 +745,11 @@ function lib({
               let customer = await order.get('customer',{transaction:t});
               let customerName = await customer.get('name',{transaction:t});
               data.push({
-                timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+                date:moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),
                 code,
-                quantity,
-                price,
-                subTotal,
+                quantity:numeral(quantity).format('0.0'),
+                price:numeral(price).format('$0,0.00'),
+                subTotal:numeral(subTotal).format('$0,0.00'),
                 action:actionName,
                 customer:customerName
               });
@@ -795,7 +796,7 @@ function lib({
             let quantity = await history.get('quantity',{transaction:t});
             let product = await history.get('product',{transaction:t});
             let code = await product.get('code',{transaction:t});
-            data = [...data,{timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),code,quantity}];
+            data = [...data,{date:moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),code,quantity:numeral(quantity).format('0.0')}];
           }
           await t.commit();
           return data;
@@ -844,10 +845,10 @@ function lib({
           let action = await history.get('action',{transaction:t});
           let actionName = await action.get('action',{transaction:t});
           data.push({
-            timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),
+            date:moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),
             code,
             action:actionName,
-            quantity
+            quantity:numeral(quantity).format('0.0')
           });
         }
         await t.commit();
@@ -890,7 +891,7 @@ function lib({
             let timestamps = await history.get('timestamps',{transaction:t});
             let customer = await history.get('customer',{transaction:t});
             let name = await customer.get('name',{transaction:t});
-            data.push({timestamps:moment.utc(timestamps).local().format('YYYY/MM/DD/HH:mm'),name});
+            data.push({date:moment.utc(timestamps).local().format('YYYY/MM/DD HH:mm'),name});
           }
           await t.commit();
           return data;
