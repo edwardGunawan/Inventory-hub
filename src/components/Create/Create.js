@@ -60,7 +60,6 @@ class Create extends Component {
     ipcRenderer.send('get-customer', '');
     ipcRenderer.on('reply-get-customer', (event,arg) => {
       let {message,status} = arg;
-      // console.log('message on get customer', message);
       if(status === 'OK') {
         this.setState({customerNames: message});
       }else {
@@ -74,8 +73,6 @@ class Create extends Component {
     ipcRenderer.on(`reply-${channel}`, (event,arg)=>{
       let {status,message} = arg;
       if(status === 'OK') {
-        // console.log(message);
-        // console.log('here after create');
         this.props.history.replace('/InOut'); // reroute to search
       }else {
         console.log(message);
@@ -104,10 +101,8 @@ class Create extends Component {
 
 
   select(e) {
-    // console.log(e.target.innerText);
     let selected = e.target.innerText;
     let {productItems, customerNames} = this.state;
-    // console.log(customerNames,'inside then');
     this.setState({
       content: selected,
       value: (selected === 'Create Product') ?
@@ -123,7 +118,6 @@ class Create extends Component {
 
 
   render() {
-    // TODO Set variable as the renderer as the button part
     let {content,value} = this.state;
     return (
       <div>

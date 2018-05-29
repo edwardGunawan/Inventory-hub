@@ -6,6 +6,7 @@ import Settings from '../Settings/Settings';
 import Analytics from '../Analytics/Analytics';
 import Create from '../Create/Create';
 import TransactionHistory from '../TransactionHistory/TransactionHistory';
+import Restock from '../Restock/Restock';
 
 
 /*
@@ -41,13 +42,10 @@ class MainRoute extends Component {
     } else {
       return (
         <div>
-          {/*<Route exact path="/Search" render={() => <Search access={access}/>} /> */}
           <Route exact path="/InOut" component={Inout}/>
           <Route path="/Create" component={Create}/>
           <Route path="/TransactionHistory" component={TransactionHistory}/>
-                {/*}  render={() =>
-                   <BulkCreate onImportExcel={this.handleImportExcel}/>
-                 }*/}
+          <Route path="/Restock" component={Restock} />
         </div>
       )
     }

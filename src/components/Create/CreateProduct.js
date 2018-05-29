@@ -3,14 +3,9 @@ import {Button,
         FormGroup,
         FormText,
         Label,
-        Input,
-        ButtonDropdown,
-        DropdownToggle,
-        DropdownMenu,
-        DropdownItem
+        Input
       } from 'reactstrap';
 import PropTypes from 'prop-types';
-// import InputList from '../Input/InputList';
 import ShowTable from '../ShowTable/ShowTable';
 import InputField from '../Input/InputField';
 import './CreateProduct.css';
@@ -20,35 +15,23 @@ class CreateProduct extends Component {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmitClick = this.handleSubmitClick.bind(this);
-    // this.handleSelectEnter = this.handleSelectEnter.bind(this);
     this.handleClickAction = this.handleClickAction.bind(this);
     this.toOptions = this.toOptions.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.select = this.select.bind(this);
     this.state = {
       tableHeader:['Code','Brand', 'Quantity', 'Price','Action'],
-      tableBody:[],
-      action: 'New',
-      dropdownOpen: false
+      tableBody:[]
     }
   }
 
 
   handleSubmit() {
     let{tableBody} = this.state;
-    // tableBody.forEach((inputObj) => {
-    //   console.log(inputObj);
-    // });
-    if(this.state.action === 'New') {
+    if(tableBody.length > 0) {
       this.props.onSubmit(tableBody,'createProduct');
-    } else {
-      this.props.onSubmit(tableBody,'restock')
     }
-
   }
 
   toOptions(productItems) {
-    // console.log(productItems);
     return productItems.map((product) => {
       return {value:product.code,label:product.code};
     });
@@ -56,7 +39,6 @@ class CreateProduct extends Component {
 
 
   handleClickAction(idx) {
-    // console.log(idx);
     // decreasing the value of the tableBody
     this.setState({
       tableBody: this.state.tableBody.filter((obj,i) => i!==idx)
@@ -64,49 +46,28 @@ class CreateProduct extends Component {
   }
 
   handleSubmitClick(newItemObj) {
-    // console.log(this.state.tableBody);
-    this.setState({
-      tableBody: this.state.tableBody.concat(newItemObj)
-    });
-  }
-
-  toggle() {
-    this.setState({
-      dropdownOpen: !this.state.dropdownOpen
-    });
-  }
-
-  select(evt) {
-    this.setState({
-      action: evt.target.innerText,
-      tableBody:[]
-    });
+    let {code} = newItemObj;
+    let indexFound = this.state.tableBody.findIndex((item) => code.toLowerCase() === item.code.toLowerCase());
+    if(indexFound === -1) {
+      this.setState({
+        tableBody: this.state.tableBody.concat(newItemObj)
+      });
+    }else {
+      // TODO warning for the item is already been created!
+    }
   }
 
   render() {
-    let {tableHeader,tableBody,action} = this.state;
+    let {tableHeader,tableBody} = this.state;
     // console.log(tableBody,'in createProduct');
     let {productItems} = this.props;
     let options = this.toOptions(this.props.productItems);
     return (
       <div className="form-product">
-        <ButtonDropdown direction="right" isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-          <DropdownToggle caret size="sm" className="drop-down">
-            {action}
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem onClick={this.select}>
-              New
-            </DropdownItem>
-            <DropdownItem onClick={this.select}>
-              Restock
-            </DropdownItem>
-          </DropdownMenu>
-        </ButtonDropdown>
         <InputField button={'submit'}
                     parent={'product'}
                     onSubmitClick={this.handleSubmitClick}
-                    otherInfo={{options,productItems,action}} />
+                    otherInfo={{options,productItems}} />
         <div className="table">
           <ShowTable  button={'delete'}
                     onClickAction={this.handleClickAction}

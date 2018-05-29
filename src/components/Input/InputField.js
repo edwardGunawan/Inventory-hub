@@ -10,7 +10,6 @@ import {
 import Select from 'react-select';
 import Creatable from 'react-select/lib/Creatable';
 import numeral from 'numeral';
-// import 'react-select/dist/react-select.css';
 
 /*
   All the InputField Component that is in the application
@@ -30,7 +29,6 @@ class InputField extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.clearInput = this.clearInput.bind(this);
     this.inputGroup = this.inputGroup.bind(this);
-    // this.creatableSelect = this.creatableSelect.bind(this);
     this.state = {
       otherInfo: this.props.otherInfo,
       selectedOption: '',
@@ -73,7 +71,7 @@ class InputField extends Component {
             quantity:item.quantity,
             selectedOption:(value === null) ? '' : value,
             // if action is not sell then no matter what quantity it will always pass, or else if based on quantity
-            isDisabled: ((this.props.parent === 'action' || action === 'Restock') && (action !== 'sell' || item.quantity !== 0)) ? false : true
+            isDisabled: ((this.props.parent === 'action') && (action !== 'sell' || item.quantity !== 0)) ? false : true
           });
         } else if(this.props.parent === 'product') {
           // if the value is not created yet, then it will enabled the other options
@@ -99,7 +97,6 @@ class InputField extends Component {
     e.preventDefault();
     // console.log(this.state, 'in handle submit');
     let {code,brand,quantity,price, otherInfo} = this.state;
-
     if(code && quantity > 0 && price > 0) {
       let toRet;
       if(this.props.parent === 'action') {
@@ -141,20 +138,11 @@ class InputField extends Component {
     const {selectedOption,otherInfo,brand,price,quantity} = this.state;
     switch(this.props.parent) {
       case 'product':
-        // const {productItems} = otherInfo;
-        console.log(otherInfo.action);
         return (
           <div>
             <FormGroup>
               <Label for="code">Code</Label>
-              {(otherInfo.action === 'New') ?
-              <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/> :
-                <Select
-                    onChange={this.handleSelectChange}
-                    isClearable
-                    name="form-field-name"
-                    options={otherInfo.options}
-                    />}
+              <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
             </FormGroup>
             <Form inline>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
@@ -171,21 +159,15 @@ class InputField extends Component {
               </FormGroup>
               <Button size="sm" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
             </Form>
-
           </div>
         )
       case 'customer':
-        // const {selectedOption,otherInfo} = this.state;
-        // const {otherInfo} = this.props;
-        // console.log(otherInfo.options);
-        // console.log(selectedOption);
         return (
           <div>
             <Label for="name">Customer Name</Label>
             <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
           </div>
         )
-      // case 'action' :
       default:
         return (
           <div>
@@ -220,12 +202,9 @@ class InputField extends Component {
     }
   }
   render() {
-    // const {button} = this.props;
-
     return (
       <div>
         {this.inputGroup()}
-        {/*<Button onClick={this.handleClick}>{button}</Button>*/}
       </div>
 
     )

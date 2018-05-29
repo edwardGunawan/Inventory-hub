@@ -84,7 +84,6 @@ class Action extends Component {
           value: item.code
         }
       }else {
-        // console.log('item in customer', item);
         return {
           label:item,
           value:item

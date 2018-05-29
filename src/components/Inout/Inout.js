@@ -25,7 +25,6 @@ class Inout extends Component {
     this.handleDiscountChange = this.handleDiscountChange.bind(this);
     this.convertToPdf = this.convertToPdf.bind(this);
     this.purchase = this.purchase.bind(this);
-    // this.toOptions = this.toOptions.bind(this);
     this.state = {
       customerNames: [],
       productItems:[],
@@ -141,6 +140,8 @@ class Inout extends Component {
         totalWithoutDiscount: this.state.totalWithoutDiscount+order.total,
         total:(this.state.totalWithoutDiscount + order.total) * (1-(this.state.discount/100))
       });
+    }else {
+      // TODO warning for custoemr already in buffer
     }
   }
 
