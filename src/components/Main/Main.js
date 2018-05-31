@@ -7,7 +7,7 @@ import {Container, Row, Col} from 'reactstrap';
 import createHistory from 'history/createBrowserHistory'
 
 
-const history = createHistory();
+export const history = createHistory();
 /*
   All Routes must be inside Router tag
 */
