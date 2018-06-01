@@ -49,7 +49,6 @@ class CreateCustomer extends Component {
   }
 
   toOptions(customerNames) {
-    // console.log(customerNames);
     return customerNames.map((name) => {
       return {value:name,label:name};
     });

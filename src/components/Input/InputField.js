@@ -85,6 +85,8 @@ class InputField extends Component {
         if(typeof item === 'undefined') {
           this.props.onSelectEnter(value); // pass it back to the parent, no button
         }
+      }else if(this.props.parent === 'process-customer') {
+        this.props.onSelectEnter(value); // pass it back to the parent, no button
       }
     }
     else {
@@ -166,6 +168,13 @@ class InputField extends Component {
           <div>
             <Label for="name">Customer Name</Label>
             <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
+          </div>
+        )
+      case 'process-customer':
+        return (
+          <div>
+            <Label for="name">Customer Name</Label>
+            <Select isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
           </div>
         )
       default:

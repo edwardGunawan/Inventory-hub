@@ -140,6 +140,7 @@ function lib({
             let {where,updates} = input;
             let instance = await db.findOne({where},{transaction:t});
             let action = await database.action.findOne({where:{action:'update'}},{transaction:t});
+            console.log(updates);
             let updatedInstance = await instance.update(updates,{transaction:t});
             if(category === 'product') {
               let quantity = await updatedInstance.get('quantity',{transaction:t});
@@ -151,7 +152,7 @@ function lib({
               promises.push(action.addProduct_transaction_history(transactionHistory,{transaction:t})); // action
             }else {
               let name = await updatedInstance.get('name',{transaction:t});
-              transactionHistory = await database.customerTransactionHistory.create({name},{transaction:t});
+              transactionHistory = await database.customerTransactionHistory.create(updates,{transaction:t});
               promises.push(instance.addCustomer_transaction(transactionHistory,{transaction:t})); // customer
               promises.push(action.addCustomer_transaction(transactionHistory,{transaction:t})); // action
             }

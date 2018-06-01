@@ -7,8 +7,10 @@ import Analytics from '../Analytics/Analytics';
 import Create from '../Create/Create';
 import TransactionHistory from '../TransactionHistory/TransactionHistory';
 import Restock from '../Product/Restock/Restock';
-import Update from '../Product/Update/Update';
-import Delete from '../Product/Delete/Delete';
+import UpdateProduct from '../Product/Update/Update';
+import DeleteProduct from '../Product/Delete/Delete';
+import UpdateCustomer from '../Customer/Update/Update';
+import DeleteCustomer from '../Customer/Delete/Delete';
 
 
 /*
@@ -37,8 +39,10 @@ class MainRoute extends Component {
       return (
         <div>
           {/*}<Route exact path="/Search" render={() => <Search access={access}/>} /> */}
-          <Route path="/Update" component={Update} />
-          <Route path="/Delete" component={Delete} />
+          <Route path="/UpdateCustomer" component={UpdateCustomer} />
+          <Route path="/DeleteCustomer" component={DeleteCustomer} />
+          <Route path="/UpdateProduct" component={UpdateProduct} />
+          <Route path="/DeleteProduct" component={DeleteProduct} />
           <Route path="/Analytics" component={Analytics}/>
           <Route path="/Settings" component={Settings}/>
 

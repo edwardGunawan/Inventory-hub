@@ -15,10 +15,16 @@ class NavComp extends Component {
           <p>{access}</p>
           <Nav vertical>
             <NavItem>
-              <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Update">Update</NavLink>
+              <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/UpdateCustomer">Update Customer</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Delete">Delete</NavLink>
+              <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/DeleteCustomer">Delete Customer</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/UpdateProduct">Update Product</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/DeleteProduct">Delete Product</NavLink>
             </NavItem>
             <NavItem>
               <NavLink tag={RRNavLink} disabled activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Analytics">Report</NavLink>

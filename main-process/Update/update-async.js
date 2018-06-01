@@ -21,8 +21,9 @@ ipcMain.on('update', async (event,data) => {
     let {input_arr,category} = data;
     let update_arr = input_arr.map((input) => {
       if(category === 'customer') {
-        let {name} = input;
-        return { where:{name},updates:{name} }
+        let {name,change} = input;
+        console.log(change);
+        return { where:{name},updates:{name:change} }
       }else {
         let {code,brand,price,quantity} = input;
         return { where:{code},updates:{brand,price,quantity} }

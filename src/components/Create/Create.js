@@ -136,7 +136,6 @@ class Create extends Component {
         </ButtonDropdown>
         {value}
       </div>
-
     )
   }
 }

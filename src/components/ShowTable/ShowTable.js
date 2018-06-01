@@ -81,10 +81,17 @@ class ShowTable extends Component{
       let {id,price,brand,code,quantity,total} = prod;
       switch(parent) {
         case 'customer':
-          let {name} = prod;
           return (
             <tr key={i}>
-              <td>{name}</td>
+              <td>{prod.name}</td>
+              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
+            </tr>
+          );
+        case 'process-customer':
+          return (
+            <tr key={i}>
+              <td>{prod.name}</td>
+              <td>{prod.change}</td>
               <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           );

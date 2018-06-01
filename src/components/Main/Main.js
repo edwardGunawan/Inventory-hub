@@ -15,7 +15,7 @@ class Main extends Component {
 
   render () {
     let {email, access} = this.props;
-    access = 'public_username';
+    access = 'admin_username';
     console.log('email is ', email, access);
     return (
         <Container>
