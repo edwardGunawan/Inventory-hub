@@ -98,7 +98,6 @@ class Delete extends Component {
                       parent={'process-customer'}
                       onSelectEnter={this.handleSelectEnter}
                       otherInfo={{options}} />
-                    {/*name.map((n,i) => <div key={i}>{n.name}</div>)*/}
           <ShowTable button={'Delete'}
                      onClickAction={this.handleClickAction}
                      tableBody={name}
