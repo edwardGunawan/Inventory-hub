@@ -11,6 +11,7 @@ import UpdateProduct from '../Product/Update/Update';
 import DeleteProduct from '../Product/Delete/Delete';
 import UpdateCustomer from '../Customer/Update/Update';
 import DeleteCustomer from '../Customer/Delete/Delete';
+import Switch from '../Switch/Switch';
 
 
 /*
@@ -38,14 +39,12 @@ class MainRoute extends Component {
     if(access === 'admin_username') {
       return (
         <div>
-          {/*}<Route exact path="/Search" render={() => <Search access={access}/>} /> */}
-          <Route path="/UpdateCustomer" component={UpdateCustomer} />
-          <Route path="/DeleteCustomer" component={DeleteCustomer} />
-          <Route path="/UpdateProduct" component={UpdateProduct} />
-          <Route path="/DeleteProduct" component={DeleteProduct} />
+          {/*}<Route exact path="/Update" render={() => <Switch access={access}/>} /> */}
+          <Route path="/Update" component={Switch('update','Customer','Product')(UpdateCustomer,UpdateProduct)} />
+          <Route path="/Delete" component={Switch('delete','Customer','Product')(DeleteCustomer,DeleteProduct)} />
           <Route path="/Analytics" component={Analytics}/>
+          <Route path="/TransactionHistory" component={TransactionHistory}/>
           <Route path="/Settings" component={Settings}/>
-
         </div>
       )
     } else {

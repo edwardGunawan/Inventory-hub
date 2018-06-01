@@ -4,6 +4,7 @@ import {Button} from 'reactstrap';
 import Select from 'react-select';
 import ShowTable from '../../ShowTable/ShowTable';
 import InputField from '../../Input/InputField';
+import './Delete.css';
 
 const {ipcRenderer} = window.require('electron');
 
@@ -42,7 +43,7 @@ class Delete extends Component {
       if(status === 'OK') {
         ipcRenderer.removeAllListeners('delete');
         ipcRenderer.removeAllListeners('reply-delete');
-        history.push('/UpdateCustomer');
+        history.push('/Delete');
       }else {
         //TODO some modal that it doesn't work
       }
@@ -98,11 +99,13 @@ class Delete extends Component {
                       parent={'process-customer'}
                       onSelectEnter={this.handleSelectEnter}
                       otherInfo={{options}} />
-          <ShowTable button={'Delete'}
+                    <div class="table-delete">
+            <ShowTable button={'Delete'}
                      onClickAction={this.handleClickAction}
                      tableBody={name}
                      tableHeader={tableHeader}
                      parent={'customer'} />
+         </div>
                    <Button size="sm" onClick={this.handleSubmit}>Submit</Button>
       </div>
     )

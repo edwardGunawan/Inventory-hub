@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-// import InputList from '../Input/InputList';
 import InputField from '../Input/InputField';
 import PropTypes from 'prop-types';
 import ShowTable from '../ShowTable/ShowTable';
 import {Button} from 'reactstrap';
 
-// let {ipcRenderer} = window.require('electron');
+import './CreateCustomer.css';
+
 
 class CreateCustomer extends Component {
   constructor(props) {
@@ -67,12 +67,13 @@ class CreateCustomer extends Component {
                       parent={'customer'}
                       onSelectEnter={this.handleSelectEnter}
                       otherInfo={{options}} />
-                    {/*name.map((n,i) => <div key={i}>{n.name}</div>)*/}
-          <ShowTable button={'Delete'}
+          <div className="delete-table">
+            <ShowTable button={'Delete'}
                      onClickAction={this.handleClickAction}
                      tableBody={name}
                      tableHeader={tableHeader}
                      parent={'customer'} />
+          </div>
                    <Button size="sm" onClick={this.handleSubmit}>Submit</Button>
       </div>
     )

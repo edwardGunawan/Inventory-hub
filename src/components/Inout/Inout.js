@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import InvoiceConverter from '../InvoiceConverter/InvoiceConverter';
 import Action from '../Action/Action';
-import {Button
-} from 'reactstrap';
+import { Button } from 'reactstrap';
 import './Inout.css';
 import numeral from 'numeral';
+import {history} from '../Main/Main';
 let {ipcRenderer} = window.require('electron');
 /*
   Buy/Sell Component:
@@ -114,7 +114,7 @@ class Inout extends Component {
     ipcRenderer.on('reply-convert-pdf', (evt,args) => {
       let {status} = args;
       if(status === 'OK') {
-        this.props.history.push('/TransactionHistory');
+        history.push('/');
       }
     })
   }

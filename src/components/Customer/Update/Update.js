@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import InputField from '../../Input/InputField';
 import {Input,Button,Label} from 'reactstrap';
+import {history} from '../../Main/Main';
 import ShowTable from '../../ShowTable/ShowTable';
 import './Update.css';
 
@@ -72,7 +73,7 @@ class Update extends Component {
           if(status === 'OK') {
             ipcRenderer.removeAllListeners('update');
             ipcRenderer.removeAllListeners('reply-update');
-            this.props.history.push('/DeleteCustomer');
+            history.push('/Update');
           }else {
             //TODO some modal that it doesn't work
           }

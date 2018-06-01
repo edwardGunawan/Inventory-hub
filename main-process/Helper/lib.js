@@ -152,7 +152,7 @@ function lib({
               promises.push(action.addProduct_transaction_history(transactionHistory,{transaction:t})); // action
             }else {
               let name = await updatedInstance.get('name',{transaction:t});
-              transactionHistory = await database.customerTransactionHistory.create(updates,{transaction:t});
+              transactionHistory = await database.customerTransactionHistory.create({name},{transaction:t});
               promises.push(instance.addCustomer_transaction(transactionHistory,{transaction:t})); // customer
               promises.push(action.addCustomer_transaction(transactionHistory,{transaction:t})); // action
             }

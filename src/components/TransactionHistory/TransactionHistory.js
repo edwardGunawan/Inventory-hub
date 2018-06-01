@@ -7,6 +7,7 @@ import {
    DropdownMenu,
    DropdownItem,
    Button } from 'reactstrap';
+import {history} from '../Main/Main';
 import './TransactionHistory.css';
 
 const {ipcRenderer} = window.require('electron');
@@ -203,8 +204,7 @@ class TransactionHistory extends Component {
       ipcRenderer.on('reply-transfer-excel',(evt,data) => {
         let {status,message} = data;
         if(status === 'OK') {
-          console.log(message);
-          this.props.history.replace('/InOut')
+          history.push('/');
           ipcRenderer.removeAllListeners('transfer-excel');
           ipcRenderer.removeAllListeners('reply-transfer-excel');
         }else {

@@ -1,3 +1,4 @@
 .table-update {
-  height:350px;
+  height:300px;
+  overflow:auto;
 }

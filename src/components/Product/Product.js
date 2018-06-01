@@ -4,6 +4,7 @@ import InputField from '../Input/InputField';
 import ProductInputField from '../Input/ProductInputField';
 import {Button} from 'reactstrap';
 import {history} from '../Main/Main';
+import './Product.css';
 
 const {ipcRenderer} = window.require('electron');
 
@@ -83,7 +84,7 @@ const ProductClass = ({parent}) => (onSubmit) => {
                       parent={parent}
                       onSubmitClick={this.handleSubmitClick}
                       otherInfo={{options,productItems}} />
-          <div className="table">
+                    <div className="table-product">
           <ShowTable  button={'delete'}
                       onClickAction={this.handleClickAction}
                       tableBody={tableBody}
