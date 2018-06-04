@@ -56,7 +56,7 @@ class Login extends Component {
       if(errMessage) return errMessage;
     }
     return (
-      <Form className="container">
+      <Form className="login-container">
         <Modal isOpen={modalIsOpen} onClose={this.handleOnClose}>
           {renderErrMessage()}
         </Modal>

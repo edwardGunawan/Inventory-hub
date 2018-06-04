@@ -35,29 +35,18 @@ class MainRoute extends Component {
   }
 
   render() {
-    let {access} = this.props;
-    if(access === 'admin_username') {
+    let {email} = this.props;
       return (
         <div>
-          {/*}<Route exact path="/Update" render={() => <Switch access={access}/>} /> */}
-          <Route path="/Update" component={Switch('update','Customer','Product')(UpdateCustomer,UpdateProduct)} />
-          <Route path="/Delete" component={Switch('delete','Customer','Product')(DeleteCustomer,DeleteProduct)} />
-          <Route path="/Analytics" component={Analytics}/>
           <Route path="/TransactionHistory" component={TransactionHistory}/>
-          <Route path="/Settings" component={Settings}/>
-        </div>
-      )
-    } else {
-      return (
-        <div>
           <Route exact path="/InOut" component={Inout}/>
           <Route path="/Create" component={Create}/>
-          <Route path="/TransactionHistory" component={TransactionHistory}/>
+          <Route path="/Delete" component={Switch('delete','Customer','Product')(DeleteCustomer,DeleteProduct)} />
+          <Route path="/Update" component={Switch('update','Customer','Product')(UpdateCustomer,UpdateProduct)} />
           <Route path="/Restock" component={Restock} />
+          <Route path="/Settings" component={Settings(email)}/>
         </div>
       )
-    }
-
   }
 }
 

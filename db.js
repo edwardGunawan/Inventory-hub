@@ -78,4 +78,5 @@ db.customerTransactionHistory.belongsTo(db.action);
 db.customerTransactionHistory.belongsTo(db.customer);
 
 
+
 module.exports = db;

@@ -17,6 +17,7 @@
     "lunr": "^2.1.6",
     "moment": "^2.22.1",
     "node-persist": "^3.0.0",
+    "nodemailer": "^4.6.5",
     "numeral": "^2.0.6",
     "pdfkit": "^0.8.3",
     "react": "^16.3.1",

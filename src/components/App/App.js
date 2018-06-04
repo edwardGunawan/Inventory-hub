@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import Main from './../Main/Main';
-import Login from './../Login/Login';
 import Signup from './../Signup/Signup';
+
+
+
 const { ipcRenderer } = window.require('electron');
 
 /*
@@ -22,144 +24,53 @@ const { ipcRenderer } = window.require('electron');
 
   Container Component
 */
+
 class App extends Component {
   constructor(props) {
     super(props);
-    this.handleSubmitLogin = this.handleSubmitLogin.bind(this);
-    this.handleSubmitSignUp = this.handleSubmitSignUp.bind(this);
-    this.handleClickStatus = this.handleClickStatus.bind(this);
-    this.handleBackClick = this.handleBackClick.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
-    this.state = {
-      status: 'notLogin'
-    };
-  }
-
-  // Adding ComponentDidUpdate to Update between state of login and signup
-  componentDidUpdate(prevProps, prevState) {
-    console.log('go through componentDidUpdate in app.js', this.state.status, prevState.status);
-    if(this.state.status !== prevState.status) {
-      switch(this.state.status) {
-        case 'signUp' :
-          this.setState({status:'signUp'});
-          break;
-        default:
-          this.handleSubmitLogin();
-          break;
-      }
+    this.state={
+      render: 'Loading ...'
     }
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
-
-  // handle submitting signup button
-  handleSubmitSignUp(data) {
-    console.log('go through data here');
-    let {email,public_password,admin_password} = data;
-    // validate here and send it back to signUp.js
-    if(!email || !public_password || !admin_password) {
-      console.log('get through exception');
-      this.setState({
-        errMessage:[{message:'Ooops! You have to fill out all the field'}],
-        modalIsOpen:true
-      });
-    }else {
-      ipcRenderer.send('signup', data);
-      ipcRenderer.on('reply-signup', (event,arg) => {
-        if(arg.status === 'Created'){
+  componentDidMount() {
+    ipcRenderer.send('get-email','');
+    ipcRenderer.on('reply-get-email',(evt,data) => {
+      let {status,message} = data;
+      if(status === 'OK') {
+        console.log(message);
+        ipcRenderer.removeAllListeners('get-email');
+        ipcRenderer.removeAllListeners('reply-get-email');
+        if(message === 'first') {
           this.setState({
-            status:'notLogin'
-          });
-        } else {
-          console.log(arg.status.errors);
+            render:<Signup onSubmit={this.handleSubmit}/>
+          })
+        }else {
           this.setState({
-            errMessage: arg.status.errors,
-            modalIsOpen:true
+            render:<Main email={message}/>
           });
         }
-      });
-    }
-  }
-
-  // handle submitting login button
-  handleSubmitLogin(){
-    console.log(this.state);
-    ipcRenderer.send('login-auth',this.state); // sending data to main-process
-    ipcRenderer.on('reply-auth',(event,arg) => {
-      // console.log('arg', arg);
-      if(arg.status === 'OK'){
-        console.log(arg);
-        let {email, access} = arg.message;
-        this.setState({
-          status:'login',
-          email,
-          access
-        });
-      } else {
-        console.log(arg.message);
-        // console.log(this.state.status);
-        this.setState({
-          errMessage:arg.message,
-          status:'notLogin',
-          modalIsOpen:true
-        });
+      }else {
+        console.log(message);
       }
     });
   }
 
-  // handle User click on Login and Signup button
-  handleClickStatus(formObj) {
-    console.log('go through here in handleClickStatus', formObj);
-    // if the formObj has something else and it is login then go through login
-    if(formObj.status === 'aboutLogin') {
-      this.setState(formObj);
-    } else {
-      // means it is only created
-      this.setState({
-        status: formObj.status
-      });
-    }
-
+  componentWillUnmount() {
+    ipcRenderer.removeAllListeners('get-email');
+    ipcRenderer.removeAllListeners('reply-get-email');
   }
 
-  // handle any backClick button for signUp
-  handleBackClick() {
+  handleSubmit(email) {
     this.setState({
-      status:'notLogin'
-    });
-  }
-
-  handleCloseModal() {
-    this.setState({
-      errMessage:'',
-      modalIsOpen:false
-    });
+      render:<Main email={email}/>
+    })
   }
 
   render() {
-    let {status,errMessage,modalIsOpen,email,access} = this.state;
-    console.log('email', email, 'access',access,'status',status, 'errMessage', errMessage);
-    let renderMain = () => {
-      switch(status) {
-        case 'signUp':
-          return <Signup onBackClick={this.handleBackClick}
-                        errMessage={errMessage}
-                        onSubmitSignUp={this.handleSubmitSignUp}
-                        onClose={this.handleCloseModal}
-                        modalIsOpen={modalIsOpen}/>
-        case 'login':
-          return <Main email={email}
-                       access={access}/>
-        default:
-          return <Login errMessage={errMessage}
-                        onClickStatus = {this.handleClickStatus}
-                        onClose={this.handleCloseModal}
-                        modalIsOpen={modalIsOpen}/>
-      }
-    }
     return (
       <div>
-        {/*renderMain()*/}
-        {<Main email={email}
-                     access={access}/>}
+        {this.state.render}
       </div>
     )
   }

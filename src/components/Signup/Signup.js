@@ -1,49 +1,48 @@
 import React, {Component} from 'react';
 import './Signup.css';
-import Modal from './../Modal/Modal';
 import {Button, Form, FormGroup, Label} from 'reactstrap';
+
+const {ipcRenderer} = window.require('electron');
 // pass back to props in render()
 class Signup extends Component {
   constructor(props) {
     super(props);
     this.submitSignup = this.submitSignup.bind(this);
-    this.handleOnClose = this.handleOnClose.bind(this);
   }
 
+  componentWillUnmount() {
+    ipcRenderer.removeAllListeners('signup');
+    ipcRenderer.removeAllListeners('reply-signup');
+  }
 
   // validate everything from the container component App.js
   submitSignup(e) {
     e.preventDefault();
     console.log('go through herere');
     let data={};
-    if(this.refs.email.value && this.refs.public_password.value &&
+    if(this.refs.email.value &&
     this.refs.admin_password.value){
       data = {
         email: this.refs.email.value,
-        admin_password:this.refs.admin_password.value,
-        public_password: this.refs.public_password.value
+        admin_password:this.refs.admin_password.value
       }
+      ipcRenderer.send('signup', data);
+      ipcRenderer.on('reply-signup', (event,arg) => {
+        let {status,message} = arg;
+        if(status === 'OK') {
+          console.log('go through heree in main');
+          this.props.onSubmit(this.refs.email.value);
+        }else {
+          console.log(message);
+        }
+      });
     }
-    this.props.onSubmitSignUp(data);
-
-  }
-
-  handleOnClose() {
-    this.props.onClose();
   }
 
 
   render() {
-    let {errMessage,modalIsOpen} = this.props;
-    console.log(errMessage, 'errMessage in signup', 'modalIsOpen', modalIsOpen);
-    let renderErrMessage = () => {
-      if(errMessage) return errMessage[0].message;
-    }
     return (
       <div className="container">
-        <Modal isOpen={modalIsOpen} onClose={this.handleOnClose}>
-          {renderErrMessage()}
-        </Modal>
         <Form onSubmit={this.submitSignup}>
           <FormGroup className="form-group">
             <Label for="email">(Company) Email: </Label>
@@ -56,24 +55,13 @@ class Signup extends Component {
             <Label for="adminPassword"> Admin Password</Label>
             <input type="password" id="adminPassword" className="form-control" ref="admin_password" placeholder="password"/>
           </FormGroup>
-          <FormGroup className="form-group">
-            <Label for="publicUser">Public Username : <b>public</b></Label>
-          </FormGroup>
-          <FormGroup>
-            <Label for="publicPassword">Public Password</Label>
-            <input type="password" id="publicPassword" className="form-control" ref="public_password" placeholder="password"/>
-          </FormGroup>
           <FormGroup className="form-actions">
             <Button>Signup!</Button>
-            <Button onClick={e=> this.props.onBackClick()}> Back </Button>
           </FormGroup>
         </Form>
       </div>
     )
   }
-}
-Signup.defaultProps = {
-  modalIsOpen: false
 }
 
 
