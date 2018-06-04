@@ -9,9 +9,8 @@ const NavComp = ({email}) => {
   return (
     <div>
       <p>Menu</p>
-      <p>{email}</p>
       <Nav vertical>
-        <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/InOut">Process</NavLink>
+        <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/InOut" active>Process</NavLink>
         <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/TransactionHistory">Transaction History</NavLink>
         <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Create">Create</NavLink>
         <NavLink tag={RRNavLink} activeClassName="active" activeStyle={{fontWeight:"bold"}} to="/Delete">Delete</NavLink>

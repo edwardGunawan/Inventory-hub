@@ -48,7 +48,6 @@ class Inout extends Component {
   }
 
   componentWillUnmount(){
-
     ipcRenderer.removeAllListeners('get-customer');
     ipcRenderer.removeAllListeners('reply-get-customer');
     ipcRenderer.removeAllListeners('get-product');
@@ -66,7 +65,6 @@ class Inout extends Component {
     let {currWindow} = this.state
     if(currWindow === 'action') {
       let {customer,total,action} = this.state;
-      console.log(action, 'in state');
       // don't go next if the total is not zero and they didn't choose customer
       if(total !== 0 && (customer.length > 0 || action === 'restock')) {
         this.setState({
@@ -114,7 +112,7 @@ class Inout extends Component {
     ipcRenderer.on('reply-convert-pdf', (evt,args) => {
       let {status} = args;
       if(status === 'OK') {
-        history.push('/');
+        history.push('/InOut');
       }
     })
   }

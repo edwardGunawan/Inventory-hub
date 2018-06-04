@@ -5,7 +5,7 @@ import { ButtonDropdown,
         DropdownToggle,
         DropdownMenu,
         DropdownItem } from 'reactstrap';
-
+import {history} from '../Main/Main';
 let {ipcRenderer} = window.require('electron');
 
 class Create extends Component {
@@ -73,7 +73,7 @@ class Create extends Component {
     ipcRenderer.on(`reply-${channel}`, (event,arg)=>{
       let {status,message} = arg;
       if(status === 'OK') {
-        this.props.history.replace('/InOut'); // reroute to search
+        history.push('/InOut'); // reroute to search
       }else {
         console.log(message);
       }

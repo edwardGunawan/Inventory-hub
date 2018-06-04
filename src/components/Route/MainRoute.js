@@ -12,6 +12,7 @@ import DeleteProduct from '../Product/Delete/Delete';
 import UpdateCustomer from '../Customer/Update/Update';
 import DeleteCustomer from '../Customer/Delete/Delete';
 import Switch from '../Switch/Switch';
+import Authenticate from '../Authenticate/Authenticate';
 
 
 /*
@@ -24,31 +25,21 @@ import Switch from '../Switch/Switch';
 
 */
 
-class MainRoute extends Component {
-  constructor(props) {
-    super(props);
-    this.handleImportExcel = this.handleImportExcel.bind(this);
-  }
-
-  handleImportExcel(path) {
-    console.log(path);
-  }
-
-  render() {
-    let {email} = this.props;
-      return (
-        <div>
-          <Route path="/TransactionHistory" component={TransactionHistory}/>
-          <Route exact path="/InOut" component={Inout}/>
-          <Route path="/Create" component={Create}/>
-          <Route path="/Delete" component={Switch('delete','Customer','Product')(DeleteCustomer,DeleteProduct)} />
-          <Route path="/Update" component={Switch('update','Customer','Product')(UpdateCustomer,UpdateProduct)} />
-          <Route path="/Restock" component={Restock} />
-          <Route path="/Settings" component={Settings(email)}/>
-        </div>
-      )
-  }
+const MainRoute = ({email}) => {
+  return (
+    <div>
+      <Route path="/InOut" component={Inout}/>
+      <Route path="/TransactionHistory" component={TransactionHistory}/>
+      <Route path="/Create" component={Create}/>
+      <Route path="/Delete" component={Switch('delete','Customer','Product')(DeleteCustomer,DeleteProduct)} />
+      <Route path="/Update" component={Authenticate(Switch('update','Customer','Product')(UpdateCustomer,UpdateProduct),email)} />
+      <Route path="/Restock" component={Restock} />
+      <Route path="/Settings" component={Settings(email)}/>
+    </div>
+  )
 }
+
+
 
 
 export default MainRoute;

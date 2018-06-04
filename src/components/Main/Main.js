@@ -19,11 +19,8 @@ history.listen((location, action) => {
   All Routes must be inside Router tag
 */
 class Main extends Component {
-
   render () {
     let {email} = this.props;
-    // access = 'admin_username';
-    console.log('email is ', email);
     return (
         <Container>
           <Router history={history}>

@@ -9,16 +9,15 @@ ipcMain.on('login-auth', (event,data) => {
   db.user.authenticate(data).then((user) => {
     console.log('user here in login-async after authenticating',data);
     // pass just let the user login
-    event.sender.send('reply-auth', {
+    event.sender.send('reply-login-auth', {
                                       status:'OK',
                                       message: {
-                                        email: user.get('email'),
-                                        access: data.options
+                                        email: user.get('email')
                                       }
                                     });
   })
   .catch((e) => {
     console.log(' error happen with authentication', e);
-    event.sender.send('reply-auth',{status:'failed',message:e})
+    event.sender.send('reply-login-auth',{status:'failed',message:e})
   });
 });

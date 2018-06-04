@@ -3,7 +3,7 @@ import './Signup.css';
 import {Button, Form, FormGroup, Label} from 'reactstrap';
 
 const {ipcRenderer} = window.require('electron');
-// pass back to props in render()
+
 class Signup extends Component {
   constructor(props) {
     super(props);
@@ -15,7 +15,7 @@ class Signup extends Component {
     ipcRenderer.removeAllListeners('reply-signup');
   }
 
-  // validate everything from the container component App.js
+
   submitSignup(e) {
     e.preventDefault();
     console.log('go through herere');
@@ -26,13 +26,14 @@ class Signup extends Component {
         email: this.refs.email.value,
         admin_password:this.refs.admin_password.value
       }
+
       ipcRenderer.send('signup', data);
       ipcRenderer.on('reply-signup', (event,arg) => {
         let {status,message} = arg;
         if(status === 'OK') {
-          console.log('go through heree in main');
           this.props.onSubmit(this.refs.email.value);
         }else {
+          //TODO Modal
           console.log(message);
         }
       });

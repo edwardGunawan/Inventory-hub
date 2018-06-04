@@ -204,7 +204,7 @@ class TransactionHistory extends Component {
       ipcRenderer.on('reply-transfer-excel',(evt,data) => {
         let {status,message} = data;
         if(status === 'OK') {
-          history.push('/');
+          history.push('/InOut');
           ipcRenderer.removeAllListeners('transfer-excel');
           ipcRenderer.removeAllListeners('reply-transfer-excel');
         }else {
