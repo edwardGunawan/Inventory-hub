@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import InputField from '../Input/InputField';
+import InputField,{selectProductStyle} from '../Input/InputField';
 import ShowTable from '../ShowTable/ShowTable';
 import PropTypes from 'prop-types';
 import {
@@ -9,7 +9,8 @@ import {
         FormGroup,
         InputGroup,
         InputGroupAddon,
-        InputGroupText
+        InputGroupText,
+        Col
 } from 'reactstrap';
 import Select from 'react-select';
 import './Action.css';
@@ -108,20 +109,20 @@ class Action extends Component {
     return (
       <div>
         <Form inline>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0 form-group">
-            <Label className="mr-sm-2">Customer</Label>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
             <Select
                 className="select-customer"
                 onChange={this.handleSelectCustomer}
                 isClearable
                 isDisabled={this.state.isDisabled}
-                name="form-field-name"
                 options={customerOptions}
+                styles={selectProductStyle}
                 isSearchable={false}
+                placeholder="Customer Name"
                 />
           </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0 discount">
-            <Label className="mr-sm-2" for="discount">Discount</Label>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Label for="discount" className="mr-sm-2">Discount</Label>
             <InputGroup>
               <InputGroupAddon addonType="append">
                 <Input type="number"
@@ -138,19 +139,18 @@ class Action extends Component {
               </InputGroupAddon>
             </InputGroup>
           </FormGroup>
-          <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
-            <Label check>
-              <Input type="radio" onChange={this.handleRadioClick} checked={action === 'sell'} value="sell" name="radio1" />{' '}
-              Sell
-            </Label>
-          </FormGroup>
-          <FormGroup check className="mb-2 mr-sm-2 mb-sm-0">
-            <Label check>
-              <Input type="radio" name="radio1" checked={action === 'return'} value="return" onChange={this.handleRadioClick} />{' '}
-              Return
-            </Label>
+          <FormGroup className="radio-button">
+              <Label className="mr-sm-2" check>
+                <Input type="radio" onChange={this.handleRadioClick} checked={action === 'sell'} value="sell" name="radio1" />{' '}
+                Sell
+              </Label>
+              <Label className="mr-sm-2" check>
+                <Input type="radio" name="radio1" checked={action === 'return'} value="return" onChange={this.handleRadioClick} />{' '}
+                Return
+              </Label>
           </FormGroup>
         </Form>
+
 
       <InputField
         button={'Submit'}
@@ -158,9 +158,8 @@ class Action extends Component {
         onSubmitClick={this.handleSubmitClick}
         otherInfo={{options:productOptions,productItems, action:action}}
         />
-      <div className="show-table-container">
+      <div className="action-table">
         <ShowTable  button={'delete'}
-                  className="show-table"
                   onClickAction={this.handleClickAction}
                   tableBody={this.props.tableBody}
                   tableHeader={this.props.tableHeader}
@@ -175,6 +174,7 @@ Action.defaultProps = {
   customerNames:[],
   productItems:[],
 }
+
 
 Action.propTypes = {
   info: PropTypes.object, // passing customer names, productItems, and toOption for both

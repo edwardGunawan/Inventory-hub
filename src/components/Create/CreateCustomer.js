@@ -61,7 +61,7 @@ class CreateCustomer extends Component {
     let options = this.toOptions(customerNames);
     // console.log(customerNames);
     return (
-      <div>
+      <div className="create-customer-container">
           <InputField
                       button={'Add'}
                       parent={'customer'}
@@ -74,7 +74,7 @@ class CreateCustomer extends Component {
                      tableHeader={tableHeader}
                      parent={'customer'} />
           </div>
-                   <Button size="sm" onClick={this.handleSubmit}>Submit</Button>
+                   <Button size="sm" color="primary" onClick={this.handleSubmit} outline>Submit</Button>
       </div>
     )
   }

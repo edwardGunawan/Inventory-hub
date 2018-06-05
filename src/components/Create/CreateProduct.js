@@ -75,7 +75,7 @@ class CreateProduct extends Component {
                     tableHeader={tableHeader}
                     parent={'product'} />
         </div>
-        <Button size="sm" onClick={this.handleSubmit}>Submit</Button>
+        <Button size="sm" color="primary" outline onClick={this.handleSubmit}>Submit</Button>
       </div>
     )
   }

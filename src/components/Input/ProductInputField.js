@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 import {Form, FormGroup, Label, Input, Button} from 'reactstrap';
+import {selectProductStyle} from './InputField.js';
 
 class ProductInputField extends Component {
   constructor(props) {
@@ -93,15 +94,16 @@ class ProductInputField extends Component {
     let {parent} = this.props;
     return (
       <div>
-        <FormGroup>
-          <Select
-              onChange={this.handleSelectChange}
-              isClearable
-              name="form-field-name"
-              options={otherInfo.options}
-              />
-        </FormGroup>
         <Form inline>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Select
+                onChange={this.handleSelectChange}
+                isClearable
+                name="form-field-name"
+                options={otherInfo.options}
+                styles={selectProductStyle}
+                />
+          </FormGroup>
           <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
             <Label className="mr-sm-2" for="brand">Model</Label>
             <Input name="brand" bsSize="sm" value={brand} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={disable.brand}/>

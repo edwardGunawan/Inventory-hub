@@ -112,7 +112,7 @@ class Inout extends Component {
     ipcRenderer.on('reply-convert-pdf', (evt,args) => {
       let {status} = args;
       if(status === 'OK') {
-        history.push('/InOut');
+        history.push('/');
       }
     })
   }
@@ -217,6 +217,7 @@ class Inout extends Component {
     // console.log(`In Inout ${customerNames}, ${productItems}, ${tableHeader}`);
     return (
       <div>
+        <h2>Process</h2>
         {(currWindow === 'action') ? <Action info={{customerNames, productItems}}
           tableHeader={tableHeader}
           tableBody={tableBody}
@@ -233,8 +234,8 @@ class Inout extends Component {
           <h6>Total: {totalWithoutDiscount} in  <span className="text-success">{discount}%</span> = {numeral(total).format('$0,0.00')}</h6>
         </div>
 
-        <Button onClick={this.handleBackButton} size="sm" disabled={back}>Back</Button>
-        <Button onClick={this.handleProceed} size="sm">{proceed}</Button>
+        <Button onClick={this.handleBackButton} outline size="sm" disabled={back}>Back</Button>
+        <Button onClick={this.handleProceed} outline color="primary" size="sm">{proceed}</Button>
 
       </div>
     )

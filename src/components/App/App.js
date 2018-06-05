@@ -29,7 +29,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state={
-      render: 'Loading ...'
+      render: <h1>Loading ...</h1>
     }
     this.handleSubmit = this.handleSubmit.bind(this);
   }

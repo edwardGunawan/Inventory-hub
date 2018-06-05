@@ -136,28 +136,28 @@ class InputField extends Component {
 
 
 
+
   inputGroup = () => {
     const {selectedOption,otherInfo,brand,price,quantity} = this.state;
     switch(this.props.parent) {
       case 'product':
         return (
           <div>
-            <FormGroup>
-              <Label for="code">Code</Label>
-              <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
-            </FormGroup>
             <Form inline>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options} styles={selectProductStyle} placeholder="Code"/>
+              </FormGroup>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="brand">Model</Label>
-                <Input name="brand" bsSize="sm" value={brand} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={this.state.isDisabled}/>
+                <Input name="brand" bsSize="sm" value={brand} onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={this.state.isDisabled}/>
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="quantity">Quantity</Label>
-                <Input name="quantity" className="mr-sm-2" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity" disabled={this.state.isDisabled}/>
+                <Input name="quantity" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity" disabled={this.state.isDisabled}/>
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="price">Price</Label>
-                <Input name="price" className="mr-sm-2" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={this.state.isDisabled}/>
+                <Input name="price" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={this.state.isDisabled}/>
               </FormGroup>
               <Button size="sm" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
             </Form>
@@ -165,46 +165,39 @@ class InputField extends Component {
         )
       case 'customer':
         return (
-          <div>
-            <Label for="name">Customer Name</Label>
-            <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
-          </div>
+          <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options} placeholder="name"/>
         )
       case 'process-customer':
         return (
-          <div>
-            <Label for="name">Customer Name</Label>
-            <Select isClearable onChange={this.handleSelectChange} options={otherInfo.options}/>
-          </div>
+          <Select isClearable onChange={this.handleSelectChange} styles={selectCustomerStyle} options={otherInfo.options} placeholder="name"/>
         )
       default:
         return (
           <div>
-            <FormGroup style={{'width':'100%'}}>
-              <Label for="code"> Code </Label>
-              <Select
-                  onChange={this.handleSelectChange}
-                  isClearable
-                  name="form-field-name"
-                  options={otherInfo.options}
-                  />
-            </FormGroup>
             <Form inline>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Label className="mr-sm-2" for="quantity">Quantity</Label>
-                <Input type="number" className="mr-sm-2" bsSize="sm" onChange={this.handleInputChange} name="quantity" id="quantity" disabled={this.state.isDisabled} value={numeral(quantity).format('0,0')}/>
+                <Select
+                    onChange={this.handleSelectChange}
+                    isClearable
+                    name="form-field-name"
+                    options={otherInfo.options}
+                    styles={selectProductStyle}
+                    placeholder="Code"
+                    />
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="brand">Model</Label>
-                <Input type="text" className="mr-sm-2" bsSize="sm" name="brand" id="brand" value={brand} disabled />
+                <Input type="text" bsSize="sm" name="brand" id="brand" value={brand} disabled />
+              </FormGroup>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Label className="mr-sm-2" for="quantity">Quantity</Label>
+                <Input type="number" bsSize="sm" onChange={this.handleInputChange} name="quantity" id="quantity" disabled={this.state.isDisabled} value={numeral(quantity).format('0,0')}/>
               </FormGroup>
               <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                 <Label className="mr-sm-2" for="price">Price</Label>
-                <Input type="text" className="mr-sm-2" bsSize="sm" name="price" id="price" value={numeral(price).format('$0,0.00')} disabled />
+                <Input type="text" bsSize="sm" name="price" id="price" value={numeral(price).format('$0,0.00')} disabled />
               </FormGroup>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Button  size="sm" className="mr-sm-2" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
-              </FormGroup>
+              <Button  size="sm" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
             </Form>
           </div>
         )
@@ -218,6 +211,21 @@ class InputField extends Component {
 
     )
   }
+}
+
+export const selectProductStyle = {
+  container:(base,state) => ({
+    ...base,
+    width:'400px',
+    marginBottom:'10px'
+  })
+}
+
+export const selectCustomerStyle ={
+  container:(base,state) => ({
+    ...base,
+    width:'300px'
+  })
 }
 
 InputField.propTypes = {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Route} from 'react-router-dom';
+import {Route,Redirect} from 'react-router-dom';
 // import Search from '../Search/Search';
 import Inout from '../Inout/Inout';
 import Settings from '../Settings/Settings';
@@ -28,6 +28,7 @@ import Authenticate from '../Authenticate/Authenticate';
 const MainRoute = ({email}) => {
   return (
     <div>
+      <Route exact path="/" render={() => <Redirect to="/InOut"/>}/>
       <Route path="/InOut" component={Inout}/>
       <Route path="/TransactionHistory" component={TransactionHistory}/>
       <Route path="/Create" component={Create}/>

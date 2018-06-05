@@ -93,23 +93,24 @@ class Delete extends Component {
     let {name,tableHeader,customerNames} = this.state;
     let options = this.toOptions(customerNames);
     return (
-      <div>
+      <div className="delete-customer-container">
           <InputField
                       button={'Add'}
                       parent={'process-customer'}
                       onSelectEnter={this.handleSelectEnter}
                       otherInfo={{options}} />
-                    <div class="table-delete">
+                    <div className="table-delete">
             <ShowTable button={'Delete'}
                      onClickAction={this.handleClickAction}
                      tableBody={name}
                      tableHeader={tableHeader}
                      parent={'customer'} />
          </div>
-                   <Button size="sm" onClick={this.handleSubmit}>Submit</Button>
+                   <Button size="sm" outline color="primary" onClick={this.handleSubmit}>Submit</Button>
       </div>
     )
   }
 }
+
 
 export default Delete;

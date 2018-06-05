@@ -1,6 +1,8 @@
-.discount.form-group {
-  width:30%;
+.action-table {
+  margin-top:5px;
+  height:350px;
+  overflow: auto;
 }
-.discount .input-group-append{
-  width:100%;
+.radio-button {
+  margin-bottom:10%;
 }

@@ -4,5 +4,6 @@
 
 .table {
   overflow:auto;
-  height:300px;
+  margin-top:5px;
+  height:400px;
 }

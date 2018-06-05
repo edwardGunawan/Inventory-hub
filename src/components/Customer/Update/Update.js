@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import InputField from '../../Input/InputField';
-import {Input,Button,Label} from 'reactstrap';
+import {Input,Button,Label,FormGroup,Form} from 'reactstrap';
 import {history} from '../../Main/Main';
 import ShowTable from '../../ShowTable/ShowTable';
 import './Update.css';
@@ -107,15 +107,23 @@ class Update extends Component {
     let {tableHeader,name,customerNames,changeName} = this.state;
     let options = this.toOptions(customerNames);
     return(
-      <div>
-        <InputField
-                  button={'Add'}
-                  parent={'process-customer'}
-                  onSelectEnter={this.handleSelectEnter('select')}
-                  otherInfo={{options}} />
-        <Label>Change To: </Label>
-        <Input placeholder="name" type="text" value={changeName} onChange={this.handleSelectEnter('change')} />
-        <Button size="sm" onClick={this.handleSubmit('submit')}  disabled={this.state.changeName.length <= 0}>Submit </Button>
+      <div className="update-customer-container">
+        <Form inline>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <InputField
+                      button={'Add'}
+                      parent={'process-customer'}
+                      onSelectEnter={this.handleSelectEnter('select')}
+                      otherInfo={{options}} />
+
+          </FormGroup>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Label className="mr-sm-2">Change To: </Label>
+            <Input placeholder="name" type="text" value={changeName} onChange={this.handleSelectEnter('change')} />
+          </FormGroup>
+          <Button size="sm" onClick={this.handleSubmit('submit')}  disabled={this.state.changeName.length <= 0}>Submit </Button>
+        </Form>
+
         <div className="table-update">
           <ShowTable button={'Delete'}
                      onClickAction={this.handleClickAction}
@@ -123,7 +131,7 @@ class Update extends Component {
                      tableHeader={tableHeader}
                      parent={'process-customer'} />
         </div>
-        <Button size="sm" onClick={this.handleSubmit('proceed')}>Proceed</Button>
+        <Button size="sm" outline color="primary" onClick={this.handleSubmit('proceed')}>Proceed</Button>
       </div>
     )
   }

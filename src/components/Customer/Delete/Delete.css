@@ -1,4 +1,9 @@
 .table-delete {
-  height:400px;
+  height:430px;
   overflow:auto;
+  margin-top:5px;
+}
+
+.delete-customer-container {
+  margin-top:20px;
 }

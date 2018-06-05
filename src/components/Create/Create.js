@@ -73,7 +73,7 @@ class Create extends Component {
     ipcRenderer.on(`reply-${channel}`, (event,arg)=>{
       let {status,message} = arg;
       if(status === 'OK') {
-        history.push('/InOut'); // reroute to search
+        history.push('/'); // reroute to search
       }else {
         console.log(message);
       }

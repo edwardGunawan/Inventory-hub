@@ -131,14 +131,7 @@ class ShowTable extends Component{
     // console.log(renderBodyArr);
 
     return (
-      <div className="table-container">
-        <ModalStrap idx={this.state.idx}
-                    actionButton={actionButton}
-                    modalTitle={"Confirmation"}
-                    modal={this.state.modal}
-                    onClick={this.handleTableClick} >
-          Are you Sure you want to {actionButton} item id {this.state.idx} ?
-        </ModalStrap>
+      <div>
         <Table>
           <thead>
             <tr>

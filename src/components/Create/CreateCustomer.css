@@ -1,4 +1,9 @@
+.create-customer-container {
+  margin-top:10px;
+}
+
 .delete-table {
-  height:400px;
+  margin-top:5px;
+  height:450px;
   overflow: auto;
 }
