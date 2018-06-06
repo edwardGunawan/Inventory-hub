@@ -1,14 +1,13 @@
 /*
   Flat Design Color Theme: http://www.flatuicolorpicker.com/category/gray
   background color: (Smoke White)
-  primary button: SHERPA BLUE
-  Action button: TURQUOISE
+  color pallete:
+    - #EBF7FF --light-blue
 */
 :root {
   --background-color:#FEFEFA; /* Baby Powder */
-  --primary-button: #013243; /* SHERPA BLUE */
-  --action-button: #36D7B7; /* TURQUOISE */
-  --light-blue:#C5EFF7; /* Humming bird */
+  --light-blue:#EBF7FF;
+  --light-skin:#FFF9F4;
 }
 * {
   font-family: 'Open Sans', sans-serif;

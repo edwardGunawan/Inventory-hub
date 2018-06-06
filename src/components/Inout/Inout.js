@@ -93,6 +93,8 @@ class Inout extends Component {
       } else {
         console.log(message);
       }
+      ipcRenderer.removeAllListeners('reply-purchase');
+      ipcRenderer.removeAllListeners('purchase');
     });
   }
 
@@ -139,7 +141,7 @@ class Inout extends Component {
         total:(this.state.totalWithoutDiscount + order.total) * (1-(this.state.discount/100))
       });
     }else {
-      // TODO warning for custoemr already in buffer
+      // TODO warning for customer already in buffer
     }
   }
 

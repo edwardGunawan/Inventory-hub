@@ -52,6 +52,8 @@ class App extends Component {
           });
         }
       }else {
+        ipcRenderer.removeAllListeners('get-email');
+        ipcRenderer.removeAllListeners('reply-get-email');
         console.log(message);
       }
     });

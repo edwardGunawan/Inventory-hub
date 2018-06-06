@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Input, Form, FormGroup,Label} from 'reactstrap';
+import {Button, Input, Form, FormGroup,Label,Alert} from 'reactstrap';
 import {history} from '../Main/Main';
 import './Settings.css';
 const {ipcRenderer} = window.require('electron');
@@ -15,9 +15,11 @@ const withClassSettings = email => handleSubmit => {
         valid:false,
         invalid:false,
         email,
-        disabled:true
+        disabled:true,
+        alert:''
       }
       this.handleChange = this.handleChange.bind(this);
+      this.onSubmit = this.onSubmit.bind(this);
     }
 
     handleChange(category) {
@@ -43,12 +45,26 @@ const withClassSettings = email => handleSubmit => {
       }
     }
 
+    onSubmit(e) {
+      e.preventDefault();
+      let promise = handleSubmit(this.state);
+      promise.then((message) => {
+        if(message === 'success') {
+          history.push('/');
+        }else {
+          this.setState({alert:<Alert color="danger">{message}</Alert>});
+        }
+      })
+
+    }
+
 
     render() {
 
       return (
         <div>
-          <h2>Settings</h2>
+          <p>Settings</p>
+          {this.state.alert}
           <Form>
             <FormGroup className="form-group-container">
               <Label for="oldPassword">Old Password: </Label>
@@ -64,7 +80,7 @@ const withClassSettings = email => handleSubmit => {
               </FormGroup>
             </div>
             <FormGroup className="form-group-container">
-              <Button outline color="danger" onClick={handleSubmit(this.state)} className="form-submit" disabled={this.state.disabled}>CHANGE PASSWORD</Button>
+              <Button outline color="danger" onClick={this.onSubmit} className="form-submit" disabled={this.state.disabled}>CHANGE PASSWORD</Button>
             </FormGroup>
           </Form>
         </div>
@@ -73,20 +89,25 @@ const withClassSettings = email => handleSubmit => {
   }
 }
 
-const handleSubmit = (state) => e => {
-  e.preventDefault();
+const handleSubmit = (state) => {
   let {oldPassword,newPassword,email} = state;
-  console.log(oldPassword,newPassword,email);
+  // console.log(oldPassword,newPassword,email);
   if(oldPassword.length > 0 && newPassword.length > 0 && email) {
-    ipcRenderer.send('change-password',{oldPassword,newPassword,email});
-    ipcRenderer.on('reply-change-password',(evt,arg) => {
-      let {status,message} = arg;
-      if(status === 'OK') {
-        history.push('/');
-      }else {
-        console.log(message);
-      }
-    })
+    let promise = new Promise((resolve,reject) => {
+      ipcRenderer.send('change-password',{oldPassword,newPassword,email});
+      ipcRenderer.on('reply-change-password',(evt,arg) => {
+        let {status,message} = arg;
+        if(status === 'OK') {
+          resolve('success');
+        }else {
+          resolve(message);
+        }
+        ipcRenderer.removeAllListeners('change-password');
+        ipcRenderer.removeAllListeners('reply-change-password');
+      });
+    });
+
+    return promise;
   }
 
 }

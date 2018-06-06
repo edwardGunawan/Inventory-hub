@@ -1,9 +1,48 @@
-.container{
-  width:70%;
-  margin:auto;
-  margin-top:90px;
+:root{
+  --ebony-clay:#22313F;
+  --alice-blue:#E4F1FE;
+  --ghost-white:#F8F8FF;
+  --humming-bird:#C5EFF7;
+  --light-blue:#EBF7FF;
 }
 
-.header {
+* {
+  color: var(--ebony-clay);
+}
+
+.signup-container{
+  width:100%;
+  height:100%;
+  /* border:1px solid black; */
+}
+
+/*
+  Title
+  */
+#title {
+  font-size:30px;
+  letter-spacing:1px;
   text-align:center;
+}
+
+.signup-label {
+  letter-spacing:1px;
+  margin:5px;
+}
+
+.signup-form {
+  /* border:1px solid red; */
+  width:60%;
+  padding:5%;
+  margin:10% auto;
+  border-radius:10px;
+}
+
+.signup-form,.signup-form * {
+  background: var(--light-blue);
+
+}
+
+.form-actions {
+  margin-top:10px;
 }

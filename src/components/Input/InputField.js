@@ -162,7 +162,7 @@ class InputField extends Component {
               </div>
 
               <FormGroup className="form-group form-group-elemnt">
-                <Button size="sm" onClick={this.handleSubmit} outline color="primary" disabled={this.state.isDisabled}>{this.props.button}</Button>
+                <Button size="sm" onClick={this.handleSubmit} outline color="success" disabled={this.state.isDisabled}>{this.props.button}</Button>
               </FormGroup>
             </Form>
           </div>
@@ -204,7 +204,7 @@ class InputField extends Component {
                 </FormGroup>
               </div>
               <FormGroup className="form-group  right-location form-group-elemnt">
-                <Button  size="sm" outline color="primary" className="primary-button" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
+                <Button  size="sm" outline color="success" className="primary-button" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
               </FormGroup>
             </Form>
           </div>

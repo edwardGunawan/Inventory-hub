@@ -120,10 +120,9 @@ class Update extends Component {
 
           </FormGroup>
           <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Label className="mr-sm-2">Change To: </Label>
-            <Input placeholder="name" type="text" value={changeName} onChange={this.handleSelectEnter('change')} />
+            <Input placeholder="New name" type="text" value={changeName} onChange={this.handleSelectEnter('change')} />
           </FormGroup>
-          <Button size="sm" onClick={this.handleSubmit('submit')} color="primary" outline  disabled={this.state.changeName.length <= 0}>MARK ON TABLE </Button>
+          <Button size="sm" onClick={this.handleSubmit('submit')} color="success" outline  disabled={this.state.changeName.length <= 0}>MARK ON TABLE </Button>
         </Form>
 
         <div className="table-update">

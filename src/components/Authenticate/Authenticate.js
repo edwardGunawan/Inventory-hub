@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Input,Button} from 'reactstrap';
+import {Input,Button,Alert} from 'reactstrap';
 import './Authenticate.css'
 
 const {ipcRenderer} = window.require('electron');
@@ -11,7 +11,8 @@ const withAuthenticateClass = defaultState => BaseComponent => AuthComponent => 
       this.state = {
         isAuth: false,
         email: defaultState.email,
-        password:''
+        password:'',
+        alert:''
       }
       this.handleClick = this.handleClick.bind(this);
       this.handleChange = this.handleChange.bind(this);
@@ -34,6 +35,9 @@ const withAuthenticateClass = defaultState => BaseComponent => AuthComponent => 
         }else {
           //TODO modal
           console.log(message);
+          this.setState({alert:<Alert color="danger">{message}</Alert>})
+          ipcRenderer.removeAllListeners('login-auth');
+          ipcRenderer.removeAllListeners('reply-login-auth');
         }
       })
     }
@@ -57,10 +61,11 @@ const withAuthenticateClass = defaultState => BaseComponent => AuthComponent => 
   props:
     password, onChange, onSubmit
   */
-const AuthComponent = ({email,onClick,onChange,password}) => {
+const AuthComponent = ({email,onClick,onChange,password,alert}) => {
   return (
     <div className="authenticate-container">
       <h1>Admin User</h1>
+      {alert}
       <Input type="password" placeholder="password" value={password} onChange={onChange}/>
       <Button onClick={onClick} color="primary" outline >ENTER</Button>
     </div>

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './Signup.css';
-import {Button, Form, FormGroup, Label} from 'reactstrap';
+import {Button, Form, FormGroup, Label,Alert} from 'reactstrap';
 
 const {ipcRenderer} = window.require('electron');
 
@@ -8,6 +8,9 @@ class Signup extends Component {
   constructor(props) {
     super(props);
     this.submitSignup = this.submitSignup.bind(this);
+    this.state = {
+      alert:''
+    }
   }
 
   componentWillUnmount() {
@@ -18,7 +21,6 @@ class Signup extends Component {
 
   submitSignup(e) {
     e.preventDefault();
-    console.log('go through herere');
     let data={};
     if(this.refs.email.value &&
     this.refs.admin_password.value){
@@ -32,9 +34,11 @@ class Signup extends Component {
         let {status,message} = arg;
         if(status === 'OK') {
           this.props.onSubmit(this.refs.email.value);
+          ipcRenderer.removeAllListeners('signup');
+          ipcRenderer.removeAllListeners('reply-signup');
         }else {
-          //TODO Modal
           console.log(message);
+          this.setState({alert: <Alert color="danger">{message.errors[0].message}</Alert>});
         }
       });
     }
@@ -43,21 +47,16 @@ class Signup extends Component {
 
   render() {
     return (
-      <div className="container">
-        <Form onSubmit={this.submitSignup}>
-          <FormGroup className="form-group">
-            <Label for="email">(Company) Email: </Label>
-            <input type="email" id="email" className="form-control" ref="email" placeholder="email"/>
-          </FormGroup>
-          <FormGroup className="form-group">
-            <Label>Admin Username : <b>admin</b></Label>
-          </FormGroup>
-          <FormGroup>
-            <Label for="adminPassword"> Admin Password</Label>
-            <input type="password" id="adminPassword" className="form-control" ref="admin_password" placeholder="password"/>
-          </FormGroup>
+      <div className="signup-container">
+        <Form onSubmit={this.submitSignup} className="signup-form">
+          <p id="title">Welcome to Inventory-Hub!</p>
+          {this.state.alert}
+          <Label className="signup-label" for="email">(Company) Email: </Label>
+          <input type="email" id="email" className="form-control" ref="email" placeholder="email"/>
+          <Label className="signup-label" for="adminPassword"> Admin Password: </Label>
+          <input type="password" id="adminPassword" className="form-control" ref="admin_password" placeholder="password"/>
           <FormGroup className="form-actions">
-            <Button outline color="info">Signup!</Button>
+            <Button outline color="primary">Create!</Button>
           </FormGroup>
         </Form>
       </div>

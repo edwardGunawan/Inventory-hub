@@ -117,7 +117,7 @@ class ProductInputField extends Component {
               <Input name="price" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={disable.price}/>
             </FormGroup>
           </div>
-          <Button size="sm" outline color="primary" onClick={this.handleSubmit} disabled={disable.submit}>{this.props.button}</Button>
+          <Button size="sm" outline color="success" onClick={this.handleSubmit} disabled={disable.submit}>{this.props.button}</Button>
         </Form>
       </div>
     )
