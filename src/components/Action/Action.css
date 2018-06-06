@@ -1,8 +1,22 @@
 .action-table {
   margin-top:5px;
-  height:350px;
+  height:300px;
   overflow: auto;
 }
+
+.form-group-container {
+  display:flex;
+}
+
+.form-group {
+  flex-direction: row;
+}
+
+.radio-button-container {
+  display:flex;
+  justify-content: space-between;
+}
+
 .radio-button {
-  margin-bottom:10%;
+  flex-direction: row;
 }

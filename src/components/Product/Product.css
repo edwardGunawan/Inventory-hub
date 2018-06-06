@@ -1,4 +1,18 @@
+:root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
 .table-product {
   overflow: auto;
-  height: 400px;
+  height: 390px;
+}
+
+p {
+  letter-spacing:0.4px;
+  font-size:25px;
+  font-weight: lighter;
 }

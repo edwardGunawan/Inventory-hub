@@ -1,3 +1,16 @@
+:root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
+p {
+  letter-spacing:0.4px;
+  font-size:25px;
+  font-weight: lighter;
+}
 .form-group {
   width:40%;
   margin-right:20px;
@@ -11,11 +24,15 @@
   float:right;
 }
 .total-box > h6 {
-  font-size:15px;
-  font-weight:400;
+  font-size:20px;
+  font-weight:600;
 }
 
 .show-table-container {
-  height:300px;
+  height:200px;
   overflow:auto;
+}
+
+.proceed-button {
+  margin-left:5px;
 }

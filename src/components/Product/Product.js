@@ -80,8 +80,8 @@ const ProductClass = ({parent}) => (onSubmit) => {
 
       return (
         <div>
-          {parent === 'restock' ? <h2>{parent.charAt(0).toUpperCase()+parent.slice(1)}</h2> : <br/>}
-          <ProductInputField button={'submit'}
+          {parent === 'restock' ? <p>{parent.charAt(0).toUpperCase()+parent.slice(1)}</p> : <br/>}
+          <ProductInputField button={'MARK ON TABLE'}
                       parent={parent}
                       onSubmitClick={this.handleSubmitClick}
                       otherInfo={{options,productItems}} />
@@ -92,7 +92,7 @@ const ProductClass = ({parent}) => (onSubmit) => {
                       tableHeader={tableHeader}
                       parent={'product'} />
           </div>
-          <Button size="sm" outline color="primary" onClick={() => onSubmit(tableBody)}>Submit</Button>
+          <Button size="sm" outline color="primary" onClick={() => onSubmit(tableBody)}>{`${parent.toUpperCase()}`}</Button>
         </div>
       )
     }

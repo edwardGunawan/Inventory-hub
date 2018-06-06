@@ -126,19 +126,27 @@ class Filter extends Component {
       <div>
         <Container className="filter-container">
           <Row>
-            <Col sm="6"><Select value={startDateValue} onChange={this.handleSelectChange('startOptions')} options={startOptions} placeholder="start date"/></Col>
-            <Col sm="6"><Select value={endDateValue} onChange={this.handleSelectChange('endOptions')} options={endOptions} placeholder="end date" isDisabled={disabled}/></Col>
+            <Col sm="6"><Select value={startDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('startOptions')} options={startOptions} placeholder="start date"/></Col>
+            <Col sm="6"><Select value={endDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('endOptions')} options={endOptions} placeholder="end date" isDisabled={disabled}/></Col>
           </Row>
         </Container>
         <Container className="filter-container">
           <Row>
-            <Col sm="4"><Select value={brandDateValue} onChange={this.handleSelectChange('brandOptions')} options={brandOptions} placeholder="brand" isDisabled={this.disabledFilter('brand')} isClearable={true}/></Col>
-            <Col sm="4"><Select value={customerDateValue} onChange={this.handleSelectChange('customerOptions')} options={customerOptions} placeholder="customer name" isDisabled={this.disabledFilter('customer')} isClearable={true}/></Col>
-            <Col sm="4"><Select value={actionDateValue} onChange={this.handleSelectChange('actionOptions')} options={actionOptions} placeholder="action type" isDisabled={this.disabledFilter('action')} isClearable={true}/></Col>
+            <Col sm="4"><Select value={brandDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('brandOptions')} options={brandOptions} placeholder="brand" isDisabled={this.disabledFilter('brand')} isClearable={true}/></Col>
+            <Col sm="4"><Select value={customerDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('customerOptions')} options={customerOptions} placeholder="customer name" isDisabled={this.disabledFilter('customer')} isClearable={true}/></Col>
+            <Col sm="4"><Select value={actionDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('actionOptions')} options={actionOptions} placeholder="action type" isDisabled={this.disabledFilter('action')} isClearable={true}/></Col>
           </Row>
         </Container>
       </div>
     )
+  }
+}
+
+const selectCustomStyle = {
+  singleValue: (base,state) => {
+    const opacity = state.isDisabled ? 0.1 : 1;
+    const transition = 'opacity 300ms';
+    return { ...base, opacity, transition};
   }
 }
 

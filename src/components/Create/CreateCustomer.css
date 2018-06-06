@@ -1,9 +1,17 @@
+:root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
 .create-customer-container {
   margin-top:10px;
 }
 
 .delete-table {
   margin-top:5px;
-  height:450px;
+  height:512px;
   overflow: auto;
 }

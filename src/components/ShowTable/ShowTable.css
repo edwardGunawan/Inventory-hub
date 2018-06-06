@@ -1,6 +1,4 @@
-.table-container{
-  overflow:auto;
-  margin-top:5px;
-  width:100%;
-  height:200px;
+:root {
+  --ebony-clay:#22313F;
+  --white-smoke:#ECECEC;
 }

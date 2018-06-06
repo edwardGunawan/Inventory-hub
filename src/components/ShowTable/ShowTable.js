@@ -73,7 +73,7 @@ class ShowTable extends Component{
     // console.log(tableBody,'in showTable');
     let renderHeader = tableHeader.map((header, idx) => {
       return (
-        <th key={idx}>{header}</th>
+        <th key={idx}>{header.toUpperCase()}</th>
       )
     });
 
@@ -84,7 +84,7 @@ class ShowTable extends Component{
           return (
             <tr key={i}>
               <td>{prod.name}</td>
-              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
+              <td><Button color="danger" outline onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           );
         case 'process-customer':
@@ -92,7 +92,7 @@ class ShowTable extends Component{
             <tr key={i}>
               <td>{prod.name}</td>
               <td>{prod.change}</td>
-              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
+              <td><Button color="danger" outline onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           );
         case 'product':
@@ -104,7 +104,7 @@ class ShowTable extends Component{
               <td>{brand}</td>
               <td>{numeral(quantity).format('0,0')}</td>
               <td>{numeral(price).format('$0,0.00')}</td>
-              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
+              <td><Button color="danger" outline onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           )
           // action
@@ -116,7 +116,7 @@ class ShowTable extends Component{
               <td>{numeral(quantity).format('0,0')}</td>
               <td>{numeral(price).format('$0,0.00')}</td>
               <td>{numeral(total).format('0,0')}</td>
-              <td><Button onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
+              <td><Button color="danger" outline onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           )
       }

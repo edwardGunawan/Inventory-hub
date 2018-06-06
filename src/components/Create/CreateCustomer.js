@@ -74,7 +74,7 @@ class CreateCustomer extends Component {
                      tableHeader={tableHeader}
                      parent={'customer'} />
           </div>
-                   <Button size="sm" color="primary" onClick={this.handleSubmit} outline>Submit</Button>
+                   <Button size="sm" color="primary" onClick={this.handleSubmit} outline>CREATE</Button>
       </div>
     )
   }

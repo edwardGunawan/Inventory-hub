@@ -37,17 +37,19 @@ class Delete extends Component {
   // handling submit on here to send value back to create
   handleSubmit(e) {
     e.preventDefault();
-    ipcRenderer.send('delete',{input_arr:this.state.name,category:'customer'});
-    ipcRenderer.on('reply-delete',(evt,data) => {
-      let {message,status} = data;
-      if(status === 'OK') {
-        ipcRenderer.removeAllListeners('delete');
-        ipcRenderer.removeAllListeners('reply-delete');
-        history.push('/Delete');
-      }else {
-        //TODO some modal that it doesn't work
-      }
-    });
+    if(this.state.name.length > 0) {
+      ipcRenderer.send('delete',{input_arr:this.state.name,category:'customer'});
+      ipcRenderer.on('reply-delete',(evt,data) => {
+        let {message,status} = data;
+        if(status === 'OK') {
+          ipcRenderer.removeAllListeners('delete');
+          ipcRenderer.removeAllListeners('reply-delete');
+          history.push('/Delete');
+        }else {
+          //TODO some modal that it doesn't work
+        }
+      });
+    }
   }
 
   handleSelectEnter(value) {
@@ -106,7 +108,7 @@ class Delete extends Component {
                      tableHeader={tableHeader}
                      parent={'customer'} />
          </div>
-                   <Button size="sm" outline color="primary" onClick={this.handleSubmit}>Submit</Button>
+                   <Button size="sm" outline color="primary" onClick={this.handleSubmit}>DELETE</Button>
       </div>
     )
   }

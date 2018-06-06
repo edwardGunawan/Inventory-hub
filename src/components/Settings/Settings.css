@@ -1,4 +1,25 @@
+root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
 .form-group-container {
   margin:0 auto;
   width:100%;
+}
+
+div > h2{
+  letter-spacing:0.5px;
+  margin-bottom:3%;
+}
+
+.new-password-container {
+  display:flex;
+}
+
+.new-password-item {
+  flex-direction: row;
 }

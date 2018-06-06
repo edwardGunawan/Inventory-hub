@@ -239,7 +239,7 @@ class TransactionHistory extends Component {
                 transactionHistory={transactionHistory}/>
         {(transactionHistory.length === 0)? '' :
               <PreviewTable tableHeader={tableHeader} tableBody={filterResult} />}
-        <Button className="submit-button" outline size="sm" onClick={this.handleSubmit} color="success">Convert To Excel</Button>
+        <Button className="submit-button" outline size="sm" onClick={this.handleSubmit} color="primary">EXPORT TO EXCEL</Button>
       </div>
     );
   }

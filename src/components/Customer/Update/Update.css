@@ -1,5 +1,13 @@
+:root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
 .table-update {
-  height:440px;
+  height:524px;
   overflow:auto;
 }
 

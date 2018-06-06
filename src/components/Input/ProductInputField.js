@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import {Form, FormGroup, Label, Input, Button} from 'reactstrap';
 import {selectProductStyle} from './InputField.js';
+import './InputField.css';
 
 class ProductInputField extends Component {
   constructor(props) {
@@ -94,29 +95,29 @@ class ProductInputField extends Component {
     let {parent} = this.props;
     return (
       <div>
-        <Form inline>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Select
+        <Form>
+          <Select
                 onChange={this.handleSelectChange}
                 isClearable
                 name="form-field-name"
                 options={otherInfo.options}
                 styles={selectProductStyle}
                 />
-          </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Label className="mr-sm-2" for="brand">Model</Label>
-            <Input name="brand" bsSize="sm" value={brand} className="mb-2 mr-sm-2 mb-sm-0" onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={disable.brand}/>
-          </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Label className="mr-sm-2" for="quantity">Quantity</Label>
-            <Input name="quantity" className="mr-sm-2" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity" disabled={disable.quantity}/>
-          </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Label className="mr-sm-2" for="price">Price</Label>
-            <Input name="price" className="mr-sm-2" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={disable.price}/>
-          </FormGroup>
-          <Button size="sm" onClick={this.handleSubmit} disabled={disable.submit}>{this.props.button}</Button>
+          <div className="form-group-container">
+            <FormGroup className="form-group">
+              <Label className="mr-sm-2" for="brand">Model</Label>
+              <Input name="brand" bsSize="sm" value={brand} onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={disable.brand}/>
+            </FormGroup>
+            <FormGroup className="form-group">
+              <Label className="mr-sm-2" for="quantity">Quantity</Label>
+              <Input name="quantity" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity" disabled={disable.quantity}/>
+            </FormGroup>
+            <FormGroup className="form-group">
+              <Label className="mr-sm-2" for="price">Price</Label>
+              <Input name="price" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={disable.price}/>
+            </FormGroup>
+          </div>
+          <Button size="sm" outline color="primary" onClick={this.handleSubmit} disabled={disable.submit}>{this.props.button}</Button>
         </Form>
       </div>
     )

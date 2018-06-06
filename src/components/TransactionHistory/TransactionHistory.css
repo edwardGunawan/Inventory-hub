@@ -1,3 +1,11 @@
+root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
 .submit-button {
   margin-top:10px;
 }

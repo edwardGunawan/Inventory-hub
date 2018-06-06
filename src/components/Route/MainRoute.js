@@ -3,7 +3,6 @@ import {Route,Redirect} from 'react-router-dom';
 // import Search from '../Search/Search';
 import Inout from '../Inout/Inout';
 import Settings from '../Settings/Settings';
-import Analytics from '../Analytics/Analytics';
 import Create from '../Create/Create';
 import TransactionHistory from '../TransactionHistory/TransactionHistory';
 import Restock from '../Product/Restock/Restock';

@@ -22,7 +22,7 @@ class Main extends Component {
   render () {
     let {email} = this.props;
     return (
-        <Container>
+        <Container className="main-container">
           <Router history={history}>
           <Row>
             <Col xs="2" className="nav-bar">

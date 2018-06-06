@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Main from './../Main/Main';
 import Signup from './../Signup/Signup';
+import './App.css';
 
 
 
@@ -69,7 +70,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="app-container">
         {this.state.render}
       </div>
     )

@@ -57,7 +57,7 @@ class Signup extends Component {
             <input type="password" id="adminPassword" className="form-control" ref="admin_password" placeholder="password"/>
           </FormGroup>
           <FormGroup className="form-actions">
-            <Button>Signup!</Button>
+            <Button outline color="info">Signup!</Button>
           </FormGroup>
         </Form>
       </div>

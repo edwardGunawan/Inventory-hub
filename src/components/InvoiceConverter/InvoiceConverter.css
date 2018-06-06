@@ -1,5 +1,14 @@
 .table-invoice {
   overflow:auto;
   width:100%;
-  height:350px;
+  height:487px;
+}
+
+.alert-container {
+  display:flex;
+}
+
+.alert-item {
+  flex-direction: row;
+  margin:5px;
 }

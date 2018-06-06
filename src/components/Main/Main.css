@@ -1,0 +1,21 @@
+:root {
+  --white-smoke: #ECECEC;
+}
+
+.main-container.container, .main-container .row{
+  margin:auto;
+  height:100%;
+  /* border:2px solid green; */
+}
+
+.nav-bar {
+  /* border:2px solid black; */
+  height:100%;
+}
+
+.main-content {
+  /* border: 2px solid var(--white-smoke); */
+  height:100%;
+  padding-top:30px;
+  border-radius:5px;
+}

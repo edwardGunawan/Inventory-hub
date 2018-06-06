@@ -67,17 +67,19 @@ class Update extends Component {
         break;
       case 'proceed':
         e.preventDefault();
-        ipcRenderer.send('update',{input_arr:this.state.name,category:'customer'});
-        ipcRenderer.on('reply-update',(evt,data) => {
-          let {message,status} = data;
-          if(status === 'OK') {
-            ipcRenderer.removeAllListeners('update');
-            ipcRenderer.removeAllListeners('reply-update');
-            history.push('/Update');
-          }else {
-            //TODO some modal that it doesn't work
-          }
-        });
+        if(this.state.name.length > 0) {
+          ipcRenderer.send('update',{input_arr:this.state.name,category:'customer'});
+          ipcRenderer.on('reply-update',(evt,data) => {
+            let {message,status} = data;
+            if(status === 'OK') {
+              ipcRenderer.removeAllListeners('update');
+              ipcRenderer.removeAllListeners('reply-update');
+              history.push('/Update');
+            }else {
+              //TODO some modal that it doesn't work
+            }
+          });
+        }
         break;
     }
 
@@ -121,7 +123,7 @@ class Update extends Component {
             <Label className="mr-sm-2">Change To: </Label>
             <Input placeholder="name" type="text" value={changeName} onChange={this.handleSelectEnter('change')} />
           </FormGroup>
-          <Button size="sm" onClick={this.handleSubmit('submit')}  disabled={this.state.changeName.length <= 0}>Submit </Button>
+          <Button size="sm" onClick={this.handleSubmit('submit')} color="primary" outline  disabled={this.state.changeName.length <= 0}>MARK ON TABLE </Button>
         </Form>
 
         <div className="table-update">
@@ -131,7 +133,7 @@ class Update extends Component {
                      tableHeader={tableHeader}
                      parent={'process-customer'} />
         </div>
-        <Button size="sm" outline color="primary" onClick={this.handleSubmit('proceed')}>Proceed</Button>
+        <Button size="sm" outline color="primary" onClick={this.handleSubmit('proceed')}>UPDATE</Button>
       </div>
     )
   }

@@ -24,11 +24,11 @@ class PreviewTable extends Component{
   render() {
     return (
       <div className="preview-table-container">
-        <Table>
+        <Table striped>
           <thead>
             <tr>
               {this.props.tableHeader.map((title,i) => {
-                return <th key={i}>{title}</th>
+                return <th key={i}>{title.toUpperCase()}</th>
               })}
             </tr>
           </thead>

@@ -1,0 +1,25 @@
+:root {
+  --light-blue: #E4F1FE; /* ALICE BLUE */
+  --san-marino-blue: #446CB3;
+}
+.nav-bar-container {
+  height:100%;
+  /* border:2px solid red; */
+}
+
+.side-nav-bar {
+  background-color: var(--light-blue);
+  border-radius:15px;
+  letter-spacing:1px;
+  /* border:1px solid black; */
+  text-align:center;
+  height:72%;
+  padding:80% 0;
+  margin-top:70px;
+}
+
+
+.selected {
+  font-weight:600;
+  color:var(--san-marino-blue);
+}

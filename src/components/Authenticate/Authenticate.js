@@ -62,7 +62,7 @@ const AuthComponent = ({email,onClick,onChange,password}) => {
     <div className="authenticate-container">
       <h1>Admin User</h1>
       <Input type="password" placeholder="password" value={password} onChange={onChange}/>
-      <Button onClick={onClick} color="primary" outline >Submit</Button>
+      <Button onClick={onClick} color="primary" outline >ENTER</Button>
     </div>
   )
 }

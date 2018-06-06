@@ -1,5 +1,13 @@
+:root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
 .table-delete {
-  height:430px;
+  height:509px;
   overflow:auto;
   margin-top:5px;
 }

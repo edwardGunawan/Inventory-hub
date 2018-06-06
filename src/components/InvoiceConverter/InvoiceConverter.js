@@ -21,6 +21,16 @@ class InvoiceConverter extends Component {
       action: info.action,
       total: info.total
     }
+    this.handleAlertColor = this.handleAlertColor.bind(this);
+  }
+
+  handleAlertColor(action) {
+    switch(action) {
+      case 'sell':
+        return 'primary';
+      case 'return':
+        return 'danger';
+    }
   }
 
   render() {
@@ -29,12 +39,14 @@ class InvoiceConverter extends Component {
     console.log('other', other);
     return(
       <div>
-        <Alert color="primary">
-          Invoice Type: {other.action}
-        </Alert>
-        <Alert color="info">
-          Charge For: {other.customer}
-        </Alert>
+        <div className="alert-container">
+          <Alert color={this.handleAlertColor(other.action)} className="alert-item">
+            INVOICE TYPE: {other.action.toUpperCase()}
+          </Alert>
+          <Alert color="info" className="alert-item">
+            CHARGE FOR: {other.customer.toUpperCase()}
+          </Alert>
+        </div>
         <div className="table-invoice">
           <Table borderless="true">
             <thead>

@@ -64,7 +64,7 @@ class CreateProduct extends Component {
     let options = this.toOptions(this.props.productItems);
     return (
       <div className="form-product">
-        <InputField button={'submit'}
+        <InputField button={'MARK ON TABLE'}
                     parent={'product'}
                     onSubmitClick={this.handleSubmitClick}
                     otherInfo={{options,productItems}} />
@@ -75,7 +75,7 @@ class CreateProduct extends Component {
                     tableHeader={tableHeader}
                     parent={'product'} />
         </div>
-        <Button size="sm" color="primary" outline onClick={this.handleSubmit}>Submit</Button>
+        <Button size="sm" color="primary" outline onClick={this.handleSubmit}>CREATE</Button>
       </div>
     )
   }

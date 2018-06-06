@@ -10,6 +10,7 @@ import {
 import Select from 'react-select';
 import Creatable from 'react-select/lib/Creatable';
 import numeral from 'numeral';
+import './InputField.css';
 
 /*
   All the InputField Component that is in the application
@@ -143,29 +144,32 @@ class InputField extends Component {
       case 'product':
         return (
           <div>
-            <Form inline>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Form>
                 <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options} styles={selectProductStyle} placeholder="Code"/>
+              <div className="form-group-container">
+                <FormGroup className="form-group">
+                  <Label className="mr-sm-2" for="brand">Model</Label>
+                  <Input name="brand" bsSize="sm" value={brand} onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={this.state.isDisabled}/>
+                </FormGroup>
+                <FormGroup className="form-group">
+                  <Label className="mr-sm-2" for="quantity">Quantity</Label>
+                  <Input name="quantity" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity" disabled={this.state.isDisabled}/>
+                </FormGroup>
+                <FormGroup className="form-group">
+                  <Label className="mr-sm-2" for="price">Price</Label>
+                  <Input name="price" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={this.state.isDisabled}/>
+                </FormGroup>
+              </div>
+
+              <FormGroup className="form-group form-group-elemnt">
+                <Button size="sm" onClick={this.handleSubmit} outline color="primary" disabled={this.state.isDisabled}>{this.props.button}</Button>
               </FormGroup>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Label className="mr-sm-2" for="brand">Model</Label>
-                <Input name="brand" bsSize="sm" value={brand} onChange={this.handleInputChange} type="text" id="brand" placeholder="model/brand" disabled={this.state.isDisabled}/>
-              </FormGroup>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Label className="mr-sm-2" for="quantity">Quantity</Label>
-                <Input name="quantity" value={quantity} bsSize="sm" onChange={this.handleInputChange} type="number" step="1" placeholder="quantity" disabled={this.state.isDisabled}/>
-              </FormGroup>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Label className="mr-sm-2" for="price">Price</Label>
-                <Input name="price" value={price} bsSize="sm" onChange={this.handleInputChange} type="number"  placeholder="Price" disabled={this.state.isDisabled}/>
-              </FormGroup>
-              <Button size="sm" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
             </Form>
           </div>
         )
       case 'customer':
         return (
-          <Creatable isClearable onChange={this.handleSelectChange} options={otherInfo.options} placeholder="name"/>
+          <Creatable isClearable onChange={this.handleSelectChange} styles={selectCustomerStyle} options={otherInfo.options} placeholder="name"/>
         )
       case 'process-customer':
         return (
@@ -174,8 +178,8 @@ class InputField extends Component {
       default:
         return (
           <div>
-            <Form inline>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Form>
+              <div className="form-group-elemnt">
                 <Select
                     onChange={this.handleSelectChange}
                     isClearable
@@ -184,20 +188,24 @@ class InputField extends Component {
                     styles={selectProductStyle}
                     placeholder="Code"
                     />
+                </div>
+              <div className="form-group-container">
+                <FormGroup className="form-group">
+                  <Label className="mr-sm-2" for="brand">Model</Label>
+                  <Input type="text" bsSize="sm" name="brand" id="brand" value={brand} disabled />
+                </FormGroup>
+                <FormGroup className="form-group right-location">
+                  <Label className="mr-sm-2" for="quantity">Quantity</Label>
+                  <Input type="number" bsSize="sm" onChange={this.handleInputChange} name="quantity" id="quantity" disabled={this.state.isDisabled} value={numeral(quantity).format('0,0')}/>
+                </FormGroup>
+                <FormGroup className="form-group">
+                  <Label className="mr-sm-2" for="price">Price</Label>
+                  <Input type="text" bsSize="sm" name="price" id="price" value={numeral(price).format('$0,0.00')} disabled />
+                </FormGroup>
+              </div>
+              <FormGroup className="form-group  right-location form-group-elemnt">
+                <Button  size="sm" outline color="primary" className="primary-button" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
               </FormGroup>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Label className="mr-sm-2" for="brand">Model</Label>
-                <Input type="text" bsSize="sm" name="brand" id="brand" value={brand} disabled />
-              </FormGroup>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Label className="mr-sm-2" for="quantity">Quantity</Label>
-                <Input type="number" bsSize="sm" onChange={this.handleInputChange} name="quantity" id="quantity" disabled={this.state.isDisabled} value={numeral(quantity).format('0,0')}/>
-              </FormGroup>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Label className="mr-sm-2" for="price">Price</Label>
-                <Input type="text" bsSize="sm" name="price" id="price" value={numeral(price).format('$0,0.00')} disabled />
-              </FormGroup>
-              <Button  size="sm" onClick={this.handleSubmit} disabled={this.state.isDisabled}>{this.props.button}</Button>
             </Form>
           </div>
         )
@@ -216,7 +224,6 @@ class InputField extends Component {
 export const selectProductStyle = {
   container:(base,state) => ({
     ...base,
-    width:'400px',
     marginBottom:'10px'
   })
 }

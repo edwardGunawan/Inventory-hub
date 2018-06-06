@@ -34,7 +34,7 @@ class Inout extends Component {
       customer:'',
       action:'sell',
       currWindow:'action', // use this to change the proceed button to go to invoiceConverter
-      proceed:'Proceed',
+      proceed:'PROCEED',
       back:true,
       totalWithoutDiscount:0,
       total:0,
@@ -64,12 +64,12 @@ class Inout extends Component {
   handleProceed = () => {
     let {currWindow} = this.state
     if(currWindow === 'action') {
-      let {customer,total,action} = this.state;
+      let {customer,total,tableBody} = this.state;
       // don't go next if the total is not zero and they didn't choose customer
-      if(total !== 0 && (customer.length > 0 || action === 'restock')) {
+      if(total !== 0 && (customer.length > 0) && (tableBody.length > 0)) {
         this.setState({
           currWindow:'invoiceConverter',
-          proceed:'Confirm Invoice',
+          proceed:'CONFIRM INVOICE',
           back:false
         });
       }
@@ -167,7 +167,10 @@ class Inout extends Component {
 
   handleRadioClick(evt) {
     // console.log(evt.target.value, ' in radioClick');
-    this.setState({action:evt.target.value, customer:(evt.target.value === 'restock')? '' : this.state.customer});
+    this.setState({
+      action:evt.target.value, customer:(evt.target.value === 'restock')? '' : this.state.customer,
+      tableBody:[]
+    });
   }
 
 
@@ -217,7 +220,7 @@ class Inout extends Component {
     // console.log(`In Inout ${customerNames}, ${productItems}, ${tableHeader}`);
     return (
       <div>
-        <h2>Process</h2>
+        <p>Transaction Description</p>
         {(currWindow === 'action') ? <Action info={{customerNames, productItems}}
           tableHeader={tableHeader}
           tableBody={tableBody}
@@ -234,8 +237,8 @@ class Inout extends Component {
           <h6>Total: {totalWithoutDiscount} in  <span className="text-success">{discount}%</span> = {numeral(total).format('$0,0.00')}</h6>
         </div>
 
-        <Button onClick={this.handleBackButton} outline size="sm" disabled={back}>Back</Button>
-        <Button onClick={this.handleProceed} outline color="primary" size="sm">{proceed}</Button>
+        <Button onClick={this.handleBackButton} outline size="sm" disabled={back}>BACK</Button>
+        <Button onClick={this.handleProceed} outline color="primary" className="proceed-button" size="sm">{proceed}</Button>
 
       </div>
     )

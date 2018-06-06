@@ -108,52 +108,54 @@ class Action extends Component {
 
     return (
       <div>
-        <Form inline>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Select
-                className="select-customer"
-                onChange={this.handleSelectCustomer}
-                isClearable
-                isDisabled={this.state.isDisabled}
-                options={customerOptions}
-                styles={selectProductStyle}
-                isSearchable={false}
-                placeholder="Customer Name"
-                />
-          </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Label for="discount" className="mr-sm-2">Discount</Label>
-            <InputGroup>
-              <InputGroupAddon addonType="append">
-                <Input type="number"
-                      id="discount"
-                      name="discount"
-                      max={100}
-                      min={0}
-                      onChange={this.handleDiscountChange}
-                      value={this.state.discount}
-                      bsSize="sm"
-                      placeholder="discount"
-                      />
-                <InputGroupText>%</InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-          </FormGroup>
-          <FormGroup className="radio-button">
-              <Label className="mr-sm-2" check>
-                <Input type="radio" onChange={this.handleRadioClick} checked={action === 'sell'} value="sell" name="radio1" />{' '}
-                Sell
-              </Label>
-              <Label className="mr-sm-2" check>
-                <Input type="radio" name="radio1" checked={action === 'return'} value="return" onChange={this.handleRadioClick} />{' '}
-                Return
-              </Label>
-          </FormGroup>
+        <Form>
+          <div className="form-group-container">
+            <FormGroup className="form-group">
+              <Select
+                  className="select-customer"
+                  onChange={this.handleSelectCustomer}
+                  isClearable
+                  isDisabled={this.state.isDisabled}
+                  options={customerOptions}
+                  styles={selectProductStyle}
+                  isSearchable={false}
+                  placeholder="Customer Name"
+                  />
+            </FormGroup>
+            <FormGroup className="form-group">
+            {/*<Label for="discount" className="mr-sm-2">Discount</Label>*/}
+              <InputGroup>
+                <InputGroupAddon addonType="append">
+                  <Input type="number"
+                        id="discount"
+                        name="discount"
+                        max={100}
+                        min={0}
+                        onChange={this.handleDiscountChange}
+                        value={this.state.discount}
+                        bsSize="sm"
+                        placeholder="discount"
+                        />
+                  <InputGroupText>%</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+            </FormGroup>
+            <FormGroup className="radio-button-container form-group">
+                <Label className="mr-sm-2 radio-button" check>
+                  <Input type="radio" onChange={this.handleRadioClick} checked={action === 'sell'} value="sell" name="radio1" />{' '}
+                  Sell
+                </Label>
+                <Label className="mr-sm-2 radio-button" check>
+                  <Input type="radio" name="radio1" checked={action === 'return'} value="return" onChange={this.handleRadioClick} />{' '}
+                  Return
+                </Label>
+            </FormGroup>
+          </div>
         </Form>
 
 
       <InputField
-        button={'Submit'}
+        button={'MARK ON TABLE!'}
         parent={'action'}
         onSubmitClick={this.handleSubmitClick}
         otherInfo={{options:productOptions,productItems, action:action}}

@@ -1,0 +1,19 @@
+root{
+  --ebony-clay:#22313F;
+}
+
+* {
+  color: var(--ebony-clay);
+}
+
+.form-group-elemnt {
+  margin-top:10px;
+}
+
+.form-group-container {
+  display:flex;
+}
+
+.form-group {
+  flex-direction: row;
+}

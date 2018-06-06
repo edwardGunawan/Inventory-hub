@@ -51,18 +51,20 @@ const withClassSettings = email => handleSubmit => {
           <h2>Settings</h2>
           <Form>
             <FormGroup className="form-group-container">
-              <Label for="oldPassword">old password: </Label>
+              <Label for="oldPassword">Old Password: </Label>
               <Input type="password" value={this.state.oldPassword} onChange={this.handleChange('oldPassword')} id="oldPassword" placeholder="old password"/>
             </FormGroup>
+            <div className="new-password-container">
+              <FormGroup className="form-group-container new-password-item">
+                <Label for="newPassword">New Password: </Label>
+                <Input type="password" value={this.state.newPassword} onChange={this.handleChange('newPassword')} id="newPassword" placeholder="new password"/>
+              </FormGroup>
+              <FormGroup className="form-group-container new-password-item">
+                <Input type="password" onChange={this.handleChange('retype')} placeholder="re-type new password" valid={this.state.valid} invalid={this.state.invalid}/>
+              </FormGroup>
+            </div>
             <FormGroup className="form-group-container">
-              <Label for="newPassword">new password: </Label>
-              <Input type="password" value={this.state.newPassword} onChange={this.handleChange('newPassword')} id="newPassword" placeholder="new password"/>
-            </FormGroup>
-            <FormGroup className="form-group-container">
-              <Input type="password" onChange={this.handleChange('retype')} placeholder="re-type new password" valid={this.state.valid} invalid={this.state.invalid}/>
-            </FormGroup>
-            <FormGroup className="form-group-container">
-              <Button outline color="primary" onClick={handleSubmit(this.state)} className="form-submit" disabled={this.state.disabled}>Submit</Button>
+              <Button outline color="danger" onClick={handleSubmit(this.state)} className="form-submit" disabled={this.state.disabled}>CHANGE PASSWORD</Button>
             </FormGroup>
           </Form>
         </div>
