@@ -2,7 +2,7 @@
   "name": "inventory-hub",
   "version": "0.1.0",
   "private": true,
-  "main": "main.js",
+  "main": "./src/main.js",
   "homepage": "./",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -11,7 +11,6 @@
     "concurrently": "^3.5.1",
     "crypto-js": "^3.1.9-1",
     "electron": "^1.8.4",
-    "electron-builder": "^20.15.1",
     "glob": "^7.1.2",
     "jsonwebtoken": "^8.2.1",
     "lodash": "^4.17.5",
@@ -44,6 +43,8 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "devtron": "^1.4.0",
+    "electron-builder": "^20.15.1",
+    "electron-packager": "^12.1.0",
     "mocha": "^5.1.1"
   }
 }

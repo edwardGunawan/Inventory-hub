@@ -19,12 +19,12 @@ function initialize() {
     const windowOptions = {
       width:1080,
       height:840,
-      minWidth: 1080,
+      minWidth: 680,
       title:app.getName()
     };
 
     const startUrl = process.env.DEV_URL || url.format({
-      pathname: path.join(__dirname, '/build/index.html'),
+      pathname: path.join(__dirname, '/../build/index.html'),
       protocol:'file:',
       slashes: true
     });
@@ -32,7 +32,7 @@ function initialize() {
     mainWindow = new BrowserWindow(windowOptions);
     mainWindow.loadURL(startUrl);
 
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     if(debug) {
       mainWindow.webContents.openDevTools();

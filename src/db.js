@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 
 
 let env = process.argv[2] || 'dev';
+console.log('env in db.js', env);
 
 let sequelize;
 if(env === 'production') {
