@@ -19,7 +19,7 @@ function initialize() {
     const windowOptions = {
       width:1080,
       height:840,
-      minWidth: 680,
+      minWidth: 1080,
       title:app.getName()
     };
 
@@ -32,7 +32,7 @@ function initialize() {
     mainWindow = new BrowserWindow(windowOptions);
     mainWindow.loadURL(startUrl);
 
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     if(debug) {
       mainWindow.webContents.openDevTools();
