@@ -1,0 +1,30 @@
+directories:
+  output: dist
+  buildResources: assets
+files:
+  - build/**/*
+extraMetadata:
+  main: build/electron.js
+appId: com.electron.inventory-hub
+asar: false
+mac:
+  category: public.app-category.business
+  icon: build/icon.png
+nsis:
+  createDesktopShortcut: always
+dmg:
+  contents:
+    - x: 110
+      'y': 150
+    - x: 240
+      'y': 150
+      type: link
+      path: /Applications
+linux:
+  target: AppImage
+  category: Development
+win:
+  icon: build/flavicon.ico
+  target: nsis
+extends: react-cra
+electronVersion: 1.8.4

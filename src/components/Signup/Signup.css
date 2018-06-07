@@ -13,6 +13,7 @@
 .signup-container{
   width:100%;
   height:100%;
+  display:flex;
   /* border:1px solid black; */
 }
 
@@ -34,8 +35,9 @@
   /* border:1px solid red; */
   width:60%;
   padding:5%;
-  margin:10% auto;
+  margin:auto;
   border-radius:10px;
+  align-items: center;
 }
 
 .signup-form,.signup-form * {

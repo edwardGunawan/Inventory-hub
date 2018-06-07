@@ -6,6 +6,7 @@ import './App.css';
 
 
 const { ipcRenderer } = window.require('electron');
+console.log(ipcRenderer);
 
 /*
   the status represent what the current status is, if it is

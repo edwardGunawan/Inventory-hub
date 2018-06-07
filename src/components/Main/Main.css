@@ -4,7 +4,7 @@
 
 .main-container.container, .main-container .row{
   margin:auto;
-  height:100%;
+  /* height:100%; */
   /* border:2px solid green; */
 }
 
