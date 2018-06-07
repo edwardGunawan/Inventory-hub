@@ -9,8 +9,7 @@ import {
         FormGroup,
         InputGroup,
         InputGroupAddon,
-        InputGroupText,
-        Col
+        InputGroupText
 } from 'reactstrap';
 import Select from 'react-select';
 import './Action.css';

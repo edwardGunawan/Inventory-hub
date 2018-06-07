@@ -120,8 +120,7 @@ class Filter extends Component {
         endDateValue,
         brandDateValue,
         customerDateValue,
-        actionDateValue,
-        filterComponent} = this.state;
+        actionDateValue} = this.state;
     return (
       <div>
         <Container className="filter-container">

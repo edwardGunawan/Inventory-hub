@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import {history} from '../../Main/Main';
 import {Button} from 'reactstrap';
-import Select from 'react-select';
 import ShowTable from '../../ShowTable/ShowTable';
 import InputField from '../../Input/InputField';
 import './Delete.css';
 
-const {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 class Delete extends Component {
   constructor(props) {
@@ -40,7 +39,7 @@ class Delete extends Component {
     if(this.state.name.length > 0) {
       ipcRenderer.send('delete',{input_arr:this.state.name,category:'customer'});
       ipcRenderer.on('reply-delete',(evt,data) => {
-        let {message,status} = data;
+        let {status} = data;
         if(status === 'OK') {
           ipcRenderer.removeAllListeners('delete');
           ipcRenderer.removeAllListeners('reply-delete');

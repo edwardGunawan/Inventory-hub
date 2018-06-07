@@ -99,7 +99,7 @@ class InputField extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     // console.log(this.state, 'in handle submit');
-    let {code,brand,quantity,price, otherInfo} = this.state;
+    let {code,brand,quantity,price} = this.state;
     if(code && quantity > 0 && price > 0) {
       let toRet;
       if(this.props.parent === 'action') {
@@ -139,7 +139,7 @@ class InputField extends Component {
 
 
   inputGroup = () => {
-    const {selectedOption,otherInfo,brand,price,quantity} = this.state;
+    const {otherInfo,brand,price,quantity} = this.state;
     switch(this.props.parent) {
       case 'product':
         return (

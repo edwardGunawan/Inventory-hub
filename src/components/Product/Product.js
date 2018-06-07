@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import ShowTable from '../ShowTable/ShowTable';
-import InputField from '../Input/InputField';
 import ProductInputField from '../Input/ProductInputField';
 import {Button} from 'reactstrap';
 import {history} from '../Main/Main';
 import './Product.css';
 
-const {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 const ProductClass = ({parent}) => (onSubmit) => {
   return class Product extends Component {

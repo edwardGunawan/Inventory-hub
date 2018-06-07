@@ -3,10 +3,7 @@ import Main from './../Main/Main';
 import Signup from './../Signup/Signup';
 import './App.css';
 
-
-
-const { ipcRenderer } = window.require('electron');
-console.log(ipcRenderer);
+const ipcRenderer = window.ipcRenderer;
 
 /*
   the status represent what the current status is, if it is
@@ -40,7 +37,6 @@ class App extends Component {
     ipcRenderer.on('reply-get-email',(evt,data) => {
       let {status,message} = data;
       if(status === 'OK') {
-        console.log(message);
         ipcRenderer.removeAllListeners('get-email');
         ipcRenderer.removeAllListeners('reply-get-email');
         if(message === 'first') {
@@ -55,7 +51,7 @@ class App extends Component {
       }else {
         ipcRenderer.removeAllListeners('get-email');
         ipcRenderer.removeAllListeners('reply-get-email');
-        console.log(message);
+        // console.log(message);
       }
     });
   }

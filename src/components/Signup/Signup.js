@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import './Signup.css';
 import {Button, Form, FormGroup, Label,Alert} from 'reactstrap';
 
-const {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 class Signup extends Component {
   constructor(props) {

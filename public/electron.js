@@ -33,6 +33,10 @@ function initialize() {
 
   function createWindow(){
     const windowOptions = {
+      webPreferences: {
+        nodeIntegration: false,
+        preload:__dirname+'/preload.js'
+      },
       width:1080,
       height:840,
       minWidth: 680,

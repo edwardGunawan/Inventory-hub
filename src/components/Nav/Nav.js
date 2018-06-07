@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {NavLink as RRNavLink} from 'react-router-dom';
-import {Nav, NavItem, NavLink} from 'reactstrap';
+import {Nav, NavLink} from 'reactstrap';
 import './Nav.css'
 
 /*

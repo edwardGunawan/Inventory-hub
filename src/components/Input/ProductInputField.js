@@ -82,7 +82,7 @@ class ProductInputField extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    let {code,brand,quantity,price, otherInfo} = this.state;
+    let {code,brand,quantity,price} = this.state;
     if(quantity > 0) {
       const toRet = {code,brand,quantity,price};
       this.props.onSubmitClick(toRet);
@@ -92,7 +92,6 @@ class ProductInputField extends Component {
 
   render() {
     let {brand,otherInfo,quantity,price,disable} = this.state;
-    let {parent} = this.props;
     return (
       <div>
         <Form>

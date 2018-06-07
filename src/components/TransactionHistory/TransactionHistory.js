@@ -10,7 +10,7 @@ import {
 import {history} from '../Main/Main';
 import './TransactionHistory.css';
 
-const {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 
 class TransactionHistory extends Component {
@@ -188,7 +188,7 @@ class TransactionHistory extends Component {
       case 'Product':
         dates = this.state.productHistoryDates;
         break;
-      case 'Customer':
+      default:
         dates = this.state.customerHistoryDates;
         break;
     }

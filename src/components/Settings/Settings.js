@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button, Input, Form, FormGroup,Label,Alert} from 'reactstrap';
 import {history} from '../Main/Main';
 import './Settings.css';
-const {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 
 const withClassSettings = email => handleSubmit => {

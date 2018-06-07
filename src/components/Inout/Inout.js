@@ -5,7 +5,8 @@ import { Button } from 'reactstrap';
 import './Inout.css';
 import numeral from 'numeral';
 import {history} from '../Main/Main';
-let {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
+
 /*
   Buy/Sell Component:
     All math calculation and discount will be in frontend

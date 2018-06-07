@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Input,Button,Alert} from 'reactstrap';
 import './Authenticate.css'
 
-const {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 const withAuthenticateClass = defaultState => BaseComponent => AuthComponent => {
   return class Authenticate extends Component {

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Table,Button} from 'reactstrap';
-import ModalStrap from '../Modal/ModalStrap'
 import PropTypes from 'prop-types';
 import './ShowTable.css';
 import numeral from 'numeral';
@@ -67,7 +66,7 @@ class ShowTable extends Component{
 
 
   render() {
-    let {tableBody,actionButton,tableHeader,parent} = this.state;
+    let {tableBody,tableHeader,parent} = this.state;
     // console.log(actionButton);
     // console.log(parent);
     // console.log(tableBody,'in showTable');
@@ -78,7 +77,7 @@ class ShowTable extends Component{
     });
 
     let getTd = (prod,i) => {
-      let {id,price,brand,code,quantity,total} = prod;
+      let {price,brand,code,quantity,total} = prod;
       switch(parent) {
         case 'customer':
           return (

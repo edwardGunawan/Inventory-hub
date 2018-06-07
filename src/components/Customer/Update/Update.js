@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import InputField from '../../Input/InputField';
-import {Input,Button,Label,FormGroup,Form} from 'reactstrap';
+import {Input,Button,FormGroup,Form} from 'reactstrap';
 import {history} from '../../Main/Main';
 import ShowTable from '../../ShowTable/ShowTable';
 import './Update.css';
 
-const {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 class Update extends Component {
   constructor(props) {
@@ -70,7 +70,7 @@ class Update extends Component {
         if(this.state.name.length > 0) {
           ipcRenderer.send('update',{input_arr:this.state.name,category:'customer'});
           ipcRenderer.on('reply-update',(evt,data) => {
-            let {message,status} = data;
+            let {status} = data;
             if(status === 'OK') {
               ipcRenderer.removeAllListeners('update');
               ipcRenderer.removeAllListeners('reply-update');

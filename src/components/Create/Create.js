@@ -6,7 +6,7 @@ import { ButtonDropdown,
         DropdownMenu,
         DropdownItem } from 'reactstrap';
 import {history} from '../Main/Main';
-let {ipcRenderer} = window.require('electron');
+const ipcRenderer = window.ipcRenderer;
 
 class Create extends Component {
   constructor(props) {

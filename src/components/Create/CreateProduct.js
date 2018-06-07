@@ -1,10 +1,5 @@
 import React, {Component} from 'react';
-import {Button,
-        FormGroup,
-        FormText,
-        Label,
-        Input
-      } from 'reactstrap';
+import {Button} from 'reactstrap';
 import PropTypes from 'prop-types';
 import ShowTable from '../ShowTable/ShowTable';
 import InputField from '../Input/InputField';
