@@ -5,17 +5,17 @@
     <key>BuildMachineOSBuild</key>
     <string>16G1212</string>
     <key>CFBundleDisplayName</key>
-    <string>inventory-hub</string>
+    <string>Inventory-Hub</string>
     <key>CFBundleExecutable</key>
-    <string>inventory-hub</string>
+    <string>Inventory-Hub</string>
     <key>CFBundleIconFile</key>
-    <string>inventory-hub.icns</string>
+    <string>Inventory-Hub.icns</string>
     <key>CFBundleIdentifier</key>
-    <string>com.electron.inventory-hub</string>
+    <string>com.electron.Inventory-Hub</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>inventory-hub</string>
+    <string>Inventory-Hub</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -43,6 +43,8 @@
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright © 2018 Edward Huang</string>
+    <string>Copyright © 2018 Inventory-Hub</string>
+    <key>AsarIntegrity</key>
+    <string>{"checksums":{"app.asar":"5MG9kxtUGz86l/Ngg7vwbvQFL50w9gI/ohSmj4QGsTC/QJaoSbAAXTlfB3TAALLges+DObtyrMfS9MvzLDC9DA==","electron.asar":"ofPEIsT8YhpsxiPf8+uWXh3sWH9KDicszx4MKtBhAgJuX7ruQJNNByfh7Wo07tgoK3tb46ChQdJkdtdJLU1znA=="}}</string>
   </dict>
 </plist>

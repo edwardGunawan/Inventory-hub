@@ -1,10 +1,10 @@
 version: 0.1.0
 files:
-  - url: inventory-hub-0.1.0-mac.zip
-    sha512: swa7aAhbUOlHC9tGoaNuWRlhkF6SayXv3BtZDclu/tdHuJeTU0bzRESYOrWWzb6BNFz9IJuERsTGVmRl/S7qZQ==
-  - url: inventory-hub-0.1.0.dmg
-    sha512: 11YJxze0b/4pKE2jEqewRBzL5XJIEzoRaxMG9Wu5KiXxjzItzRvO4M4Igw3J87ddXtdRsEtPxxEMiL2hQCXy+g==
-    size: 82698988
-path: inventory-hub-0.1.0-mac.zip
-sha512: swa7aAhbUOlHC9tGoaNuWRlhkF6SayXv3BtZDclu/tdHuJeTU0bzRESYOrWWzb6BNFz9IJuERsTGVmRl/S7qZQ==
-releaseDate: '2018-06-07T03:53:15.293Z'
+  - url: Inventory-Hub-0.1.0-mac.zip
+    sha512: bL9K8FOycsIw+7jHAxRlL4SCmH07CaLigItMRkUiCEj4YUsX7mzGvUL5BzmVUZ/GQdnrM5v8c0GUCrs9RDxecA==
+  - url: Inventory-Hub-mac-0.1.0.dmg
+    sha512: LcM+wxh3CI1iT5TEiL4XVpsaJ+IIjZ8ABF585z9jVC40GuCgjdZBNdhR65cm/y2frrnJQQmhL9Eq8P5yFSKeuA==
+    size: 97544707
+path: Inventory-Hub-0.1.0-mac.zip
+sha512: bL9K8FOycsIw+7jHAxRlL4SCmH07CaLigItMRkUiCEj4YUsX7mzGvUL5BzmVUZ/GQdnrM5v8c0GUCrs9RDxecA==
+releaseDate: '2018-06-07T22:17:08.595Z'

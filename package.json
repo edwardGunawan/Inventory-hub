@@ -1,9 +1,10 @@
 {
-  "name": "inventory-hub",
+  "name": "Inventory-Hub",
   "description": "simple store inventory system",
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",
+  "repository": "https://github.com/edwardGunawan/Inventory-hub",
   "homepage": "./",
   "author": "Edward Huang",
   "dependencies": {
@@ -13,6 +14,8 @@
     "bootstrap": "^4.1.0",
     "crypto-js": "^3.1.9-1",
     "electron-is-dev": "^0.3.0",
+    "electron-log": "^2.2.14",
+    "electron-updater": "^2.21.10",
     "glob": "^7.1.2",
     "jquery": "^3.3.1",
     "jsonwebtoken": "^8.2.1",
@@ -38,46 +41,13 @@
     "react-build": "react-scripts build",
     "react-test": "react-scripts test --env=jsdom",
     "react-eject": "react-scripts eject",
-    "electron-build": "CSC_IDENTITY_AUTO_DISCOVERY=false build",
+    "electron-build": "CSC_IDENTITY_AUTO_DISCOVERY=false build --mac --win",
     "rebuild": "electron-rebuild -f -w sqlite3",
     "build": "yarn react-build && yarn electron-build",
     "start": "concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
     "debug": "concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron . --debug\"",
-    "test-backend": "mocha main-process/Create/create-async.test.js test",
-    "postinstall": "electron-builder install-app-deps"
-  },
-  "build": {
-    "appId": "com.electron.inventory-hub",
-    "asar": false,
-    "mac": {
-      "category": "public.app-category.business",
-      "icon": "build/icon.png"
-    },
-    "nsis": {
-      "createDesktopShortcut": "always"
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 110,
-          "y": 150
-        },
-        {
-          "x": 240,
-          "y": 150,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "linux": {
-      "target": "AppImage",
-      "category": "Development"
-    },
-    "win": {
-      "icon": "build/flavicon.ico",
-      "target": "nsis"
-    }
+    "postinstall": "electron-builder install-app-deps",
+    "publish": "build --mac --win -p always"
   },
   "devDependencies": {
     "chai": "^4.1.2",

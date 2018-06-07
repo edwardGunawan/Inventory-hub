@@ -1,27 +1,29 @@
 const Sequelize = require('sequelize');
+const {app} = require('electron');
+const isDev = require('electron-is-dev');
+const path = require('path');
 
 
-// let env = process.argv[2] || 'dev';
-// console.log('env in db.js', env);
-sequelize = new Sequelize(undefined, undefined, undefined, {
+if(!isDev) {
+  const fs = require('fs');
+  function checkOrCreateDir(path) {
+    try {
+      fs.statSync(path);
+    }catch(e) {
+      fs.mkdirSync(path);
+    }
+  }
+  checkOrCreateDir(path.join(app.getPath('documents'),'inventory-hub-data'));
+}
+
+
+let sequelize = isDev ? new Sequelize(undefined, undefined, undefined, {
   'dialect':'sqlite',
-  'storage': __dirname + '/data/prod-inventory.sqlite'
-});
-// let sequelize;
-// if(env === 'production') {
-//
-// } else if(env === 'dev') {
-//   sequelize = new Sequelize(undefined, undefined, undefined, {
-//     'dialect':'sqlite',
-//     'storage': __dirname + '/data/dev-inventory.sqlite'
-//   });
-// } else {
-//   sequelize = new Sequelize(undefined, undefined, undefined, {
-//     'dialect':'sqlite',
-//     'storage': __dirname + '/data/test-inventory.sqlite'
-//   });
-// }
-
+  'storage': path.join(app.getAppPath(),'data/inventory.sqlite')
+}) : new Sequelize(undefined,undefined,undefined, {
+  'dialect': 'sqlite',
+  'storage': path.join(app.getPath('documents'),'inventory-hub-data/inventory.sqlite')
+})
 
 let db = {};
 

@@ -1,12 +1,26 @@
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 const glob = require('glob');
 const path = require('path');
-const url = require('path');
+const isDev = require('electron-is-dev');
 const debug = /--debug/.test(process.argv[2]); // run `npm run debug`
-const dbPath = path.join(app.getAppPath(),'db.js');
 const db = require('./db.js');
 const moment = require('moment');
-const isDev = require('electron-is-dev');
+const {autoUpdater} =  require('electron-updater');
+const log = require('electron-log');
+
+
+//-------------------------------------------------------------------
+// Logging
+//
+//
+// makes debugging easier :)
+//-------------------------------------------------------------------
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
+
+
+
 
 
 let mainWindow = null;
@@ -25,6 +39,10 @@ function initialize() {
       title:app.getName()
     };
 
+    if (process.platform === 'linux') {
+      windowOptions.icon = path.join(__dirname, '/icon.png');
+    }
+
     const startUrl = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
 
     mainWindow = new BrowserWindow(windowOptions);
@@ -42,17 +60,18 @@ function initialize() {
     });
   }
 
+
   app.on('ready', () => {
     createWindow();
-
+    autoUpdater.checkForUpdatesAndNotify()
     db.sequelize
       .authenticate()
       .then(() => {
-        console.log('Connection has been established successfully');
+        log.info('Connection has been established successfully');
         return db.sequelize.sync({});
       })
       .then(() => {
-        console.log('db is already in sync');
+        log.info('db is already in sync');
         return db.sequelize.transaction(function(t) {
           let timestamps = moment().valueOf();
           return db.customer.findOrCreate({
@@ -64,15 +83,15 @@ function initialize() {
             });
             return Promise.all(promises);
           }).catch(e => {
-            console.log('something is wrong with transaction', e);
+            log.info('something is wrong with transaction', e);
             throw e;
           });
         })
       }).then((res) => {
-        console.log(`finished initializing`);
+        log.info(`finished initializing`);
       })
       .catch(e => {
-        console.log('Unable to connect/initialized to the database', e);
+        log.info('Unable to connect/initialized to the database', e);
         throw e;
       });
   });

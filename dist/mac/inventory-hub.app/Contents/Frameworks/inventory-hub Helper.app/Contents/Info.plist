@@ -5,7 +5,7 @@
     <key>BuildMachineOSBuild</key>
     <string>16G1212</string>
     <key>CFBundleIdentifier</key>
-    <string>com.electron.inventory-hub.helper</string>
+    <string>com.electron.Inventory-Hub.helper</string>
     <key>CFBundleName</key>
     <string>Electron Helper</string>
     <key>CFBundlePackageType</key>
@@ -23,9 +23,9 @@
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
     <key>CFBundleExecutable</key>
-    <string>inventory-hub Helper</string>
+    <string>Inventory-Hub Helper</string>
     <key>CFBundleDisplayName</key>
-    <string>inventory-hub Helper</string>
+    <string>Inventory-Hub Helper</string>
     <key>CFBundleVersion</key>
     <string>0.1.0</string>
   </dict>

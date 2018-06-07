@@ -1,5 +1,10 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
-# .xlsx
+
+# electron-builder.yml
+electron-builder.yml
+
+# dist
+dist
 
 *.xlsx
 # Invoice

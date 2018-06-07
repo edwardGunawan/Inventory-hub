@@ -5,11 +5,11 @@
     <key>BuildMachineOSBuild</key>
     <string>16G1212</string>
     <key>CFBundleDisplayName</key>
-    <string>inventory-hub Helper NP</string>
+    <string>Inventory-Hub Helper NP</string>
     <key>CFBundleExecutable</key>
-    <string>inventory-hub Helper NP</string>
+    <string>Inventory-Hub Helper NP</string>
     <key>CFBundleIdentifier</key>
-    <string>com.electron.inventory-hub.helper.NP</string>
+    <string>com.electron.Inventory-Hub.helper.NP</string>
     <key>CFBundleName</key>
     <string>Electron Helper NP</string>
     <key>CFBundlePackageType</key>
