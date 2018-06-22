@@ -29,6 +29,7 @@ ipcMain.on('get-transaction', async (evt, data) => {
     // it can only be assigned to default if the value is undefined
     let {beginTimestamps,endTimestamps=moment(beginTimestamps).add(1,'months').valueOf(),category} = data;
     let transactionHistory;
+    console.log('category', category, beginTimestamps, endTimestamps);
 
     switch(category) {
       case 'Product':

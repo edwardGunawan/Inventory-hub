@@ -45,6 +45,6 @@
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2018 Inventory-Hub</string>
     <key>AsarIntegrity</key>
-    <string>{"checksums":{"app.asar":"5MG9kxtUGz86l/Ngg7vwbvQFL50w9gI/ohSmj4QGsTC/QJaoSbAAXTlfB3TAALLges+DObtyrMfS9MvzLDC9DA==","electron.asar":"ofPEIsT8YhpsxiPf8+uWXh3sWH9KDicszx4MKtBhAgJuX7ruQJNNByfh7Wo07tgoK3tb46ChQdJkdtdJLU1znA=="}}</string>
+    <string>{"checksums":{"app.asar":"bXSEcG3yZ7ROETFIW9i+1bg9ZKtoSNH4qYr+smbViSIyrMTzWXk/PWKc6Axgcjao2M+uSdxkJN4S2vO0uCDQvA==","electron.asar":"ofPEIsT8YhpsxiPf8+uWXh3sWH9KDicszx4MKtBhAgJuX7ruQJNNByfh7Wo07tgoK3tb46ChQdJkdtdJLU1znA=="}}</string>
   </dict>
 </plist>

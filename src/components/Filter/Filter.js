@@ -15,7 +15,7 @@ class Filter extends Component {
       startOptions:[],
       endOptions: [],
       actionOptions:[],
-      brandOptions:[],
+      codeOptions:[],
       customerOptions:[],
       beginTimestamps:'',
       disabled:true,
@@ -32,19 +32,19 @@ class Filter extends Component {
         startDateValue:'', // all value option is cleared
         endDateValue:'', // all vlaue option is cleared
         transactionHistory:{}, // reset the entire transactionHistory
-        brandDateValue:'',
+        codeDateValue:'',
         customerDateValue:'',
         actionDateValue:''
       })
       this.toOption(nextProps.dates,'startOptions');
     }
     if(nextProps.transactionHistory !== this.props.transactionHistory) {
-      console.log('go through transactionHistory');
+      // console.log('go through transactionHistory', nextProps.filter.codeOptions);
       // this.showFilter(nextProps.optionTitle);
       this.setState({
         transactionHistory:nextProps.transactionHistory,
         actionOptions: nextProps.filter.actionOptions,
-        brandOptions: nextProps.filter.brandOptions,
+        codeOptions: nextProps.filter.codeOptions,
         customerOptions: nextProps.filter.customerOptions
       });
     }
@@ -101,7 +101,7 @@ class Filter extends Component {
     let bool = !(typeof transactionHistory !== 'undefined' && transactionHistory.length > 0);
     switch(this.props.optionTitle) {
       case 'Product':
-        return !(category === 'brand' || category === 'action') || bool;
+        return !(category === 'code' || category === 'action') || bool;
       case 'Customer':
         return !(category === 'action') || bool;
       default:
@@ -113,14 +113,15 @@ class Filter extends Component {
     let {startOptions,
         endOptions,
         actionOptions,
-        brandOptions,
+        codeOptions,
         customerOptions,
         disabled,
         startDateValue,
         endDateValue,
-        brandDateValue,
+        codeDateValue,
         customerDateValue,
         actionDateValue} = this.state;
+
     return (
       <div>
         <Container className="filter-container">
@@ -131,7 +132,7 @@ class Filter extends Component {
         </Container>
         <Container className="filter-container">
           <Row>
-            <Col sm="4"><Select value={brandDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('brandOptions')} options={brandOptions} placeholder="brand" isDisabled={this.disabledFilter('brand')} isClearable={true}/></Col>
+            <Col sm="4"><Select value={codeDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('codeOptions')} options={codeOptions} placeholder="code" isDisabled={this.disabledFilter('code')} isClearable={true}/></Col>
             <Col sm="4"><Select value={customerDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('customerOptions')} options={customerOptions} placeholder="customer name" isDisabled={this.disabledFilter('customer')} isClearable={true}/></Col>
             <Col sm="4"><Select value={actionDateValue} styles={selectCustomStyle} onChange={this.handleSelectChange('actionOptions')} options={actionOptions} placeholder="action type" isDisabled={this.disabledFilter('action')} isClearable={true}/></Col>
           </Row>

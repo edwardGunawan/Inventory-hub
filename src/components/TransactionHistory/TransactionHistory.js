@@ -93,7 +93,7 @@ class TransactionHistory extends Component {
       ipcRenderer.on('reply-get-transaction',(evt,data) => {
         let {status,message} = data;
         if(status === 'OK') {
-          console.log(message);
+          console.log('message in transactionHistory', message);
           const tableHeader = Object.keys(message[0]);
           this.setState({transactionHistory:message,tableHeader,filterResult:message});
         } else {
@@ -110,8 +110,10 @@ class TransactionHistory extends Component {
     let actionOptions = [];
     let brandOptions = [];
     let customerOptions = [];
+    let codeOptions = [];
     let set = new Set();
-    for(let {action,brand,customer} of arr) {
+    console.log('arr in handleRenderFilter', arr);
+    for(let {action,brand,customer,code} of arr) {
       if(!set.has(action)) {
         actionOptions.push({value:action, label:action});
       }
@@ -121,11 +123,16 @@ class TransactionHistory extends Component {
       if(!set.has(customer)) {
         customerOptions.push({value:customer, label:customer});
       }
+
+      if(!set.has(code)) {
+        codeOptions.push({value:code, label:code});
+      }
       set.add(action);
       set.add(brand);
       set.add(customer);
+      set.add(code);
     }
-    return {actionOptions,brandOptions,customerOptions};
+    return {actionOptions,brandOptions,customerOptions,codeOptions};
   }
 
 
@@ -157,10 +164,10 @@ class TransactionHistory extends Component {
     const {transactionHistory} = this.state;
     let filterResult = [];
 
-    let {brand='all',customer='all',action='all'} = filterObj;
-    console.log('go through handle Search ', brand,customer,action);
+    let {code='all',customer='all',action='all'} = filterObj;
+    console.log('go through handle Search ', code,customer,action);
     filterResult = transactionHistory.filter((obj) => {
-      return brand === 'all' || obj.brand === brand;
+      return code === 'all' || obj.code === code;
     });
     console.log('filterResult after brand', filterResult);
     filterResult = filterResult.filter((obj) => {
@@ -180,7 +187,7 @@ class TransactionHistory extends Component {
     Render dates to Filter.js based on optionTitle
   */
   renderDates(optionTitle) {
-    let dates;
+    let dates=[];
     switch(optionTitle){
       case 'Order':
         dates = this.state.orderDates;
@@ -188,7 +195,7 @@ class TransactionHistory extends Component {
       case 'Product':
         dates = this.state.productHistoryDates;
         break;
-      default:
+      case 'Customer':
         dates = this.state.customerHistoryDates;
         break;
     }
@@ -218,6 +225,7 @@ class TransactionHistory extends Component {
     let {optionTitle,transactionHistory,tableHeader,filterResult} = this.state;
     let filterOptions = this.handleRenderFilter(transactionHistory);
     let dates = this.renderDates(optionTitle);
+    console.log('filterOptions in render', filterOptions);
     return (
       <div>
         <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
