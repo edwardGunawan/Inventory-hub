@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
         isFloat:true
       }
     },
-    timestamps: {
+    timestamps: { // this also serve as a receipt number
       type: DataTypes.BIGINT,
       allowNull: false,
       defaultValue: function() {

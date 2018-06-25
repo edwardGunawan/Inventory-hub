@@ -568,6 +568,7 @@ function lib({
                 customer: customerName,
                 discount:numeral(discount).format('0.0%'),
                 action: actionName,
+                receipt_num: timestamps,
                 code,
                 brand,
                 quantity:numeral(quantity).format('0.0'),

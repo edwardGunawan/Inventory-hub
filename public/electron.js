@@ -18,6 +18,7 @@ const log = require('electron-log');
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
+log.info('isDev is ', isDev);
 
 
 
@@ -39,7 +40,7 @@ function initialize() {
       },
       width:1080,
       height:840,
-      minWidth: 680,
+      resizable: false,
       title:app.getName()
     };
 
@@ -48,6 +49,8 @@ function initialize() {
     }
 
     const startUrl = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
+
+
 
     mainWindow = new BrowserWindow(windowOptions);
     mainWindow.loadURL(startUrl);
