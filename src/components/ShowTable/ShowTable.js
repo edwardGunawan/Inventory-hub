@@ -102,7 +102,7 @@ class ShowTable extends Component{
               <td>{code}</td>
               <td>{brand}</td>
               <td>{numeral(quantity).format('0,0')}</td>
-              <td>{numeral(price).format('$0,0.00')}</td>
+              <td>{numeral(price).format('0,0.00')}</td>
               <td><Button color="danger" outline onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>
           )
@@ -113,7 +113,7 @@ class ShowTable extends Component{
               <td>{code}</td>
               <td>{brand}</td>
               <td>{numeral(quantity).format('0,0')}</td>
-              <td>{numeral(price).format('$0,0.00')}</td>
+              <td>{numeral(price).format('0,0.00')}</td>
               <td>{numeral(total).format('0,0')}</td>
               <td><Button color="danger" outline onClick={this.handleTableClick(i)}>{this.state.actionButton}</Button></td>
             </tr>

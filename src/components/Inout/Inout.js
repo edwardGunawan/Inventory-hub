@@ -237,7 +237,7 @@ class Inout extends Component {
                   info={{tableBody,customer,discount,action,total}}
                   />}
         <div className="total-box">
-          <h6>Total: {totalWithoutDiscount} in  <span className="text-success">{discount}%</span> = {numeral(total).format('$0,0.00')}</h6>
+          <h6>Total: {totalWithoutDiscount} in  <span className="text-success">{discount}%</span> = {numeral(total).format('0,0.00')}</h6>
         </div>
 
         <Button onClick={this.handleBackButton} outline size="sm" disabled={back}>BACK</Button>

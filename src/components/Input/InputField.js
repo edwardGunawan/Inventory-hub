@@ -200,7 +200,7 @@ class InputField extends Component {
                 </FormGroup>
                 <FormGroup className="form-group">
                   <Label className="mr-sm-2" for="price">Price</Label>
-                  <Input type="text" bsSize="sm" name="price" id="price" value={numeral(price).format('$0,0.00')} disabled />
+                  <Input type="text" bsSize="sm" name="price" id="price" value={numeral(price).format('0,0.00')} disabled />
                 </FormGroup>
               </div>
               <FormGroup className="form-group  right-location form-group-elemnt">

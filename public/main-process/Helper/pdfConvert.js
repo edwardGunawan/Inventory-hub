@@ -122,8 +122,8 @@ function PDFInvoice({
     genTableRow(){
       items
         .map(item => Object.assign({}, item, {
-          price: numeral(item.price).format('$ 0,00.00'),
-          total: numeral(item.total).format('$ 0,00.00')
+          price: numeral(item.price).format('0,00.00'),
+          total: numeral(item.total).format('0,00.00')
         }))
         .forEach((item, itemIndex) => {
           [
@@ -142,7 +142,7 @@ function PDFInvoice({
         doc.fontSize(TEXT_SIZE)
            .text(`Discount: ${discount}%`, table.x + 3 * table.inc, table.y + TEXT_SIZE + 6 + (items.length) * 20);
         doc.fontSize(TEXT_SIZE)
-           .text(`$ ${charge.total}`,table.x + 4 * table.inc,table.y + TEXT_SIZE + 6 + (items.length) * 20);
+           .text(`Rp ${charge.total}`,table.x + 4 * table.inc,table.y + TEXT_SIZE + 6 + (items.length) * 20);
 
     },
 
