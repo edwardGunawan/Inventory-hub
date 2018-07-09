@@ -1,0 +1,42 @@
+const pdfInvoice = require('../Helper/pdfConvert.js');
+const path = require('path');
+// require('dotenv').config()
+// console.log(process.cwd());
+console.log(process.env.name);
+const document = pdfInvoice({
+  company: {
+    phone:'(021)-29939014',
+     address: 'Senen Jaya Blok IV. Lt.1 - B2 no 12 Jakarta Pusat',
+     name: 'Toko CERMERLANG'
+   },
+   customer: {
+     name:'customer',
+     email: '',
+   },
+   receiptNum: 12333,
+   items: [
+     {price: 50.0, code: 'XYZ', quantity: 12, brand:'SamCafaso',total:1000},
+     {price: 12.0, code: 'ABC', quantity: 12, brand:'SamCafaso',total:1000},
+     {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+     {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+     {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+     {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000},
+     {price: 127.72, code: 'DFE', quantity: 12, brand:'SamCafaso',total:1000}
+   ],
+   discount:20,
+   action:'Sold',
+   rekening: {
+     number: process.env.BCANUM,
+     name: process.env.name
+   }
+});
+
+
+// That's it! Do whatever you want now.
+// Pipe it to a file for instance:
+
+const fs = require('fs')
+
+document.generate() // triggers rendering
+// console.log(document.pdfKitDoc);
+document.pdfkitDoc.pipe(fs.createWriteStream(__dirname+'/my-invoice.testing.pdf'))
