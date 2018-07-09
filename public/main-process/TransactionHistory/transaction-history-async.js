@@ -4,10 +4,11 @@ const db = require('../../db.js');
 const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
+const log = require('electron-log');
 const dirPath = app.getPath('desktop');
 let libInstance;
 checkOrCreateDir(path.join(dirPath,'inventoryTransactionHistory')).then((transactionPath) => {
-  console.log('in transactionHistory', transactionPath);
+  log.info('in transactionHistory', transactionPath);
   libInstance = require('../Helper/lib.js')({database:db,pathname:transactionPath});
 });
 
@@ -29,7 +30,7 @@ ipcMain.on('get-transaction', async (evt, data) => {
     // it can only be assigned to default if the value is undefined
     let {beginTimestamps,endTimestamps=moment(beginTimestamps).add(1,'months').valueOf(),category} = data;
     let transactionHistory;
-    console.log('category', category, beginTimestamps, endTimestamps);
+    log.info('category', category, beginTimestamps, endTimestamps);
 
     switch(category) {
       case 'Product':
@@ -42,7 +43,7 @@ ipcMain.on('get-transaction', async (evt, data) => {
         transactionHistory = await libInstance.getCustomerHistoryDetail(beginTimestamps,endTimestamps);
         break;
     }
-    console.log('transactionHistory', transactionHistory);
+    log.debug('transactionHistory', transactionHistory);
     evt.sender.send('reply-get-transaction', {status:'OK', message:transactionHistory});
   }catch (e) {
     evt.sender.send('reply-get-trasaction', {status:'Error', message:e});
@@ -68,7 +69,7 @@ ipcMain.on('transfer-excel', async(evt,data) => {
     }
     evt.sender.send('reply-transfer-excel',{status:'OK', message:'All data is converted'});
   } catch(e) {
-    console.log(e);
+    log.error(e);
     throw e;
   }
 });

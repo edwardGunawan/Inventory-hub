@@ -10,8 +10,8 @@ ipcMain.on('purchase', async (event,data) => {
   // discount
   try {
     let {customer,productArr,discount, action,totalPrice} = data;
-    await libInstance.purchaseOrder(data);
-    event.sender.send('reply-purchase',{status:'OK', message:'Success'});
+    let timestamps = await libInstance.purchaseOrder(data);
+    event.sender.send('reply-purchase',{status:'OK', message:timestamps});
   }catch(e) {
     throw e;
     event.sender.send('reply-purchase',{status:'Error', message:e});

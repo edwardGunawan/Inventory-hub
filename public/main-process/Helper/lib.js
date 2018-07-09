@@ -234,7 +234,8 @@ function lib({
         const t = await database.sequelize.transaction();
         try {
           // console.log(moment().valueOf());
-          const order = await database.purchaseOrder.create({discount,totalPrice,timestamps:moment().valueOf()}, {transaction:t});
+          let timestamps = moment().valueOf();
+          const order = await database.purchaseOrder.create({discount,totalPrice,timestamps}, {transaction:t});
           const actionInst = await database.action.findOne({where:{action}},{transaction:t});
           const customerInst = await database.customer.findOne({where:{name:customer}}, {transaction:t});
 
@@ -260,6 +261,7 @@ function lib({
           }
           await t.commit();
           console.log('transaction successful');
+          return timestamps;
         } catch(e) {
           console.log(e);
           await t.rollback();

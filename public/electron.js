@@ -24,6 +24,7 @@ log.info('isDev is ', isDev);
 
 
 
+
 let mainWindow = null;
 
 function initialize() {

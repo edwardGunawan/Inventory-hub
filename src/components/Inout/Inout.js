@@ -90,7 +90,7 @@ class Inout extends Component {
     ipcRenderer.on('reply-purchase', (evt,arg) => {
       let {message, status} = arg;
       if(status === 'OK') {
-        this.convertToPdf(tableBody,discount,customer,action,total); // convert here to pdf
+        this.convertToPdf(tableBody,discount,customer,action,total,message); // convert here to pdf
       } else {
         console.log(message);
       }
@@ -99,7 +99,7 @@ class Inout extends Component {
     });
   }
 
-  convertToPdf(tableBody,discount,customer,action,total) {
+  convertToPdf(tableBody,discount,customer,action,total,receiptNum) {
     let items = tableBody.map((body) => {
       // console.log(body);
       return {
@@ -111,7 +111,7 @@ class Inout extends Component {
       }
     });
 
-    ipcRenderer.send('convert-pdf', {items,discount,customer,action,total});
+    ipcRenderer.send('convert-pdf', {items,discount,customer,action,total,receiptNum});
     ipcRenderer.on('reply-convert-pdf', (evt,args) => {
       let {status} = args;
       if(status === 'OK') {

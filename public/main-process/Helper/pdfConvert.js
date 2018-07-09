@@ -3,15 +3,17 @@ const moment = require('moment')
 const numeral = require('numeral')
 const i18n = require('./i18n')
 
-const TEXT_SIZE = 8
+const TEXT_SIZE = 10
 const CONTENT_LEFT_PADDING = 25
 
 function PDFInvoice({
   company, // {phone, email, address}
   customer, // {name, email}
+  receiptNum, // timestamps
   items, // [{total, code,brand, quantity price}]
   discount, // discount
-  action // sell or return invoice
+  action, // sell or return invoice
+  rekening// rekening
 }){
   const date = new Date()
   const charge = {
@@ -38,11 +40,11 @@ function PDFInvoice({
       doc
        .fontSize(20)
        .text(company.name, CONTENT_LEFT_PADDING, 50);
-      doc
-       .fontSize(TEXT_SIZE)
-       .text(action)
+      doc.fontSize(13).text(company.address);
+      doc.fontSize(13).text(company.phone);
+      doc.text(`No. ${receiptNum}`)
 
-      const borderOffset = doc.currentLineHeight() + 80;
+      const borderOffset = doc.currentLineHeight() + 110;
 
       doc
         .fontSize(16)
@@ -59,15 +61,32 @@ function PDFInvoice({
     },
 
     genFooter(){
-      doc.fillColor('#cccccc');
+      doc.fillColor('#424242');
 
       doc
         .fontSize(12)
-        .text(company.name, CONTENT_LEFT_PADDING, 450);
+        .text('Pembayaran via transfer ke rekening', CONTENT_LEFT_PADDING, 450);
 
-      doc.text(company.address);
-      doc.text(company.phone);
-      doc.text(company.email);
+      doc
+        .fontSize(12)
+        .text('BCA a/n')
+
+      doc
+        .font('Helvetica-Bold')
+        .text(rekening.number)
+
+      doc
+        .font('Helvetica')
+        .fontSize(12)
+        .text('a/n')
+
+      doc
+        .font('Helvetica-Bold')
+        .text(rekening.name)
+
+      // doc.text(company.address);
+      // doc.text(company.phone);
+      // doc.text(company.email);
 
       doc.fillColor('#333333');
     },
@@ -77,7 +96,13 @@ function PDFInvoice({
         .fontSize(TEXT_SIZE)
         .text(translate.chargeFor, CONTENT_LEFT_PADDING, 400);
 
-      doc.text(`${customer.name} <${customer.email}>`);
+      doc
+        .fontSize(14)
+        .text(`${customer.name}`);
+
+      doc
+       .fontSize(14)
+       .text(action)
     },
 
     genTableHeaders(){
