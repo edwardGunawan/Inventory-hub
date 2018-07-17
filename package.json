@@ -39,7 +39,7 @@
   },
   "scripts": {
     "react-start": "react-scripts start",
-    "react-build": "react-scripts build",
+    "react-build": "sh -ac '. .env; react-scripts build'",
     "react-test": "react-scripts test --env=jsdom",
     "react-eject": "react-scripts eject",
     "electron-build": "CSC_IDENTITY_AUTO_DISCOVERY=false build --mac --win",

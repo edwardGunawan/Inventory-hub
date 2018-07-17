@@ -1,8 +1,16 @@
 const {ipcMain,app} = require('electron');
 const pdfInvoice = require('../Helper/pdfConvert.js');
 const path = require('path');
-require('dotenv').config()
+const isDev = require('electron-is-dev');
 const log = require('electron-log');
+if(isDev) {
+  log.info('process cwd', process.cwd());
+  require('dotenv').config();
+} else {
+  require('dotenv').config();
+}
+
+
 
 log.info('process env name ', process.env.name);
 ipcMain.on('convert-pdf', (evt,data) => {
@@ -24,8 +32,8 @@ ipcMain.on('convert-pdf', (evt,data) => {
      discount,
      action,
      rekening: {
-       number: process.env.BCANUM,
-       name: process.env.name
+       number: process.env.REACT_APP_BCANUM,
+       name: process.env.REACT_APP_name
      }
   });
   const fs = require('fs');
