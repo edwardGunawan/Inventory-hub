@@ -1,10 +1,12 @@
 const {ipcMain,app} = require('electron');
 const pdfInvoice = require('../Helper/pdfConvert.js');
+const envJs = require('../../config/env.js');
 const path = require('path');
 const isDev = require('electron-is-dev');
 const log = require('electron-log');
 if(isDev) {
   log.info('process cwd', process.cwd());
+  log.info('endJs', envJs)
   require('dotenv').config();
 } else {
   require('dotenv').config();
@@ -12,7 +14,8 @@ if(isDev) {
 
 
 
-log.info('process env name ', process.env.name);
+
+// log.info('process env name ', process.env.name);
 ipcMain.on('convert-pdf', (evt,data) => {
   let {items,discount,customer,action,receiptNum} = data;
   log.info(items, ' items in convert-pdf');
@@ -32,8 +35,8 @@ ipcMain.on('convert-pdf', (evt,data) => {
      discount,
      action,
      rekening: {
-       number: process.env.REACT_APP_BCANUM,
-       name: process.env.REACT_APP_name
+       number: envJs.BCANUM,//process.env.REACT_APP_BCANUM,
+       name: envJs.name//process.env.REACT_APP_name.split('_').join(' ')
      }
   });
   const fs = require('fs');

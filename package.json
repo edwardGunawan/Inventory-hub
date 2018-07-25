@@ -39,14 +39,15 @@
   },
   "scripts": {
     "react-start": "react-scripts start",
-    "react-build": "sh -ac '. .env; react-scripts build'",
+    "react-build": "npm run run-scripts && react-scripts build'",
     "react-test": "react-scripts test --env=jsdom",
     "react-eject": "react-scripts eject",
     "electron-build": "CSC_IDENTITY_AUTO_DISCOVERY=false build --mac --win",
     "rebuild": "electron-rebuild -f -w sqlite3",
     "build": "yarn react-build && yarn electron-build",
-    "start": "concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "debug": "concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron . --debug\"",
+    "run-scripts": "./scripts/*.sh",
+    "start": "npm run run-scripts && concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "debug": "npm run run-scripts && concurrently \"BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron . --debug\"",
     "postinstall": "electron-builder install-app-deps",
     "publish": "build --mac --win -p always"
   },

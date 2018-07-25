@@ -2,6 +2,8 @@
 
 # dotenv
 .env
+config/*
+public/config/*
 
 # electron-builder.yml
 electron-builder.yml
