@@ -1,6 +1,11 @@
 #!/bin/bash
 
-mkdir ./public/config
+if [ -d "./public/config" ]; then
+  echo "Directory ./public/config exist"
+else
+  mkdir ./public/config
+fi
+
 cd ./config
 for all_file in *.js
 do
