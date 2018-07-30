@@ -1,4 +1,8 @@
-let bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs')
+const cryptojs = require('crypto-js')
+const env = require('../config/env')
+const log = require('electron-log')
+
 module.exports = function(sequelize,DataTypes){
   var User =  sequelize.define('user', {
     email:{
@@ -15,6 +19,9 @@ module.exports = function(sequelize,DataTypes){
     admin_password_hash: {
       type: DataTypes.STRING
     },
+    admin_password_encrypt: {
+      type: DataTypes.STRING
+    },
     admin_password: {
       type:DataTypes.VIRTUAL,
       allowNull:false,
@@ -27,10 +34,19 @@ module.exports = function(sequelize,DataTypes){
         let salt = bcrypt.genSaltSync(10);
         // bcrypt hash
         let hash = bcrypt.hashSync(val,salt);
+
+        log.info('type of password', typeof val);
+        // set the encryption with cryptojs for password recovery
+        // NOTE: encrypt is not a string, need to do toString()
+        let encrypt = cryptojs.AES.encrypt(val,env.secretKey)
+
+        // log.info('encrypt key ', encrypt, typeof encrypt);
+
         // set dataValue for password (rest of the passwrod property but not the value) salt and hash
         this.setDataValue('salt_admin', salt);
         this.setDataValue('admin_password_hash', hash);
         this.setDataValue('admin_password', val);
+        this.setDataValue('admin_password_encrypt',encrypt.toString());
       }
     }
   },{
@@ -38,7 +54,6 @@ module.exports = function(sequelize,DataTypes){
       beforeValidate: (user, options) => {
         if(typeof user.email === 'String'){
           user.admin_password = user.admin_password.toLowerCase();
-          user.public_password = user.public_password.toLowerCase();
           user.username = user.email.trim().toLowerCase();
         }
       }
@@ -98,6 +113,24 @@ module.exports = function(sequelize,DataTypes){
       };
       return true;
     } catch(e) {
+      throw e
+    }
+  }
+
+  /**
+    Getting password
+    Get admin_password_encrypt and decrypt the admin_password to get
+    original password, and return
+    */
+  User.prototype.getPassword = function() {
+    try {
+      let password_encrypt = this.get('admin_password_encrypt');
+      let bytes = cryptojs.AES.decrypt(password_encrypt,env.secretKey)
+      let pass = bytes.toString(cryptojs.enc.Utf8)
+      log.info('pass exist', pass)
+      return pass;
+    } catch (e) {
+      log.error(e)
       throw e
     }
   }

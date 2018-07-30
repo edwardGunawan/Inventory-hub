@@ -5,7 +5,7 @@ import './Settings.css';
 const ipcRenderer = window.ipcRenderer;
 
 
-const withClassSettings = email => handleSubmit => {
+const withClassSettings = email => funcObj => {
   return class Settings extends Component {
     constructor(props) {
       super(props);
@@ -24,7 +24,6 @@ const withClassSettings = email => handleSubmit => {
 
     handleChange(category) {
       return (e) => {
-
         switch(category) {
           case 'oldPassword':
             this.setState({oldPassword:e.target.value});
@@ -45,17 +44,37 @@ const withClassSettings = email => handleSubmit => {
       }
     }
 
-    onSubmit(e) {
+    onSubmit = (option) => (e) => {
       e.preventDefault();
-      let promise = handleSubmit(this.state);
-      promise.then((message) => {
-        if(message === 'success') {
-          history.push('/');
-        }else {
-          this.setState({alert:<Alert color="danger">{message}</Alert>});
-        }
-      })
-
+      let promise;
+      switch(option) {
+        case 'change-password':
+          let {handlePasswordChange} = funcObj;
+          promise = handlePasswordChange(this.state);
+          promise.then((message) => {
+            if(message === 'success') {
+              history.push('/');
+            }else {
+              this.setState({alert:<Alert color="danger">{message}</Alert>});
+            }
+          }).catch(e => {
+            this.setState({alert:<Alert color="danger">{e}</Alert>});
+          })
+          break;
+        case 'email-password':
+          let {handleEmailPassword} = funcObj;
+          promise = handleEmailPassword(this.state);
+          promise.then((message) => {
+            console.log('message in success');
+            if(message === 'success') {
+              this.setState({alert:<Alert color="info">Password has been email to {this.state.email} </Alert>})
+            }else {
+              this.setState({alert:<Alert color="danger">{message}</Alert>});
+            }
+          }).catch(e => {
+            this.setState({alert:<Alert color="danger">{e}</Alert>});
+          })
+      }
     }
 
 
@@ -80,16 +99,17 @@ const withClassSettings = email => handleSubmit => {
               </FormGroup>
             </div>
             <FormGroup className="form-group-container">
-              <Button outline color="danger" onClick={this.onSubmit} className="form-submit" disabled={this.state.disabled}>CHANGE PASSWORD</Button>
+              <Button outline color="danger" onClick={this.onSubmit('change-password')} className="form-submit" disabled={this.state.disabled}>CHANGE PASSWORD</Button>
             </FormGroup>
           </Form>
+          <Button outline color="primary" onClick={this.onSubmit('email-password')} className="form-submit">Forgot Password?</Button>
         </div>
       )
     }
   }
 }
 
-const handleSubmit = (state) => {
+const handlePasswordChange = (state) => {
   let {oldPassword,newPassword,email} = state;
   // console.log(oldPassword,newPassword,email);
   if(oldPassword.length > 0 && newPassword.length > 0 && email) {
@@ -109,8 +129,28 @@ const handleSubmit = (state) => {
 
     return promise;
   }
-
 }
 
-const Settings = (email) => withClassSettings(email)(handleSubmit);
+const handleEmailPassword = state => {
+  let {email} = state;
+  if(email) {
+    let promise = new Promise((resolve,reject) => {
+      ipcRenderer.send('email-notification',{email});
+      ipcRenderer.on('reply-email-notification',(evt,arg) => {
+        let {status,message} = arg;
+        console.log('log message', message);
+        if(status === 'OK') {
+          resolve('success')
+        } else {
+          resolve(message)
+        }
+        ipcRenderer.removeAllListeners('email-notification');
+        ipcRenderer.removeAllListeners('reply-email-notification');
+      })
+    })
+    return promise
+  }
+}
+
+const Settings = (email) => withClassSettings(email)({handlePasswordChange,handleEmailPassword});
 export default Settings;
