@@ -76,7 +76,7 @@ function initialize() {
       .authenticate()
       .then(() => {
         log.info('Connection has been established successfully');
-        return db.sequelize.sync({force:true});
+        return db.sequelize.sync({});
       })
       .then(() => {
         log.info('db is already in sync');

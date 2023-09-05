@@ -42,7 +42,7 @@
     "react-build": "react-scripts build",
     "react-test": "react-scripts test --env=jsdom",
     "react-eject": "react-scripts eject",
-    "electron-build": "CSC_IDENTITY_AUTO_DISCOVERY=false build --mac --win",
+    "electron-build": "CSC_IDENTITY_AUTO_DISCOVERY=false build --win",
     "rebuild": "electron-rebuild -f -w sqlite3",
     "build": "npm run run-scripts && yarn react-build && yarn electron-build",
     "run-scripts": "./scripts/*.sh",
